@@ -1,24 +1,14 @@
-package fr.insa.dorgli.projetbat;
+package main.java.fr.insa.dorgli.projetbat;
 
-public class TypeMur {
-    private int id;
+public class TypeMur implements ToStringShort {
     private double epaisseur;
     private double prixUnitaire;
     private String nom;
 
-    public TypeMur(int id, double epaisseur, double prixUnitaire, String nom) {
-        this.id = id;
+    public TypeMur(double epaisseur, double prixUnitaire, String nom) {
         this.epaisseur = epaisseur;
         this.prixUnitaire = prixUnitaire;
         this.nom = nom;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public double getEpaisseur() {
@@ -43,5 +33,14 @@ public class TypeMur {
 
     public void setNom(String nom) {
         this.nom = nom;
+    }
+
+    public String toString() {
+        return "TypeMur { epaisseur: " + epaisseur + ", prixUnitaire: " + prixUnitaire + ", nom: " + nom + " }";
+    }
+
+    public String toStringShort() {
+        // TODO -> toStringShort -> afficher l'ID
+        return "( #" + "TODO" + ")";
     }
 }

@@ -241,7 +241,7 @@ public class Sol {
         return read_short(null);
     }
     public static short read_short(String prompt) throws IOException, NumberFormatException {
-        return short.parseshort(read_line(prompt));
+        return Short.parseShort(read_line(prompt));
     }
 
     ///// read_long

@@ -1,24 +1,14 @@
-package fr.insa.dorgli.projetbat;
+package main.java.fr.insa.dorgli.projetbat;
 
-public class Point {
-    private int id;
+public class Point implements ToStringShort {
     private double x;
     private double y;
     private int niveauId;
 
-    public Point(int id, double x, double y, int niveauId) {
-        this.id = id;
+    public Point(double x, double y, int niveauId) {
         this.x = x;
         this.y = y;
         this.niveauId = niveauId;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public double getX() {
@@ -43,5 +33,14 @@ public class Point {
 
     public void setNiveauId(int niveauId) {
         this.niveauId = niveauId;
+    }
+
+    public String toString() {
+        return "Point { x: " + x + ", y: " + y + ", niveauId: " + niveauId + " }";
+    }
+
+    public String toStringShort() {
+        // TODO -> toStringShort -> afficher l'ID au lieu du nom
+        return "( #" + "TODO" + " )";
     }
 }

@@ -1,6 +1,6 @@
-package fr.insa.dorgli.projetbat;
+package main.java.fr.insa.dorgli.projetbat;
 
-public class TypeOuvertureMur {
+public class TypeOuvertureMur implements ToStringShort {
     private double prixUnitaire;
     private double hauteur;
     private double largeur;
@@ -43,5 +43,15 @@ public class TypeOuvertureMur {
 
     public void setNom(String nom) {
         this.nom = nom;
+    }
+
+    public String toString() {
+        return "TypeOuvertureMur { prixUnitaire: " + prixUnitaire + ", hauteur: " + hauteur + ", largeur: " + largeur
+                + ", nom: " + nom + " }";
+    }
+
+    public String toStringShort() {
+        // TODO -> toStringShort -> afficher l'ID
+        return "( #" + "TODO" + ")";
     }
 }

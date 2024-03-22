@@ -1,6 +1,6 @@
-package fr.insa.dorgli.projetbat;
+package main.java.fr.insa.dorgli.projetbat;
 
-public class TypeOuvertureNiveau {
+public class TypeOuvertureNiveau implements ToStringShort {
     private double prixUnitaire;
     private double x;
     private double y;
@@ -43,5 +43,14 @@ public class TypeOuvertureNiveau {
 
     public void setNom(String nom) {
         this.nom = nom;
+    }
+
+    public String toString() {
+        return "TypeOuvertureNiveau { prixUnitaire: " + prixUnitaire + ", x: " + x + ", y: " + y + ", nom: " + nom + " }";
+    }
+
+    public String toStringShort() {
+        // TODO -> toStringShort -> afficher l'ID
+        return "( #" + "TODO" + ")";
     }
 }
