@@ -11,7 +11,9 @@ public class Mur implements ToString, ToStringShort {
     private ArrayList<RevetementMur> revetements2;
     private ArrayList<OuvertureMur> ouvertures;
 
-    public Mur(Point pointDebut, Point pointFin, double hauteur) throws IllegalArgumentException {
+    public Mur(Point pointDebut, Point pointFin, double hauteur, TypeMur typeMur, ArrayList<RevetementMur> revetements1,
+            ArrayList<RevetementMur> revetements2, ArrayList<OuvertureMur> ouvertures) throws IllegalArgumentException {
+
         if (pointDebut.getNiveauId() != pointFin.getNiveauId())
             throw new IllegalArgumentException("Un mur doit avoir des points sur le même niveau! '"
                     + pointDebut.getNiveauId() + "' != '" + pointFin.getNiveauId() + "'");
@@ -19,8 +21,10 @@ public class Mur implements ToString, ToStringShort {
         this.pointDebut = pointDebut;
         this.pointFin = pointFin;
         this.hauteur = hauteur;
-        this.revetements1 = new ArrayList<RevetementMur>();
-        this.revetements2 = new ArrayList<RevetementMur>();
+        this.typeMur = typeMur;
+        this.revetements1 = revetements1;
+        this.revetements2 = revetements2;
+        this.ouvertures = ouvertures;
     }
 
     public Point getPointDebut() {
@@ -89,6 +93,12 @@ public class Mur implements ToString, ToStringShort {
             revetements2Out += each.toStringShort() + ", ";
         }
         revetements2Out += "]";
+
+        String ouverturesOut = "[ ";
+        for (OuvertureMur each : ouvertures) {
+            ouverturesOut += each.toStringShort() + ", ";
+        }
+        ouverturesOut += "]";
 
         return "Mur {\n"
                 + pfx + "pointDebut: " + pointDebut + ",\n"

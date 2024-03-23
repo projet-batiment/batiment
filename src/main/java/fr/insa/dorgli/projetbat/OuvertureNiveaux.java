@@ -1,21 +1,21 @@
 package main.java.fr.insa.dorgli.projetbat;
 
-public class OuvertureMur implements ToStringShort {
-    TypeOuvertureMur typeOuverture;
+public class OuvertureNiveaux {
+    TypeOuvertureNiveau typeOuverture;
     double posL;
     double posH;
 
-    public OuvertureMur(TypeOuvertureMur typeOuverture, double posL, double posH) {
+    public OuvertureNiveaux(TypeOuvertureNiveau typeOuverture, double posL, double posH) {
         this.typeOuverture = typeOuverture;
         this.posL = posL;
         this.posH = posH;
     }
 
-    public TypeOuvertureMur getTypeOuverture() {
+    public TypeOuvertureNiveau getTypeOuverture() {
         return typeOuverture;
     }
 
-    public void setTypeOuverture(TypeOuvertureMur typeOuverture) {
+    public void setTypeOuverture(TypeOuvertureNiveau typeOuverture) {
         this.typeOuverture = typeOuverture;
     }
 
@@ -36,7 +36,7 @@ public class OuvertureMur implements ToStringShort {
     }
 
     public String toString() {
-        return "OuvertureMur { typeOuverture: " + typeOuverture.toStringShort() + ", position: (" + posL + ", "
+        return "OuvertureNiveau { typeOuverture: " + typeOuverture.toStringShort() + ", position: (" + posL + ", "
                 + posH + ") }";
     }
 

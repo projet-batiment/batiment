@@ -1,13 +1,24 @@
 # TODOS
 
-*(ragarder les "TODO" dans les différents fichiers)*
+*(regarder les "TODO" dans les différents fichiers)*
+
+#### Notes
+
+* La classe Test est un programme "principal" pour faire des tests avec les classes et compagnie, sans toucher au reste du programme
+* La classe Deserialize permet de créer une hiérarchie d'objets via une interface interactive très rustique
+  A terme, il faudrait séparer la partie interactive d'une future partie automatique (sur des fichiers de sauvegarde)
+
+## Urgents
+
+- [ ] Normaliser les constructeurs qui se ressemblent
+  Typiquement, pour certaines classes, "nom" arrive en dernier argument tandis qu'il est premier pour d'autres classes...
 
 ## Importants
 
 Dans l'ordre :
 
 - [ ] Faire les classes de base
-  - [ ] L'environnement de la classe Mur a l'air complet
+  - [x] L'environnement de la classe Mur a l'air complet
   - [ ] Piece, Sol, Plafond, RevetementSolPlafond, OuvertureNiveaux, TypeOuvertureNiveaux
   - [ ] EtageAppart (à garder ou supprimer ??), Niveau, Appart
   - [ ] Batiment
@@ -17,6 +28,7 @@ Dans l'ordre :
   - [ ] Faire des méthodes permettant de manipuler les objets à partir d'ID / retrouver l'ID d'un objet
   - [ ] Afficher l'ID de l'objet en question dans toStringShort, sans avoir à le stocker dans l'objet en question
 - [ ] Faire une *mini* interface interactive (TUI) pour manipuler de manière basique la hiérarchie des objets du batiment
+  - *(en cours)*
 - [ ] Calculer un devis
   - [ ] Calculer le prix de chaque sous-composant de manière récursive
     - [ ] Interface *Couts* ?

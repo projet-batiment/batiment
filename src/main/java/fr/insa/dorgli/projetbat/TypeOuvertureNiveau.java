@@ -1,15 +1,17 @@
 package main.java.fr.insa.dorgli.projetbat;
 
 public class TypeOuvertureNiveau implements ToStringShort {
+    // j'ai pris le parti d'utiliser "largeur" et "hauteur" pour mieux distinguer
+    //   les deux directions (largeur et longueurs peuvent prêter à confusion)
     private double prixUnitaire;
-    private double x;
-    private double y;
+    private double largeur;
+    private double hauteur;
     private String nom;
 
-    public TypeOuvertureNiveau(double prixUnitaire, double x, double y, String nom) {
+    public TypeOuvertureNiveau(double prixUnitaire, double largeur, double hauteur, String nom) {
         this.prixUnitaire = prixUnitaire;
-        this.x = x;
-        this.y = y;
+        this.largeur = largeur;
+        this.hauteur = hauteur;
         this.nom = nom;
     }
 
@@ -21,20 +23,20 @@ public class TypeOuvertureNiveau implements ToStringShort {
         this.prixUnitaire = prixUnitaire;
     }
 
-    public double getX() {
-        return x;
+    public double getLargeur() {
+        return largeur;
     }
 
-    public void setX(double x) {
-        this.x = x;
+    public void setLargeur(double largeur) {
+        this.largeur = largeur;
     }
 
-    public double getY() {
-        return y;
+    public double getHauteur() {
+        return hauteur;
     }
 
-    public void setY(double y) {
-        this.y = y;
+    public void setHauteur(double hauteur) {
+        this.hauteur = hauteur;
     }
 
     public String getNom() {
@@ -46,7 +48,7 @@ public class TypeOuvertureNiveau implements ToStringShort {
     }
 
     public String toString() {
-        return "TypeOuvertureNiveau { prixUnitaire: " + prixUnitaire + ", x: " + x + ", y: " + y + ", nom: " + nom + " }";
+        return "TypeOuvertureNiveau { prixUnitaire: " + prixUnitaire + ", largeur: " + largeur + ", hauteur: " + hauteur + ", nom: " + nom + " }";
     }
 
     public String toStringShort() {

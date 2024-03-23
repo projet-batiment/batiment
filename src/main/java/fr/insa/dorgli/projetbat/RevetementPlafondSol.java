@@ -1,13 +1,14 @@
 package main.java.fr.insa.dorgli.projetbat;
 
-public class RevetementMur implements ToStringShort {
+public class RevetementPlafondSol implements ToStringShort {
     TypeRevetement typeRevetement;
+    // TODO: à terme, définir les revetements plafond et sol avec des points verticaux sur les murs ?
     int pos1L;
     int pos1H;
     int pos2L;
     int pos2H;
 
-    public RevetementMur(TypeRevetement typeRevetement, int pos1L, int pos1H, int pos2L, int pos2H) {
+    public RevetementPlafondSol(TypeRevetement typeRevetement, int pos1L, int pos1H, int pos2L, int pos2H) {
         this.typeRevetement = typeRevetement;
         this.pos1L = pos1L;
         this.pos1H = pos1H;
@@ -56,7 +57,7 @@ public class RevetementMur implements ToStringShort {
     }
 
     public String toString() {
-        return "RevetementMur { type -> " + typeRevetement.getNom() + ", positions: (" + pos1L + ", " + pos1H + ") -> ("
+        return "RevetementSol { type -> " + typeRevetement.getNom() + ", positions: (" + pos1L + ", " + pos1H + ") -> ("
                 + pos2L + ", " + pos2H + ") }";
     }
 
