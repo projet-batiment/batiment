@@ -1,4 +1,4 @@
-package main.java.fr.insa.dorgli.projetbat;
+package fr.insa.dorgli.projetbat;
 
 public class RevetementMur implements ToStringShort {
     TypeRevetement typeRevetement;

@@ -1,15 +1,11 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package main.java.fr.insa.dorgli.projetbat;
+package fr.insa.dorgli.projetbat;
 
-/**
- *
- * @author rdorgli01
- */
+// Note pour plus tard :
+//   - Est ce que l'utilisateur peut créer différents types d'apparts lors de l'exécution ?
+//     Dans ce cas, il faudrait stocker le type sous une autre forme qu'un enum
 public enum  TypeAppart{
-    COMMUNS, PRIVE
+    COMMUNS,
+    PRIVE,
 }
     
     

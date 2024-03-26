@@ -17,11 +17,12 @@
 
 Dans l'ordre :
 
-- [ ] Faire les classes de base
+- [x] Faire les classes de base
+    => Terminé 🥳
   - [x] L'environnement de la classe Mur a l'air complet
-  - [ ] Piece, Sol, Plafond, RevetementSolPlafond, OuvertureNiveaux, TypeOuvertureNiveaux
-  - [ ] EtageAppart (à garder ou supprimer ??), Niveau, Appart
-  - [ ] Batiment
+  - [x] Piece, Sol, Plafond, RevetementSolPlafond, OuvertureNiveaux, TypeOuvertureNiveaux
+  - [x] ~~EtageAppart (à garder ou supprimer ??)~~, Niveau, Appart
+  - [x] Batiment
 - [ ] Faire une classe principale / Main / App et une fonction principale, mais en gardant quand même Test
 - [ ] Lister les objets et faire des IDs
   - [ ] Faire une liste de tous les objets par ID et les regroupper par type dans des map (id -> objet)

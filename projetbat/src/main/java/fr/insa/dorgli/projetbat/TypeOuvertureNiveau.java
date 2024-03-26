@@ -1,4 +1,4 @@
-package main.java.fr.insa.dorgli.projetbat;
+package fr.insa.dorgli.projetbat;
 
 public class TypeOuvertureNiveau implements ToStringShort {
     // j'ai pris le parti d'utiliser "largeur" et "hauteur" pour mieux distinguer
