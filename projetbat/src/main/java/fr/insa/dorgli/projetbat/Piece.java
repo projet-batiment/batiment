@@ -91,6 +91,6 @@ public class Piece implements ToString, ToStringShort {
 
     public String toStringShort() {
         // TODO -> toStringShort -> afficher l'ID
-        return "( #" + nom + ")";
+        return "( #" + nom + " )";
     }
 }
