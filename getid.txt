@@ -1,0 +1,57 @@
+public int getIdOfMur(Mur murRecherce){
+	for (( i dans murs.keys )) {
+		if (murs.get(i) == murRecherche) {
+			return i;
+		}
+	}
+	return -1;
+}
+
+-----------------------------------------------------------
+public int getIdOfNiveau(Niveau niveauRecherche){			à corriger pour tous
+	for (int i: niveaux.keySet()){
+		if (niveaux.get(i) == niveaurecherche){
+			return i;
+		}
+	}
+	return -1;
+}
+-----------------------------------------------------------
+public int getIdOfAppart(Appart appartrecherche){
+	for ((i: apparts.keys)){
+		if (apparts.get(i) == appartrecherche){
+			return i;
+		}
+	}
+	return -1;
+}
+-----------------------------------------------------------
+public int getIdOfPiece(Piece piecerecherche){
+	for ((i: pieces.keys)){
+		if (pieces.get(i) == piecerecherche){
+			return i;
+		}
+	}
+	return -1;
+}
+-----------------------------------------------------------
+public int getIdOfPlafondSol(PlafondSol plafondSolrecherche){
+	for ((i: plafondsSols.keys)){
+		if (plafondsSols.get(i) == plafondSolrecherche){
+			return i;
+		}
+	}
+	return -1;
+}
+-----------------------------------------------------------
+public int getIdOfPoint(Point pointrecherche){
+	for ((i: points.keys)){
+		if (points.get(i) == pointrecherche){
+			return i;
+		}
+	}
+	return -1;
+}
+
+to do:
+faire aussi pour OuvertureMur et OuvertureNiveaux
