@@ -79,6 +79,81 @@ public class Projetbat {
 
     public static void main(String[] args) {
         Deserialize.main(args); // pour l'instant
+    
+    public int getIdOfMur(Mur murRecherce){
+	    for (int i: murs.keys ) {
+		    if (murs.get(i) == murRecherche) {
+			    return i;
+		    }
+	    }
+	    return -1;
+    }
+
+    public int getIdOfNiveau(Niveau niveauRecherche){			
+	    for (int i: niveaux.keySet()){
+		    if (niveaux.get(i) == niveauRecherche){
+			    return i;
+		    }
+	    }
+	    return -1;
+    }
+
+    public int getIdOfAppart(Appart appartRecherche){
+	    for (int i: apparts.keys){
+		    if (apparts.get(i) == appartRecherche){
+			    return i;
+		    }
+	    }
+	    return -1;
+    }
+
+    public int getIdOfPiece(Piece pieceRecherche){
+	    for (int i: pieces.keys){
+		    if (pieces.get(i) == pieceRecherche){
+			    return i;
+		    }
+	    }
+	    return -1;
+    }
+
+    public int getIdOfPlafondSol(PlafondSol plafondSolRecherche){
+	    for (int i: plafondsSols.keys){
+		    if (plafondsSols.get(i) == plafondSolRecherche){
+			    return i;
+		    }
+	    }
+	    return -1;
+    }
+
+    public int getIdOfPoint(Point pointRecherche){
+	    for (int i: points.keys){
+		    if (points.get(i) == pointRecherche){
+			    return i;
+		    }
+	    }
+	    return -1;
+    }
+
+
+    public int getIdOfOuvertureMur(Point ouvertureMurRecherche){
+	    for (int i: ouverturesMur.keys){
+		    if (ouverturesMur.get(i) == ouvertureMurRecherche){
+			    return i;
+		    }
+	    }
+	    return -1;
+    }
+
+    public int getIdOfOuvertureNiveaux(Point ouvertureNiveauxRecherche){
+	    for (int i: ouverturesNiveaux.keys){
+		    if (ouverturesNiveaux.get(i) == ouvertureNiveauxRecherche){
+			    return i;
+		    }
+	    }
+	    return -1;
+    }
+
+    
 
         Batiment batiment = new Batiment();
     }
