@@ -153,6 +153,59 @@ public class Projetbat {
 	    return -1;
     }
 
+    public int getIdOfTypeRevetement(TypeRevetement typerevetementRecherche){
+	for ( int i : typesRevetement.keySet() ){
+		if (typesrevetement.get(i) == typerevetementRecherche){
+			return i;
+		}
+	}
+	return -1;
+}
+
+public int getIdOfTypeOuvertureMur(TypeOuvertureMur typeouvertureMurRecherche){
+	for ( int i : typesOuverturesMur.keySet() ){
+		if (typesOuverturesMur.get(i) == typeouvertureMurRecherche){
+			return i;
+		}
+	}
+	return -1;
+}
+
+public int getIdOfTypeOuvertureNiveau(TypeOuvertureNiveau typeouvertureNiveauRecherche){
+	for ( int i : typesOuverturesNiveau.keySet() ){
+		if (typesOuverturesNiveau.get(i) == typeouvertureNiveauRecherche){
+			return i;
+		}
+	}
+	return -1;
+}
+
+public int getIdOfTypeMur(TypeMur typemurRecherche){
+	for ( int i : typesMur.keySet() ){
+		if (typesMur.get(i) == typemurRecherche){
+			return i;
+		}
+	}
+	return -1;
+}
+
+public int getIdOfRevetementPlafondSol(RevetementPlafondSol revetementPlafondSolRecherche){
+	for ( int i : revetementsPlafondSol.keySet() ){
+		if (revetementsPlafondSol.get(i) == revetementPlafondSolRecherche){
+			return i;
+		}
+	}
+	return -1;
+}
+
+public int getIdOfRevetementMur (RevetementMur revetementMurRecherche){
+	for ( int i : revetementsMur.keySet() ){
+		if (revetementsMur.get(i) == revetementMurRecherche){
+			return i;
+		}
+	}
+	return -1;
+}
     
 
         Batiment batiment = new Batiment();
