@@ -3,61 +3,61 @@ package fr.insa.dorgli.projetbat;
 import java.util.ArrayList;
 
 public class PlafondSol implements ToString, ToStringShort {
-    private ArrayList<RevetementPlafondSol> revetements;
-    private ArrayList<OuvertureNiveaux> ouvertures;
+	private ArrayList<RevetementPlafondSol> revetements;
+	private ArrayList<OuvertureNiveaux> ouvertures;
 
-    public PlafondSol() throws IllegalArgumentException {
-        this.revetements = new ArrayList<RevetementPlafondSol>();
-        this.ouvertures = new ArrayList<OuvertureNiveaux>();
-    }
+	public PlafondSol() throws IllegalArgumentException {
+		this.revetements = new ArrayList<RevetementPlafondSol>();
+		this.ouvertures = new ArrayList<OuvertureNiveaux>();
+	}
 
-    public ArrayList<RevetementPlafondSol> getRevetements() {
-        return revetements;
-    }
+	public ArrayList<RevetementPlafondSol> getRevetements() {
+		return revetements;
+	}
 
-    public void setRevetements(ArrayList<RevetementPlafondSol> revetements) {
-        this.revetements = revetements;
-    }
+	public void setRevetements(ArrayList<RevetementPlafondSol> revetements) {
+		this.revetements = revetements;
+	}
 
-    public ArrayList<OuvertureNiveaux> getOuvertures() {
-        return ouvertures;
-    }
+	public ArrayList<OuvertureNiveaux> getOuvertures() {
+		return ouvertures;
+	}
 
-    public void setOuvertures(ArrayList<OuvertureNiveaux> ouvertures) {
-        this.ouvertures = ouvertures;
-    }
+	public void setOuvertures(ArrayList<OuvertureNiveaux> ouvertures) {
+		this.ouvertures = ouvertures;
+	}
 
-    public String toString() {
-        return toString(0);
-    }
+	public String toString() {
+		return toString(0);
+	}
 
-    public String toString(int depth) {
-        String pfx = "";
-        for (int i = 0; i <= depth; i++) {
-            pfx += "  ";
-        }
-        int nextDepth = depth + 1;
+	public String toString(int depth) {
+		String pfx = "";
+		for (int i = 0; i <= depth; i++) {
+			pfx += "  ";
+		}
+		int nextDepth = depth + 1;
 
-        String revetementsOut = "[ ";
-        for (RevetementPlafondSol each : revetements) {
-            revetementsOut += each.toStringShort() + ", ";
-        }
-        revetementsOut += "]";
+		String revetementsOut = "[ ";
+		for (RevetementPlafondSol each : revetements) {
+			revetementsOut += each.toStringShort() + ", ";
+		}
+		revetementsOut += "]";
 
-        String ouverturesOut = "[ ";
-        for (OuvertureNiveaux each : ouvertures) {
-            ouverturesOut += each.toStringShort() + ", ";
-        }
-        ouverturesOut += "]";
+		String ouverturesOut = "[ ";
+		for (OuvertureNiveaux each : ouvertures) {
+			ouverturesOut += each.toStringShort() + ", ";
+		}
+		ouverturesOut += "]";
 
-        return "PlafondSol {\n"
-                + pfx + "revetements: " + revetementsOut + ",\n"
-                + pfx + "ouvertures: " + ouverturesOut + ",\n"
-                + "}";
-    }
+		return "PlafondSol {\n"
+				+ pfx + "revetements: " + revetementsOut + ",\n"
+				+ pfx + "ouvertures: " + ouverturesOut + ",\n"
+				+ "}";
+	}
 
-    public String toStringShort() {
-        // TODO -> toStringShort -> afficher l'ID
-        return "( #" + "TODO" + ")";
-    }
+	public String toStringShort() {
+		// TODO -> toStringShort -> afficher l'ID
+		return "( #" + "TODO" + ")";
+	}
 }

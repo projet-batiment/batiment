@@ -3,38 +3,38 @@ package fr.insa.dorgli.projetbat;
 import java.util.ArrayList;
 
 public class Batiment {
-    private TypeBatiment typeBatiment;
-    private ArrayList<Niveau> niveau;
-    private ArrayList<Niveau> appart;
+	private TypeBatiment typeBatiment;
+	private ArrayList<Niveau> niveau;
+	private ArrayList<Niveau> appart;
 
-    public Batiment(TypeBatiment typeBatiment, ArrayList<Niveau> niveau, ArrayList<Niveau> appart) {
-        this.typeBatiment = typeBatiment;
-        this.niveau = niveau;
-        this.appart = appart;
-    }
+	public Batiment(TypeBatiment typeBatiment, ArrayList<Niveau> niveau, ArrayList<Niveau> appart) {
+		this.typeBatiment = typeBatiment;
+		this.niveau = niveau;
+		this.appart = appart;
+	}
 
-    public TypeBatiment getTypeBatiment() {
-        return typeBatiment;
-    }
+	public TypeBatiment getTypeBatiment() {
+		return typeBatiment;
+	}
 
-    public void setTypeBatiment(TypeBatiment typeBatiment) {
-        this.typeBatiment = typeBatiment;
-    }
+	public void setTypeBatiment(TypeBatiment typeBatiment) {
+		this.typeBatiment = typeBatiment;
+	}
 
-    public ArrayList<Niveau> getNiveau() {
-        return niveau;
-    }
+	public ArrayList<Niveau> getNiveau() {
+		return niveau;
+	}
 
-    public void setNiveau(ArrayList<Niveau> niveau) {
-        this.niveau = niveau;
-    }
+	public void setNiveau(ArrayList<Niveau> niveau) {
+		this.niveau = niveau;
+	}
 
-    public ArrayList<Niveau> getAppart() {
-        return appart;
-    }
+	public ArrayList<Niveau> getAppart() {
+		return appart;
+	}
 
-    public void setAppart(ArrayList<Niveau> appart) {
-        this.appart = appart;
-    }
+	public void setAppart(ArrayList<Niveau> appart) {
+		this.appart = appart;
+	}
 
 }
