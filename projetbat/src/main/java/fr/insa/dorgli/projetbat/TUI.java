@@ -13,6 +13,15 @@ public class TUI {
 	}
 
 	private LogLevel logLevel = LogLevel.NORMAL;
+	private int errCounter = 0;
+
+	public int getErrCounter() {
+		return errCounter;
+	}
+
+	public void clearErrCounter() {
+		errCounter = 0;
+	}
 
 	public LogLevel getLogLevel() {
 		return logLevel;
@@ -48,6 +57,7 @@ public class TUI {
 	}
 
 	public void error(String msg) {
+		errCounter ++;
 		if (logLevelGreaterOrEqual(LogLevel.NORMAL))
 			System.err.println("ERR: " + msg);
 	}

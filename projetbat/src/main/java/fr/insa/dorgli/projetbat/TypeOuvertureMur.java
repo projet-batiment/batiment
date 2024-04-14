@@ -1,16 +1,34 @@
 package fr.insa.dorgli.projetbat;
 
 public class TypeOuvertureMur implements ToStringShort {
-	private double prixUnitaire;
+	private String nom;
+	private String description;
 	private double hauteur;
 	private double largeur;
-	private String nom;
+	private double prixUnitaire;
 
-	public TypeOuvertureMur(double prixUnitaire, double hauteur, double largeur, String nom) {
-		this.prixUnitaire = prixUnitaire;
+	public TypeOuvertureMur(String nom, String description, double hauteur, double largeur, double prixUnitaire) {
+		this.nom = nom;
+		this.description = description;
 		this.hauteur = hauteur;
 		this.largeur = largeur;
+		this.prixUnitaire = prixUnitaire;
+	}
+
+	public String getNom() {
+		return nom;
+	}
+
+	public void setNom(String nom) {
 		this.nom = nom;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	public double getPrixUnitaire() {
@@ -35,14 +53,6 @@ public class TypeOuvertureMur implements ToStringShort {
 
 	public void setLargeur(double largeur) {
 		this.largeur = largeur;
-	}
-
-	public String getNom() {
-		return nom;
-	}
-
-	public void setNom(String nom) {
-		this.nom = nom;
 	}
 
 	public String toString() {
