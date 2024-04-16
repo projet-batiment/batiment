@@ -93,19 +93,24 @@ public class Piece implements ToString, ToStringShort {
 		// TODO -> toStringShort -> afficher l'ID
 		return "( #" + nom + " )";
 	}
- public double aire(ArrayList<Point> points){
-     return 0.5*Math.abs(sum(points));
+	
+ public double aire(){
+     double out=0;
+     for(int i=0; i < points.size(); i++){
+        Point current = points[i];
+        Point next = points[(i+1) % points.size()];
+        out += current.getX() * next.getY() - current.getY() * next.getX();
+     } 
+	 return 0.5*Math.abs(out);
  }
- private double sum(ArrayList<Point> points){
-     double sum=0.0;
-     for(int i=0; i< points.length,i++){
-        Point current=points[i];
-        Point next=points[(i+1) % points.length];
-        sum += current.x * next.y - current.y * next.x;
-     }
-   return sum;
- public double calculerprix(double aire,int idTypeRevetement){
-      pu=get.prixunitaire(idTypeRevetement);
-     }
-      return aire*pu;
+	
+ public double calculerPrix(){
+      	double prix = 0;
+	prix += this.plafond.calculerPrix(aire());
+	prix += this.sol.calculerPrix(aire());
+	for (Mur mur: murs) {
+		prix += mur.calculerPrix();
+	}
+	return prix;
+ }
 }
