@@ -10,6 +10,7 @@ public class Mur implements ToString, ToStringShort {
 	private ArrayList<RevetementMur> revetements1;
 	private ArrayList<RevetementMur> revetements2;
 	private ArrayList<OuvertureMur> ouvertures;
+	private double area;
 
 	public Mur(Point pointDebut, Point pointFin, double hauteur, TypeMur typeMur, ArrayList<RevetementMur> revetements1,
 			ArrayList<RevetementMur> revetements2, ArrayList<OuvertureMur> ouvertures) throws IllegalArgumentException {
@@ -26,7 +27,16 @@ public class Mur implements ToString, ToStringShort {
 		this.revetements2 = revetements2;
 		this.ouvertures = ouvertures;
 	}
-
+        public void set area ( ){
+		dx = (this.pointDebut.getX() - this.pointDebut.getX() ;
+		dy = (this.pointFin.getY() - this.pointFin.getY();
+		dist = Math.sqrt(Math.pow (dx,2)+ Math.pow(dy,2));
+		
+		aireMur = (Math.pow( dist,2) * Math.pow(this.hauteur,2));
+		return aireMur;	
+	
+	}	
+		
 	public Point getPointDebut() {
 		return this.pointDebut;
 	}
