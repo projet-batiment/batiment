@@ -55,4 +55,7 @@ public class TypeOuvertureNiveau implements ToStringShort {
 		// TODO -> toStringShort -> afficher l'ID
 		return "( #" + "TODO" + ")";
 	}
+ public double calculerprix(){
+  return hauteur*largeur*prixUnitaire
+}
 }
