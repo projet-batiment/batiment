@@ -1,19 +1,19 @@
 package fr.insa.dorgli.projetbat;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Deserialize {
 	Config config;
-	BufferedReader reader;
+	SmartReader sreader;
 
 	///// Sommaire de la classe Deserialize
 	// 
 	// - unescapeString et escapeString : pour permettre des \n, des virgules dans la sauvegarde
 	// - fonctions d'erreur
+	// - une méthode générique
 	// 
 	// - deserializeFile : lire la sauvegarde depuis une fichier dont le chemin est spécifié en arguments
 	// 
@@ -32,9 +32,9 @@ public class Deserialize {
 	// pour faciliter la lecture des regex ci-dessous
 	// normalement, java interprète ces variables comme des constantes de compilation
 	// pour la suite, flemme de faire des pseudo-optimisations dans java...
-	private final String REGEX_int = "[0-9]+";
-	private final String REGEX_double = "[0-9]+(\\.[0-9]+)?";
-	private final String REGEX_string = "[^,\n\r]+";
+	private static final String REGEX_INT = "[0-9]+";
+	private static final String REGEX_DOUBLE = "[0-9]+(\\.[0-9]+)?";
+	private static final String REGEX_STRING = "[^,]*"; // NB: un String peut être vide, d'où le *
 
 	private String unescapeString(String escaped) {
 		return escaped
@@ -49,99 +49,124 @@ public class Deserialize {
 		this.config = config;
 	}
 
+	private void log(String where, String text) {
+		config.tui.log("deserialize/" + where, sreader.getLineNumber() + ": " + text);
+	}
+	private void debug(String where, String text) {
+		config.tui.debug("deserialize/" + where, sreader.getLineNumber() + ": " + text);
+	}
 	private void error(String where, String text) {
-		config.tui.error("deserialize/" + where + ": " + text);
+		config.tui.error("deserialize/" + where, sreader.getLineNumber() + ": " + text);
 	}
 
-	private void errorParse(String where, int lineIdx, String text, String errMsg) {
-		error(where, ": erreur lors de l'interprétation des valeurs: ligne " + lineIdx + " '" + text + "': " + errMsg);
+	private void errorParse(String where, String text, String errMsg) {
+		error(where, "erreur lors de l'interprétation des valeurs: '" + text + "': " + errMsg);
 	}
-	private void errorSyntax(String where, int lineIdx, String text) {
-		error(where, ": mauvaise syntaxe: ligne " + lineIdx + " '" + text + "'");
+	private void errorSyntax(String where, String text) {
+		error(where, "mauvaise syntaxe: '" + text + "'");
 	}
-	private void errorId(String where, int lineIdx, int objectId) {
-		error(where, ": ID déjà pris ou incorrect: ligne " + lineIdx + ", ID " + objectId);
+	private void errorId(String where, int objectId) {
+		error(where, "ID déjà pris ou incorrect: ID " + objectId);
 	}
 
-	public void deserializeFile(String path) {
-		final String where = "deserializeFile: ";
+	// Méthode obscure, générique de type T, pour à la fois :
+	// 1) convertir le HashMap newMap en un ArrayList, qui est renvoyé à la fin
+	// 2) vérifier que les keys du newMap (ie les ID des objets) ne sont pas déjà occupés dans le Hashmap olderMap,
+	//    qui contient la liste des objets du type T déjà créés/lus
+	// 3) ajouter les paires (id + objet) du newMap au olderMap
+	// Cette méthode est utile pour lire les objets qui nécessaitent des objets internes (mur, pièce, plafond, sol, etc), car dans ce
+	// cas de figure, on utilise directement les objets sous forme de ArrayList après les avoir lus au lieu de renvoyer un bête HashMap
+	private <T> ArrayList<T> manageHashMapToArrayList(String where, HashMap<Integer, T> newMap, HashMap<Integer, T> olderMap) {
+		ArrayList<T> out = new ArrayList<>();
+		for (Integer key: newMap.keySet()) {
+			if (olderMap.containsKey(key)) {
+				errorId(where + "/manageHashMapToArrayList", key);
+			} else {
+				out.add(newMap.get(key));
+				olderMap.put(key, newMap.get(key));
+			}
+		}
+		return out;
+	}
+
+	public void deserializeFile(String path) throws FileNotFoundException {
+		final String where = "deserializeFile";
+		config.tui.begin(where);
 
 		Config newConfig = new Config();
 		newConfig.tui = config.tui;
 
+		sreader = new SmartReader(config.tui, path);
+
 		try {
-			reader = new BufferedReader(new FileReader(path));
-
-			int sectionCount = 1;
-			String line = reader.readLine();
-			while (line != null) {
-				config.tui.clearErrCounter();
-				if (line.startsWith("OBJECTS:")) {
-					String objectsKind = line.split(":")[1];
-
-					ArrayList<String> buffer = new ArrayList<>();
-					line = reader.readLine();
-					while (line != null && ! line.equals("EOS:" + objectsKind)) {
-						buffer.add(line);
-						line = reader.readLine();
-					}
-					config.tui.debug(where + "reading objects section '" + objectsKind + "'...");
-
-					HashMap map;
-					switch (objectsKind) {
-						case "Point" -> 		newConfig.objects.points = pointsFromString(buffer);
-						case "TypeRevetement" -> 	newConfig.objects.typesRevetement = typeRevetementsFromString(buffer);
-						case "TypeOuvertureMur" -> 	newConfig.objects.typesOuverturesMur = typeOuvertureMursFromString(buffer);
-						case "TypeMur" -> 		newConfig.objects.typesMur = typeMursFromString(buffer);
-						case "Mur" -> 			newConfig.objects.murs = mursFromString(
-						    buffer,
-						    newConfig.objects.points,
-						    newConfig.objects.typesRevetement,
-						    newConfig.objects.typesMur,
-						    newConfig.objects.typesOuverturesMur
-						);
-						default -> error(where, "section d'objects inconnue: '" + objectsKind + "'");
-					}
-
-					if (config.tui.getErrCounter() > 0) {
-						error(where, "erreur lors de la lecture de la section d'objets " + objectsKind);
-					} else {
-						config.tui.debug(where + "reading objects section '" + objectsKind + "': success");
-					}
-				} else if (line.startsWith("FILE:")) {
-					config.tui.log(where + "ici, on a une section FILE, mais on sait pas encore la déchiffrer");
-
-					ArrayList<String> buffer = new ArrayList<>();
-					line = reader.readLine();
-					while (line != null && ! line.equals("EOS")) {
-						buffer.add(line);
-						line = reader.readLine();
-					}
+			for (
+				SmartReader.ReadResult result = sreader.readLine();
+				result.getState() != SmartReader.ReadState.EOF;
+				result = sreader.readLine()
+			) {
+				//int sectionCount = 1;
+				if (result.getState() == SmartReader.ReadState.EOS) {
+					error(where, "reached an EOS outside any section !");
 				} else {
-					error(where, "section inconnue: '" + line + "'");
+					String line = result.getText();
 
-					while (line != null && ! line.startsWith("EOS")) {
-						line = reader.readLine();
+					config.tui.clearErrCounter();
+					if (line.startsWith("OBJECTS:")) {
+						String objectsKind = line.split(":")[1];
+
+						debug(where, "reading objects section " + TUI.blue("'" + objectsKind + "'") + "...");
+
+						HashMap map;
+						switch (objectsKind) {
+							case "Point" -> 		newConfig.objects.points = pointsFromString();
+							case "TypeRevetement" -> 	newConfig.objects.typesRevetement = typeRevetementsFromString();
+							case "TypeOuvertureMur" -> 	newConfig.objects.typesOuverturesMur = typeOuvertureMursFromString();
+							case "TypeMur" -> 		newConfig.objects.typesMur = typeMursFromString();
+							case "Mur" -> 			newConfig.objects.murs = mursFromString(newConfig.objects);
+							default -> error(where, "section d'objects inconnue: '" + objectsKind + "'");
+						}
+
+						if (config.tui.getErrCounter() > 0) {
+							error(where, "erreur lors de la lecture de la section d'objets " + objectsKind);
+						} else {
+							debug(where, "reading objects section '" + objectsKind + "': success");
+						}
+					} else if (line.startsWith("FILE")) {
+						debug(where, "reading " + TUI.blue("FILE") + " statements");
+						fileStatements(newConfig);
+					} else {
+						error(where, "section inconnue: '" + line + "'");
 					}
-				}
 
-				line = reader.readLine();
-				sectionCount++;
+					debug(where, "finished reading a section");
+
+					//sectionCount++;
+				}
 			}
 
-			config.tui.log(where + "les objets suivants ont été lus:\n" + newConfig.objects.toString());
+			debug(where, "reached EOF");
+			log(where, "les objets suivants ont été lus:\n" + newConfig.objects.toString());
 
 		} catch (IOException e) {
-			error(where, "erreur lors de la lecture du fichier '" + path + "': " + e.getMessage());
+			error(where, "erreur d'entrée/sortie lors de la lecture du fichier '" + path + "': " + e.getMessage());
 		}
+
+		config.tui.ended(where);
 	}
 
 	/// FileStatements
-	private void fileStatements(ArrayList<String> lines, Config newConfig) {
+	private void fileStatements(Config newConfig) throws IOException {
 		final String where = "fileStatements";
 		String[] command;
-		for (int i = 0; i < lines.size(); i++) {
-			command = lines.get(i).split(":", 2);
+
+		for (
+			SmartReader.ReadResult result = sreader.readLine();
+			result.getState() == SmartReader.ReadState.LINE;
+			result = sreader.readLine()
+		) {
+			debug(where, result.toString());
+			String line = result.getText();
+			command = line.split(":", 2);
 			switch (command[0]) {
 				case "version" -> {
 					try {
@@ -151,33 +176,47 @@ public class Deserialize {
 						} else if (savefileVersion > config.minimumSavefileVersion) {
 							error(where, "savefile is too recent (v" + savefileVersion + " > max " + config.maximumSavefileVersion + ")");
 						} else {
-							config.tui.debug("savefile is of correct version " + savefileVersion);
+							debug(where, "savefile is of correct version " + savefileVersion);
 						}
 					} catch (NumberFormatException e) {
-						errorParse(where, i, lines.get(i), "failed parsing the version as an integer: " + e.getMessage());
+						errorParse(where, line, "failed parsing the version as an integer: " + e.getMessage());
 					}
 				}
-				case "projectName" -> newConfig.projectName = command[1];
-				case "projectDescription" -> newConfig.projectDescription = command[1];
-				default -> errorSyntax(where, i, lines.get(i));
+				case "projectName" -> {
+					String unescaped = unescapeString(command[1]);
+					newConfig.projectName = unescaped;
+					log(where, "set projectName = '" + unescaped + "'");
+				}
+				case "projectDescription" -> {
+					String unescaped = unescapeString(command[1]);
+					newConfig.projectDescription = unescaped;
+					log(where, "set projectDescription = '" + unescaped + "'");
+				}
+				default -> errorSyntax(where, line);
 			}
 		}
 	}
 
 	/// Point
-	private HashMap<Integer, Point> pointsFromString(ArrayList<String> lines) {
+	private HashMap<Integer, Point> pointsFromString() throws IOException {
 		final String where = "Points";
 		HashMap<Integer, Point> points = new HashMap<>();
 
-		for (int i=0; i < lines.size(); i++) {
-			String line = lines.get(i);
-			if (line.matches(String.join(",", REGEX_int, REGEX_double, REGEX_double, REGEX_int))) {
+		final String regex = String.join(",", REGEX_INT, REGEX_DOUBLE, REGEX_DOUBLE, REGEX_INT);
+		debug(where, "regex: '" + regex + "'");
+		for (
+			SmartReader.ReadResult result = sreader.readLine();
+			result.getState() == SmartReader.ReadState.LINE;
+			result = sreader.readLine()
+		) {
+			String line = result.getText();
+			if (line.matches(regex)) {
 				String[] splitted = line.split(",");
 
 				int id = Integer.parseInt(splitted[0]);
 
 				if (points.keySet().contains(id)) {
-					errorId(where, i, id);
+					errorId(where, id);
 				} else {
 					try {
 						double x = Double.parseDouble(splitted[1]);
@@ -186,12 +225,13 @@ public class Deserialize {
 
 						Point object = new Point(x, y, niveauId);
 						points.put(id, object);
+						debug(where, "read " + object);
 					} catch (NumberFormatException e) {
-						errorParse(where, i, line, e.getMessage());
+						errorParse(where, line, e.getMessage());
 					}
 				}
 			} else {
-				errorSyntax(where, i, line);
+				errorSyntax(where, line);
 			}
 		}
 
@@ -199,31 +239,38 @@ public class Deserialize {
 	}
 
 	/// TypeRevetement
-	private HashMap<Integer, TypeRevetement> typeRevetementsFromString(ArrayList<String> lines) {
+	private HashMap<Integer, TypeRevetement> typeRevetementsFromString() throws IOException {
 		final String where = "TypeRevetements";
 		HashMap<Integer, TypeRevetement> typeRevetements = new HashMap<>();
 
-		for (int i=0; i < lines.size(); i++) {
-			String line = lines.get(i);
-			if (line.matches(String.join(",", REGEX_int, REGEX_string, REGEX_string, REGEX_double))) {
+		final String regex = String.join(",", REGEX_INT, REGEX_STRING, REGEX_STRING, REGEX_DOUBLE);
+		debug(where, "regex: '" + regex + "'");
+		for (
+			SmartReader.ReadResult result = sreader.readLine();
+			result.getState() == SmartReader.ReadState.LINE;
+			result = sreader.readLine()
+		) {
+			String line = result.getText();
+			if (line.matches(regex)) {
 				String[] splitted = line.split(",");
 
 				int id = Integer.parseInt(splitted[0]);
 
 				if (typeRevetements.keySet().contains(id)) {
-					errorId(where, i, id);
+					errorId(where, id);
 				} else {
 					try {
 						double prixUnitaire = Double.parseDouble(splitted[3]);
 
 						TypeRevetement object = new TypeRevetement(unescapeString(splitted[1]), unescapeString(splitted[2]), prixUnitaire);
 						typeRevetements.put(id, object);
+						debug(where, "read " + object);
 					} catch (NumberFormatException e) {
-						errorParse(where, i, line, e.getMessage());
+						errorParse(where, line, e.getMessage());
 					}
 				}
 			} else {
-				errorSyntax(where, i, line);
+				errorSyntax(where, line);
 			}
 		}
 
@@ -231,19 +278,25 @@ public class Deserialize {
 	}
 
 	/// TypeOuvertureMur
-	private HashMap<Integer, TypeOuvertureMur> typeOuvertureMursFromString(ArrayList<String> lines) {
+	private HashMap<Integer, TypeOuvertureMur> typeOuvertureMursFromString() throws IOException {
 		final String where = "TypeOuvertureMurs";
 		HashMap<Integer, TypeOuvertureMur> typeOuvertureMurs = new HashMap<>();
 
-		for (int i=0; i < lines.size(); i++) {
-			String line = lines.get(i);
-			if (line.matches(String.join(",", REGEX_int, REGEX_string, REGEX_string, REGEX_double, REGEX_double, REGEX_double))) {
+		final String regex = String.join(",", REGEX_INT, REGEX_STRING, REGEX_STRING, REGEX_DOUBLE, REGEX_DOUBLE, REGEX_DOUBLE);
+		debug(where, "regex: '" + regex + "'");
+		for (
+			SmartReader.ReadResult result = sreader.readLine();
+			result.getState() == SmartReader.ReadState.LINE;
+			result = sreader.readLine()
+		) {
+			String line = result.getText();
+			if (line.matches(regex)) {
 				String[] splitted = line.split(",");
 
 				int id = Integer.parseInt(splitted[0]);
 
 				if (typeOuvertureMurs.keySet().contains(id)) {
-					errorId(where, i, id);
+					errorId(where, id);
 				} else {
 					try {
 						double hauteur = Double.parseDouble(splitted[3]);
@@ -252,12 +305,13 @@ public class Deserialize {
 
 						TypeOuvertureMur object = new TypeOuvertureMur(unescapeString(splitted[1]), unescapeString(splitted[2]), hauteur, largeur, prixUnitaire);
 						typeOuvertureMurs.put(id, object);
+						debug(where, "read " + object);
 					} catch (NumberFormatException e) {
-						errorParse(where, i, line, e.getMessage());
+						errorParse(where, line, e.getMessage());
 					}
 				}
 			} else {
-				errorSyntax(where, i, line);
+				errorSyntax(where, line);
 			}
 		}
 
@@ -265,19 +319,25 @@ public class Deserialize {
 	}
 
 	/// TypeMur
-	private HashMap<Integer, TypeMur> typeMursFromString(ArrayList<String> lines) {
+	private HashMap<Integer, TypeMur> typeMursFromString() throws IOException {
 		final String where = "TypeMurs";
 		HashMap<Integer, TypeMur> typeMurs = new HashMap<>();
 
-		for (int i=0; i < lines.size(); i++) {
-			String line = lines.get(i);
-			if (line.matches(String.join(",", REGEX_int, REGEX_string, REGEX_string, REGEX_double, REGEX_double))) {
+		final String regex = String.join(",", REGEX_INT, REGEX_STRING, REGEX_STRING, REGEX_DOUBLE, REGEX_DOUBLE);
+		debug(where, "regex: '" + regex + "'");
+		for (
+			SmartReader.ReadResult result = sreader.readLine();
+			result.getState() == SmartReader.ReadState.LINE;
+			result = sreader.readLine()
+		) {
+			String line = result.getText();
+			if (line.matches(regex)) {
 				String[] splitted = line.split(",");
 
 				int id = Integer.parseInt(splitted[0]);
 
 				if (typeMurs.keySet().contains(id)) {
-					errorId(where, i, id);
+					errorId(where, id);
 				} else {
 					try {
 						double epaisseur = Double.parseDouble(splitted[3]);
@@ -285,12 +345,13 @@ public class Deserialize {
 
 						TypeMur object = new TypeMur(unescapeString(splitted[1]), unescapeString(splitted[2]), epaisseur, prixU);
 						typeMurs.put(id, object);
+						debug(where, "read " + object);
 					} catch (NumberFormatException e) {
-						errorParse(where, i, line, e.getMessage());
+						errorParse(where, line, e.getMessage());
 					}
 				}
 			} else {
-				errorSyntax(where, i, line);
+				errorSyntax(where, line);
 			}
 		}
 
@@ -298,19 +359,25 @@ public class Deserialize {
 	}
 
 	/// RevetementMur
-	private HashMap<Integer, RevetementMur> revetementMursFromString(ArrayList<String> lines, HashMap<Integer, TypeRevetement> typeRevetements) {
+	private HashMap<Integer, RevetementMur> revetementMursFromString(HashMap<Integer, TypeRevetement> typeRevetements) throws IOException {
 		final String where = "RevetementMurs";
 		HashMap<Integer, RevetementMur> revetementMurs = new HashMap<>();
 
-		for (int i=0; i < lines.size(); i++) {
-			String line = lines.get(i);
-			if (line.matches(String.join(",", REGEX_int, REGEX_int, REGEX_int, REGEX_int, REGEX_int, REGEX_int))) {
+			final String regex = String.join(",", REGEX_INT, REGEX_INT, REGEX_INT, REGEX_INT, REGEX_INT, REGEX_INT);
+			debug(where, "regex: '" + regex + "'");
+		for (
+			SmartReader.ReadResult result = sreader.readLine();
+			result.getState() == SmartReader.ReadState.LINE;
+			result = sreader.readLine()
+		) {
+			String line = result.getText();
+			if (line.matches(regex)) {
 				String[] splitted = line.split(",");
 
 				int id = Integer.parseInt(splitted[0]);
 
 				if (revetementMurs.keySet().contains(id)) {
-					errorId(where, i, id);
+					errorId(where, id);
 				} else {
 					try {
 						TypeRevetement tr = typeRevetements.get(Integer.parseInt(splitted[1]));
@@ -321,12 +388,13 @@ public class Deserialize {
 
 						RevetementMur object = new RevetementMur(tr, p1l, p1h, p2l, p2h);
 						revetementMurs.put(id, object);
+						debug(where, "read " + object);
 					} catch (NumberFormatException e) {
-						errorParse(where, i, line, e.getMessage());
+						errorParse(where, line, e.getMessage());
 					}
 				}
 			} else {
-				errorSyntax(where, i, line);
+				errorSyntax(where, line);
 			}
 		}
 
@@ -334,19 +402,25 @@ public class Deserialize {
 	}
 
 	/// OuvertureMur
-	private HashMap<Integer, OuvertureMur> ouvertureMursFromString(ArrayList<String> lines, HashMap<Integer, TypeOuvertureMur> typeOuvertureMurs) {
-		final String where = "OuvertureMurMurs";
+	private HashMap<Integer, OuvertureMur> ouvertureMursFromString(HashMap<Integer, TypeOuvertureMur> typeOuvertureMurs) throws IOException {
+		final String where = "OuvertureMurs";
 		HashMap<Integer, OuvertureMur> ouvertureMurs = new HashMap<>();
 
-		for (int i=0; i < lines.size(); i++) {
-			String line = lines.get(i);
-			if (line.matches(String.join(",", REGEX_int, REGEX_int, REGEX_int, REGEX_int, REGEX_int, REGEX_int))) {
+		final String regex = String.join(",", REGEX_INT, REGEX_INT, REGEX_INT, REGEX_INT);
+		debug(where, "regex: '" + regex + "'");
+		for (
+			SmartReader.ReadResult result = sreader.readLine();
+			result.getState() == SmartReader.ReadState.LINE;
+			result = sreader.readLine()
+		) {
+			String line = result.getText();
+			if (line.matches(regex)) {
 				String[] splitted = line.split(",");
 
 				int id = Integer.parseInt(splitted[0]);
 
 				if (ouvertureMurs.keySet().contains(id)) {
-					errorId(where, i, id);
+					errorId(where, id);
 				} else {
 					try {
 						TypeOuvertureMur tr = typeOuvertureMurs.get(Integer.parseInt(splitted[1]));
@@ -355,12 +429,13 @@ public class Deserialize {
 
 						OuvertureMur object = new OuvertureMur(tr, p1l, p1h);
 						ouvertureMurs.put(id, object);
+						debug(where, "read " + object);
 					} catch (NumberFormatException e) {
-						errorParse(where, i, line, e.getMessage());
+						errorParse(where, line, e.getMessage());
 					}
 				}
 			} else {
-				errorSyntax(where, i, line);
+				errorSyntax(where, line);
 			}
 		}
 
@@ -368,79 +443,74 @@ public class Deserialize {
 	}
 
 	/// Mur
-	private HashMap<Integer, Mur> mursFromString
-	(
-		ArrayList<String> lines,
-		HashMap<Integer, Point> points,
-		HashMap<Integer, TypeRevetement> typeRevetements,
-		HashMap<Integer, TypeMur> typeMurs,
-		HashMap<Integer, TypeOuvertureMur> typeOuvertureMurs
-	) {
+	private HashMap<Integer, Mur> mursFromString (Objects objects) throws IOException {
 		final String where = "Murs";
 		HashMap<Integer, Mur> murs = new HashMap<>();
 
-		for (int i=0; i < lines.size(); i++) {
-			String line = lines.get(i);
-			if (line.matches(String.join(",", REGEX_int, REGEX_int, REGEX_int, REGEX_double, REGEX_int))) {
+		final String regex = String.join(",", REGEX_INT, REGEX_INT, REGEX_INT, REGEX_DOUBLE, REGEX_INT);
+		debug(where, "regex: '" + regex + "'");
+		for (
+			SmartReader.ReadResult result = sreader.readLine();
+			result.getState() == SmartReader.ReadState.LINE;
+			result = sreader.readLine()
+		) {
+			String line = result.getText();
+			if (line.matches(regex)) {
 				String[] splitted = line.split(",");
 
 				int id = Integer.parseInt(splitted[0]);
 
 				if (murs.keySet().contains(id)) {
-					errorId(where, i, id);
+					errorId(where, id);
 				} else {
 					try {
 						// lire les propriétés directes du mur
-						Point p1 = points.get(Integer.parseInt(splitted[1]));
-						Point p2 = points.get(Integer.parseInt(splitted[2]));
-						double hauteur = Integer.parseInt(splitted[3]);
-						TypeMur typemur = typeMurs.get(Integer.parseInt(splitted[4]));
+						Point p1 = objects.points.get(Integer.parseInt(splitted[1]));
+						Point p2 = objects.points.get(Integer.parseInt(splitted[2]));
+						double hauteur = Double.parseDouble(splitted[3]);
+						TypeMur typeMur = objects.typesMur.get(Integer.parseInt(splitted[4]));
 
-						// lire les RevetementMurs (côté 1) spécifiés dans les lignes en dessous
-						// NB!! la sous-section se termine avec EOS:RevetementMur,1
-						ArrayList<String> innerLines = new ArrayList<>();
-						i++;
-						line = lines.get(i);
-						while (i < lines.size() && !line.equals("EOS:RevetementMur,1")) {
-							innerLines.add(line);
-							i++;
-							line = lines.get(i);
+						// lire les RevetementMur des 2 côtés et les OuvertureMur
+						HashMap<Integer, RevetementMur> r1 = new HashMap<>();
+						ArrayList<RevetementMur> r1_list = new ArrayList<>();
+						HashMap<Integer, RevetementMur> r2 = new HashMap<>();
+						ArrayList<RevetementMur> r2_list = new ArrayList<>();
+						HashMap<Integer, OuvertureMur> o = new HashMap<>();
+						ArrayList<OuvertureMur> o_list = new ArrayList<>();
+						for (
+							SmartReader.ReadResult propResult = sreader.readLine();
+							propResult.getState() == SmartReader.ReadState.LINE;
+							propResult = sreader.readLine()
+						) {
+							switch (propResult.getText()) {
+								case "PROP:RevetementMur:1" -> {
+									debug(where, "reading mur prop " + TUI.blue("revetements [1]"));
+									r1 = revetementMursFromString(objects.typesRevetement);
+									r1_list = manageHashMapToArrayList(where, r1, objects.revetementsMur);
+								}
+								case "PROP:RevetementMur:2" -> {
+									debug(where, "reading mur prop " + TUI.blue("revetements [2]"));
+									r2 = revetementMursFromString(objects.typesRevetement);
+									r2_list = manageHashMapToArrayList(where, r2, objects.revetementsMur);
+								}
+								case "PROP:OuvertureMur" -> {
+									debug(where, "reading mur prop " + TUI.blue("ouvertures"));
+									o = ouvertureMursFromString(objects.typesOuverturesMur);
+									o_list = manageHashMapToArrayList(where, o, objects.ouverturesMur);
+								}
+								default -> error(where, "propriété du mur inconnue: '" + propResult.getText() + "'");
+							}
 						}
-						HashMap<Integer, RevetementMur> revetementMurs1 = revetementMursFromString(innerLines, typeRevetements);
 
-						// lire les RevetementMurs (côté 2) spécifiés dans les lignes en dessous
-						// NB!! la sous-section se termine avec EOS:RevetementMur,2
-						innerLines = new ArrayList<>();
-						i++;
-						line = lines.get(i);
-						while (i < lines.size() && !line.equals("EOS:RevetementMur,2")) {
-							innerLines.add(line);
-							i++;
-							line = lines.get(i);
-						}
-						HashMap<Integer, RevetementMur> revetementMurs2 = revetementMursFromString(innerLines, typeRevetements);
-
-						// lire les OuvertureMur spécifiés dans les lignes en dessous
-						// NB!! la sous-section se termine avec EOS:OuvertureMur
-						innerLines = new ArrayList<>();
-						i++;
-						line = lines.get(i);
-						while (i < lines.size() && !line.equals("EOS:OuvertureMur")) {
-							innerLines.add(line);
-							i++;
-							line = lines.get(i);
-						}
-						HashMap<Integer, OuvertureMur> ouvertureMurs = ouvertureMursFromString(innerLines, typeOuvertureMurs);
-
-						// watch unescapeString !!
-						// Mur object = new Mur(splitted[1], splitted[2], epaisseur, prixU);
-						// murs.put(id, object);
-					} catch (Throwable e) {
-						errorParse(where, i, line, e.getMessage());
+						Mur object = new Mur(p1, p2, hauteur, typeMur, r1_list, r2_list, o_list);
+						murs.put(id, object);
+						debug(where, "read " + object);
+					} catch (NumberFormatException e) {
+						errorParse(where, line, e.getMessage());
 					}
 				}
 			} else {
-				errorSyntax(where, i, line);
+				errorSyntax(where, line);
 			}
 		}
 

@@ -12,16 +12,16 @@ public class TUI {
 		DEBUG,
 	}
 
-	public String red(String text) {
+	public static String red(String text) {
 		return "\033[0;31m" + text + "\033[0m";
 	}
-	public String green(String text) {
+	public static String green(String text) {
 		return "\033[0;32m" + text + "\033[0m";
 	}
-	public String yellow(String text) {
+	public static String yellow(String text) {
 		return "\033[0;33m" + text + "\033[0m";
 	}
-	public String blue(String text) {
+	public static String blue(String text) {
 		return "\033[0;34m" + text + "\033[0m";
 	}
 

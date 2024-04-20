@@ -56,12 +56,15 @@ public class TypeOuvertureMur implements ToStringShort {
 	}
 
 	public String toString() {
-		return "TypeOuvertureMur { prixUnitaire: " + prixUnitaire + ", hauteur: " + hauteur + ", largeur: " + largeur
-				+ ", nom: " + nom + " }";
+		return "TypeOuvertureMur { nom: '" + nom + "'"
+		    + ", description: '" + description + "'"
+		    + ", hauteur: " + hauteur
+		    + ", largeur: " + largeur
+		    + ", prixUnitaire: " + prixUnitaire + " }";
 	}
 
 	public String toStringShort() {
 		// TODO -> toStringShort -> afficher l'ID
-		return "( #" + "TODO" + ")";
+		return "( #" + "TODO" + " )";
 	}
 }

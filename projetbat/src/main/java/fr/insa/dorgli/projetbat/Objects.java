@@ -23,6 +23,10 @@ public class Objects {
 	HashMap<Integer, TypeOuvertureNiveau> typesOuverturesNiveau = new HashMap<>();
 	HashMap<Integer, TypeRevetement> typesRevetement = new HashMap<>();
 
+	private String entrySetCustomString(Map.Entry entry) {
+		return entry.getKey() + ": " + entry.getValue();
+	}
+
 	@Override
 	public String toString() {
 		String out = "Objects {\n";
@@ -30,37 +34,37 @@ public class Objects {
 		// éléments principaux
 		out += "    niveaux {\n";
 		for (Map.Entry each: niveaux.entrySet()) {
-			out += "        " + each.toString() + ",\n";
+			out += "        " + entrySetCustomString(each) + ",\n";
 		}
 		out += "    },\n";
 
 		out += "    apparts {\n";
 		for (Map.Entry each: apparts.entrySet()) {
-			out += "        " + each.toString() + ",\n";
+			out += "        " + entrySetCustomString(each) + ",\n";
 		}
 		out += "    },\n";
 		
 		out += "    pieces {\n";
 		for (Map.Entry each: pieces.entrySet()) {
-			out += "        " + each.toString() + ",\n";
+			out += "        " + entrySetCustomString(each) + ",\n";
 		}
 		out += "    },\n";
 		
 		out += "    murs {\n";
 		for (Map.Entry each: murs.entrySet()) {
-			out += "        " + each.toString() + ",\n";
+			out += "        " + entrySetCustomString(each) + ",\n";
 		}
 		out += "    },\n";
 		
 		out += "    plafondsSols {\n";
 		for (Map.Entry each: plafondsSols.entrySet()) {
-			out += "        " + each.toString() + ",\n";
+			out += "        " + entrySetCustomString(each) + ",\n";
 		}
 		out += "    },\n";
 		
 		out += "    points {\n";
 		for (Map.Entry each: points.entrySet()) {
-			out += "        " + each.toString() + ",\n";
+			out += "        " + entrySetCustomString(each) + ",\n";
 		}
 		out += "    },\n";
 		out += "\n";
@@ -68,13 +72,13 @@ public class Objects {
 		// ouvertures
 		out += "    ouverturesMur {\n";
 		for (Map.Entry each: ouverturesMur.entrySet()) {
-			out += "        " + each.toString() + ",\n";
+			out += "        " + entrySetCustomString(each) + ",\n";
 		}
 		out += "    },\n";
 		
 		out += "    ouverturesNiveaux {\n";
 		for (Map.Entry each: ouverturesNiveaux.entrySet()) {
-			out += "        " + each.toString() + ",\n";
+			out += "        " + entrySetCustomString(each) + ",\n";
 		}
 		out += "    },\n";
 		out += "\n";
@@ -82,13 +86,13 @@ public class Objects {
 		// revetements
 		out += "    revetementsMur {\n";
 		for (Map.Entry each: revetementsMur.entrySet()) {
-			out += "        " + each.toString() + ",\n";
+			out += "        " + entrySetCustomString(each) + ",\n";
 		}
 		out += "    },\n";
 
 		out += "    revetementsPlafondSol {\n";
 		for (Map.Entry each: revetementsPlafondSol.entrySet()) {
-			out += "        " + each.toString() + ",\n";
+			out += "        " + entrySetCustomString(each) + ",\n";
 		}
 		out += "    },\n";
 		out += "\n";
@@ -96,26 +100,26 @@ public class Objects {
 		// types
 		out += "    typesMur {\n";
 		for (Map.Entry each: typesMur.entrySet()) {
-			out += "        " + each.toString() + ",\n";
+			out += "        " + entrySetCustomString(each) + ",\n";
 		}
 		out += "    },\n";
 
 		out += "    typesOuverturesMurs {\n";
 		for (Map.Entry each: typesOuverturesMur.entrySet()) {
-			out += "        " + each.toString() + ",\n";
+			out += "        " + entrySetCustomString(each) + ",\n";
 		}
 		out += "    },\n";
 		
 		out += "    typesOuverturesNiveaux {\n";
 		for (Map.Entry each: ouverturesNiveaux.entrySet()) {
-			out += "        " + each.toString() + ",\n";
+			out += "        " + entrySetCustomString(each) + ",\n";
 		}
 		out += "    },\n";
 		out += "\n";
 
 		out += "    TypesRevetements {\n";
-		for (Map.Entry each: revetementsMur.entrySet()) {
-			out += "        " + each.toString() + ",\n";
+		for (Map.Entry each: typesRevetement.entrySet()) {
+			out += "        " + entrySetCustomString(each) + ",\n";
 		}
 		out += "    },\n";
 
