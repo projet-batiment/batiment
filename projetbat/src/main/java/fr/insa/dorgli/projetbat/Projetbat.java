@@ -9,7 +9,7 @@ public class Projetbat {
 			switch (arg) {
 				case "--version":
 				case "-v":
-					System.out.println("Batiment  v" + config.version);
+					System.out.println("Batiment - v" + config.version);
 					break;
 
 				case "--verbose":

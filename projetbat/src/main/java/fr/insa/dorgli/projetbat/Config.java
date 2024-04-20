@@ -5,7 +5,13 @@ package fr.insa.dorgli.projetbat;
 // Ainsi qu'un annuaire de tous les objets créés lors de l'exécution (dans des hashmap)
 public class Config {
 	TUI tui = new TUI();
-	final String version = "0.0.1";
+
+	final int version = 3;
+	final int minimumSavefileVersion = 2;
+	final int maximumSavefileVersion = 2;
+
+	String projectName;
+	String projectDescription;
 
 	String savefilePath;
 
