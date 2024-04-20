@@ -12,6 +12,19 @@ public class TUI {
 		DEBUG,
 	}
 
+	public String red(String text) {
+		return "\033[0;31m" + text + "\033[0m";
+	}
+	public String green(String text) {
+		return "\033[0;32m" + text + "\033[0m";
+	}
+	public String yellow(String text) {
+		return "\033[0;33m" + text + "\033[0m";
+	}
+	public String blue(String text) {
+		return "\033[0;34m" + text + "\033[0m";
+	}
+
 	private LogLevel logLevel = LogLevel.NORMAL;
 	private int errCounter = 0;
 
@@ -59,16 +72,31 @@ public class TUI {
 	public void error(String msg) {
 		errCounter ++;
 		if (logLevelGreaterOrEqual(LogLevel.NORMAL))
-			System.err.println("ERR: " + msg);
+			System.err.println(red("ERR: ") + msg);
+	}
+	public void error(String where, String msg) {
+		error(where + ": " + msg);
 	}
 
 	public void log(String msg) {
 		if (logLevelGreaterOrEqual(LogLevel.LOG))
-			System.out.println("LOG: " + msg);
+			System.out.println(yellow("LOG: ") + msg);
+	}
+	public void log(String where, String msg) {
+		log(where + ": " + msg);
 	}
 
 	public void debug(String msg) {
 		if (logLevelGreaterOrEqual(LogLevel.DEBUG))
-			System.err.println("DBG: " + msg);
+			System.err.println(green("DBG: ") + msg);
+	}
+	public void debug(String where, String msg) {
+		debug(where + ": " + msg);
+	}
+	public void begin(String where) {
+		debug(blue("=== BEGIN === ") + where);
+	}
+	public void ended(String where) {
+		debug(blue("=== ENDED === ") + where);
 	}
 }
