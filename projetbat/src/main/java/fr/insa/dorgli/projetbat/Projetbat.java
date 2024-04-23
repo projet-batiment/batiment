@@ -4,26 +4,56 @@ import java.io.FileNotFoundException;
 
 public class Projetbat {
 	Config config = new Config();
+	final String where = "main/run";
+
+	private void argVersion() { System.out.println("Batiment - v" + config.version); }
+	private void argFile(String path) {
+		config.savefilePath = path.replaceFirst("^~", System.getProperty("user.home"));
+		config.tui.debug(where, "set savefilePath to '" + config.savefilePath + "'");
+	}
 
 	public void run(String[] args) {
-		final String where = "main/run";
-
 		for (int i = 0; i < args.length; i++) {
 			String arg = args[i];
-			switch (arg) {
-				case "--version", "-v" -> System.out.println("Batiment - v" + config.version);
-				case "--verbose", "-V", "--log" -> config.tui.setLogLevel(TUI.LogLevel.LOG);
-
-				case "--debug" -> config.tui.setLogLevel(TUI.LogLevel.DEBUG);
-				case "--file", "-f" -> {
-					if (i+1 < args.length) {
-						i++;
-						config.savefilePath = args[i];
-						config.tui.debug(where, "set savefilePath to '" + args[i] + "'");
+			if (arg.matches("-[^-]+")) {
+				for (int shortArgIdx=1; shortArgIdx < arg.length(); shortArgIdx++){
+					char shortArg = arg.charAt(shortArgIdx);
+					switch (shortArg) {
+						case 'v' -> argVersion();
+						case 'V' -> config.tui.setLogLevel(TUI.LogLevel.LOG);
+						case 'f' -> {
+							if (shortArgIdx + 1 == arg.length()) {
+								if (i+1 < args.length) {
+									i++;
+									argFile(args[i]);
+									config.tui.debug(where, "read file with indirect short argument");
+								} else {
+									config.tui.error(where, "expected a filename after argument -f");
+								}
+							} else {
+								argFile(arg.substring(shortArgIdx+1));
+								shortArgIdx = arg.length();
+								config.tui.debug(where, "read file with direct short argument");
+							}
+						}
+						default -> config.tui.error(where, "unknown CLI short-argument: '" + shortArg + "' in '" + arg + "'");
 					}
 				}
-
-				default -> config.tui.error(where, "unknown CLI argument: '" + arg + "'");
+			} else {
+				switch (arg) {
+					case "--version" -> argVersion();
+					case "--verbose" -> config.tui.setLogLevel(TUI.LogLevel.LOG);
+					case "--debug" -> config.tui.setLogLevel(TUI.LogLevel.DEBUG);
+					case "--file" -> {
+						if (i+1 < args.length) {
+							i++;
+							argFile(args[i]);
+						} else {
+							config.tui.error(where, "expected a filename after argument --file");
+						}
+					}
+					default -> config.tui.error(where, "unknown CLI argument: '" + arg + "'");
+				}
 			}
 		}
 
