@@ -25,8 +25,17 @@ public class Deserialize {
 	// - RevetementMur
 	// - OuvertureMur
 	// - Mur
-	// - Point
-	// - Point
+	// - TypesOuvertureNiveau
+	// 
+	// Reste à faire :
+	//  revetementsPlafondSol
+	//  ouverturesNiveaux
+	//  plafondsSols
+	//
+	//  pieces
+	//
+	//  niveaux
+	//  apparts
 
 
 	// pour faciliter la lecture des regex ci-dessous
@@ -121,8 +130,10 @@ public class Deserialize {
 							case "Point" -> 		newConfig.objects.points = pointsFromString();
 							case "TypeRevetement" -> 	newConfig.objects.typesRevetement = typeRevetementsFromString();
 							case "TypeOuvertureMur" -> 	newConfig.objects.typesOuverturesMur = typeOuvertureMursFromString();
+							case "TypeOuvertureNiveau" -> 	newConfig.objects.typesOuverturesNiveau = typeOuvertureNiveauxFromString();
 							case "TypeMur" -> 		newConfig.objects.typesMur = typeMursFromString();
 							case "Mur" -> 			newConfig.objects.murs = mursFromString(newConfig.objects);
+							case "PlafondSol" -> 		newConfig.objects.plafondsSols = plafondSolsFromString(newConfig.objects);
 							default -> error(where, "section d'objects inconnue: '" + objectsKind + "'");
 						}
 
@@ -482,19 +493,17 @@ public class Deserialize {
 							propResult.getState() == SmartReader.ReadState.LINE;
 							propResult = sreader.readLine()
 						) {
+							debug(where, "reading mur prop '" + TUI.blue(propResult.getText().replaceFirst("PROP:", "")) + "'");
 							switch (propResult.getText()) {
 								case "PROP:RevetementMur:1" -> {
-									debug(where, "reading mur prop " + TUI.blue("revetements [1]"));
 									r1 = revetementMursFromString(objects.typesRevetement);
 									r1_list = manageHashMapToArrayList(where, r1, objects.revetementsMur);
 								}
 								case "PROP:RevetementMur:2" -> {
-									debug(where, "reading mur prop " + TUI.blue("revetements [2]"));
 									r2 = revetementMursFromString(objects.typesRevetement);
 									r2_list = manageHashMapToArrayList(where, r2, objects.revetementsMur);
 								}
 								case "PROP:OuvertureMur" -> {
-									debug(where, "reading mur prop " + TUI.blue("ouvertures"));
 									o = ouvertureMursFromString(objects.typesOuverturesMur);
 									o_list = manageHashMapToArrayList(where, o, objects.ouverturesMur);
 								}
@@ -515,5 +524,191 @@ public class Deserialize {
 		}
 
 		return murs;
+	}
+
+	/// TypeOuvertureNiveau
+	private HashMap<Integer, TypeOuvertureNiveau> typeOuvertureNiveauxFromString() throws IOException {
+		final String where = "TypeOuvertureNiveaux";
+		HashMap<Integer, TypeOuvertureNiveau> typeOuvertureNiveaux = new HashMap<>();
+
+		final String regex = String.join(",", REGEX_INT, REGEX_STRING, REGEX_STRING, REGEX_DOUBLE, REGEX_DOUBLE, REGEX_DOUBLE);
+		debug(where, "regex: '" + regex + "'");
+		for (
+			SmartReader.ReadResult result = sreader.readLine();
+			result.getState() == SmartReader.ReadState.LINE;
+			result = sreader.readLine()
+		) {
+			String line = result.getText();
+			if (line.matches(regex)) {
+				String[] splitted = line.split(",");
+
+				int id = Integer.parseInt(splitted[0]);
+
+				if (typeOuvertureNiveaux.keySet().contains(id)) {
+					errorId(where, id);
+				} else {
+					try {
+						double hauteur = Double.parseDouble(splitted[3]);
+						double largeur = Double.parseDouble(splitted[4]);
+						double prixUnitaire = Double.parseDouble(splitted[5]);
+
+						TypeOuvertureNiveau object = new TypeOuvertureNiveau(unescapeString(splitted[1]), unescapeString(splitted[2]), hauteur, largeur, prixUnitaire);
+						typeOuvertureNiveaux.put(id, object);
+						debug(where, "read " + object);
+					} catch (NumberFormatException e) {
+						errorParse(where, line, e.getMessage());
+					}
+				}
+			} else {
+				errorSyntax(where, line);
+			}
+		}
+
+		return typeOuvertureNiveaux;
+	}
+
+	/// RevetementPlafondSol
+	private HashMap<Integer, RevetementPlafondSol> revetementPlafondSolsFromString(HashMap<Integer, TypeRevetement> typeRevetements) throws IOException {
+		final String where = "RevetementPlafondSols";
+		HashMap<Integer, RevetementPlafondSol> revetementPlafondSols = new HashMap<>();
+
+			final String regex = String.join(",", REGEX_INT, REGEX_INT, REGEX_INT, REGEX_INT, REGEX_INT, REGEX_INT);
+			debug(where, "regex: '" + regex + "'");
+		for (
+			SmartReader.ReadResult result = sreader.readLine();
+			result.getState() == SmartReader.ReadState.LINE;
+			result = sreader.readLine()
+		) {
+			String line = result.getText();
+			if (line.matches(regex)) {
+				String[] splitted = line.split(",");
+
+				int id = Integer.parseInt(splitted[0]);
+
+				if (revetementPlafondSols.keySet().contains(id)) {
+					errorId(where, id);
+				} else {
+					try {
+						TypeRevetement tr = typeRevetements.get(Integer.parseInt(splitted[1]));
+						int p1l = Integer.parseInt(splitted[2]);
+						int p1h = Integer.parseInt(splitted[3]);
+						int p2l = Integer.parseInt(splitted[4]);
+						int p2h = Integer.parseInt(splitted[5]);
+
+						RevetementPlafondSol object = new RevetementPlafondSol(tr, p1l, p1h, p2l, p2h);
+						revetementPlafondSols.put(id, object);
+						debug(where, "read " + object);
+					} catch (NumberFormatException e) {
+						errorParse(where, line, e.getMessage());
+					}
+				}
+			} else {
+				errorSyntax(where, line);
+			}
+		}
+
+		return revetementPlafondSols;
+	}
+
+	/// OuvertureNiveau
+	private HashMap<Integer, OuvertureNiveaux> ouvertureNiveauxFromString(HashMap<Integer, TypeOuvertureNiveau> typeOuvertureNiveaux) throws IOException {
+		final String where = "OuvertureNiveaux";
+		HashMap<Integer, OuvertureNiveaux> ouvertureNiveaux = new HashMap<>();
+
+		final String regex = String.join(",", REGEX_INT, REGEX_INT, REGEX_INT, REGEX_INT);
+		debug(where, "regex: '" + regex + "'");
+		for (
+			SmartReader.ReadResult result = sreader.readLine();
+			result.getState() == SmartReader.ReadState.LINE;
+			result = sreader.readLine()
+		) {
+			String line = result.getText();
+			if (line.matches(regex)) {
+				String[] splitted = line.split(",");
+
+				int id = Integer.parseInt(splitted[0]);
+
+				if (ouvertureNiveaux.keySet().contains(id)) {
+					errorId(where, id);
+				} else {
+					try {
+						TypeOuvertureNiveau tr = typeOuvertureNiveaux.get(Integer.parseInt(splitted[1]));
+						int p1l = Integer.parseInt(splitted[2]);
+						int p1h = Integer.parseInt(splitted[3]);
+
+						OuvertureNiveaux object = new OuvertureNiveaux(tr, p1l, p1h);
+						ouvertureNiveaux.put(id, object);
+						debug(where, "read " + object);
+					} catch (NumberFormatException e) {
+						errorParse(where, line, e.getMessage());
+					}
+				}
+			} else {
+				errorSyntax(where, line);
+			}
+		}
+
+		return ouvertureNiveaux;
+	}
+
+	/// PlafondSol
+	private HashMap<Integer, PlafondSol> plafondSolsFromString (Objects objects) throws IOException {
+		final String where = "PlafondSols";
+		HashMap<Integer, PlafondSol> plafondSols = new HashMap<>();
+
+		final String regex = String.join(",", REGEX_INT);
+		debug(where, "regex: '" + regex + "'");
+		for (
+			SmartReader.ReadResult result = sreader.readLine();
+			result.getState() == SmartReader.ReadState.LINE;
+			result = sreader.readLine()
+		) {
+			String line = result.getText();
+			if (line.matches(regex)) {
+				String[] splitted = line.split(",");
+
+				int id = Integer.parseInt(splitted[0]);
+
+				if (plafondSols.keySet().contains(id)) {
+					errorId(where, id);
+				} else {
+					try {
+						// lire les RevetementPlafondSol et les OuvertureNiveaux
+						HashMap<Integer, RevetementPlafondSol> r = new HashMap<>();
+						ArrayList<RevetementPlafondSol> r_list = new ArrayList<>();
+						HashMap<Integer, OuvertureNiveaux> o = new HashMap<>();
+						ArrayList<OuvertureNiveaux> o_list = new ArrayList<>();
+						for (
+							SmartReader.ReadResult propResult = sreader.readLine();
+							propResult.getState() == SmartReader.ReadState.LINE;
+							propResult = sreader.readLine()
+						) {
+							debug(where, "reading plafondSol prop '" + TUI.blue(propResult.getText().replaceFirst("PROP:", "")) + "'");
+							switch (propResult.getText()) {
+								case "PROP:RevetementPlafondSol" -> {
+									r = revetementPlafondSolsFromString(objects.typesRevetement);
+									r_list = manageHashMapToArrayList(where, r, objects.revetementsPlafondSol);
+								}
+								case "PROP:OuvertureNiveaux" -> {
+									o = ouvertureNiveauxFromString(objects.typesOuverturesNiveau);
+									o_list = manageHashMapToArrayList(where, o, objects.ouverturesNiveaux);
+								}
+								default -> error(where, "propriété du plafondSol inconnue: '" + propResult.getText() + "'");
+							}
+						}
+
+						PlafondSol object = new PlafondSol(r_list, o_list);
+						plafondSols.put(id, object);
+						debug(where, "read " + object);
+					} catch (NumberFormatException e) {
+						errorParse(where, line, e.getMessage());
+					}
+				}
+			} else {
+				errorSyntax(where, line);
+			}
+		}
+
+		return plafondSols;
 	}
 }

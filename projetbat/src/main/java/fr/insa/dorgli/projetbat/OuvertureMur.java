@@ -42,6 +42,6 @@ public class OuvertureMur implements ToStringShort {
 
 	public String toStringShort() {
 		// TODO -> toStringShort -> afficher l'ID
-		return "( #" + "TODO" + ")";
+		return "( #" + "TODO" + " )";
 	}
 }

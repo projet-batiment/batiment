@@ -106,6 +106,7 @@ public class Mur implements ToString, ToStringShort {
 				+ pfx + "hauteur: " + hauteur + ",\n"
 				+ pfx + "revetements1: " + revetements1Out + ",\n"
 				+ pfx + "revetements2: " + revetements2Out + ",\n"
+				+ pfx + "ouvertures: " + ouverturesOut + ",\n"
 				+ "}";
 	}
 

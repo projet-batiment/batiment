@@ -6,9 +6,9 @@ public class PlafondSol implements ToString, ToStringShort {
 	private ArrayList<RevetementPlafondSol> revetements;
 	private ArrayList<OuvertureNiveaux> ouvertures;
 
-	public PlafondSol() throws IllegalArgumentException {
-		this.revetements = new ArrayList<RevetementPlafondSol>();
-		this.ouvertures = new ArrayList<OuvertureNiveaux>();
+	public PlafondSol(ArrayList<RevetementPlafondSol> revetements, ArrayList<OuvertureNiveaux> ouvertures) {
+		this.revetements = revetements;
+		this.ouvertures = ouvertures;
 	}
 
 	public ArrayList<RevetementPlafondSol> getRevetements() {

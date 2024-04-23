@@ -57,8 +57,8 @@ public class RevetementPlafondSol implements ToStringShort {
 	}
 
 	public String toString() {
-		return "RevetementSol { type -> " + typeRevetement.getNom() + ", positions: (" + pos1L + ", " + pos1H + ") -> ("
-				+ pos2L + ", " + pos2H + ") }";
+		return "RevetementMur { type -> '" + typeRevetement.getNom() + "'"
+		    + ", positions: (" + pos1L + ", " + pos1H + ") -- (" + pos2L + ", " + pos2H + ") }";
 	}
 
 	public String toStringShort() {
