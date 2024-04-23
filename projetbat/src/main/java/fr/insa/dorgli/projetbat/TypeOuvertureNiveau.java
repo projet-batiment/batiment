@@ -3,23 +3,23 @@ package fr.insa.dorgli.projetbat;
 public class TypeOuvertureNiveau implements ToStringShort {
 	// j'ai pris le parti d'utiliser "largeur" et "hauteur" pour mieux distinguer
 	//   les deux directions (largeur et longueurs peuvent prêter à confusion)
-	private double prixUnitaire;
+	public double prixOuverture;
 	private double largeur;
 	private double hauteur;
 	private String nom;
 
-	public TypeOuvertureNiveau(double prixUnitaire, double largeur, double hauteur, String nom) {
-		this.prixUnitaire = prixUnitaire;
+	public TypeOuvertureNiveau(double prixOuverture, double largeur, double hauteur, String nom) {
+		this.prixOuverture = prixOuverture;
 		this.largeur = largeur;
 		this.hauteur = hauteur;
 		this.nom = nom;
 	}
 
-	public double getPrixUnitaire() {
+	public double getPrixOuverture() {
 		return prixUnitaire;
 	}
 
-	public void setPrixUnitaire(double prixUnitaire) {
+	public void setPrixOuverture(double prixOuverture) {
 		this.prixUnitaire = prixUnitaire;
 	}
 
@@ -48,14 +48,11 @@ public class TypeOuvertureNiveau implements ToStringShort {
 	}
 
 	public String toString() {
-		return "TypeOuvertureNiveau { prixUnitaire: " + prixUnitaire + ", largeur: " + largeur + ", hauteur: " + hauteur + ", nom: " + nom + " }";
+		return "TypeOuvertureNiveau { prixUnitaire: " + prixOuverture + ", largeur: " + largeur + ", hauteur: " + hauteur + ", nom: " + nom + " }";
 	}
 
 	public String toStringShort() {
 		// TODO -> toStringShort -> afficher l'ID
 		return "( #" + "TODO" + ")";
 	}
- public double calculerprix(){
-  return hauteur*largeur*prixUnitaire
-}
 }
