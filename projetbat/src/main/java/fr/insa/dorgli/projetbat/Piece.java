@@ -105,9 +105,11 @@ public class Piece implements ToString, ToStringShort {
  }
 	
  public double calculerPrix(){
-      	double prix = 0;
-	prix += aire()*(this.PlafondSol.revetements.prixunitaire);
- prix =prix-(this.PlafondSol.ouvertures.calculerprix());
+      double prix = 0;
+      prix += aire()*(this.plafond.revetements.prixunitaire);
+      prix =prix-(this.plafond.ouvertures.prixOuverture);
+      prix += aire()*(this.sol.revetements.prixunitaire);
+      prix =prix-(this.sol.ouvertures.prixOuverture);
 	
 	for (Mur mur: murs) {
 		prix += mur.calculerPrix();
