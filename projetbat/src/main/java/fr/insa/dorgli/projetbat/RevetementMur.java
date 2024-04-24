@@ -23,7 +23,15 @@ public class RevetementMur implements ToStringShort {
 		this.typeRevetement = typeRevetement;
 	}
 
-	public static double calculerPrix(){
+	public void set surface(){
+		dL = (this.pos2L - this.pos1L);
+		dH = (this.pos1H - this.pos1L);
+		surfaceRevetement = (dL * dH);
+		return surfaceRevetement;
+	}
+
+	public double calculerPrix(){
+		
 		
 
 	public int getPos1L() {
