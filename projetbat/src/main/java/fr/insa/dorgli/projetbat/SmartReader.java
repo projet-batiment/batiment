@@ -45,27 +45,39 @@ public class SmartReader {
 
 	// readLine
 	public ReadResult readLine() throws IOException {
-		final String where = "smartReader/readLine";
+		tui.diveWhere("smartReadLine");
+		ReadResult out = null;
 		String line;
 		do {
 			line = reader.readLine();
 			if (line == null) {
-				tui.debug("smartReader/readLine: reached EOF");
-				return new ReadResult(ReadState.EOF, null);
+				tui.debug("reached EOF");
+				out = new ReadResult(ReadState.EOF, null);
+				break;
 			} else if (line.startsWith("EOS")) {
 				String[] splitted = line.split(":", 2);
 				if (splitted.length > 1) {
-					tui.debug("smartReader/readLine: reached EOS '" + splitted[1] + "'");
-					return new ReadResult(ReadState.EOS, splitted[1]);
+					tui.debug("reached EOS '" + splitted[1] + "'");
+					out = new ReadResult(ReadState.EOS, splitted[1]);
+					break;
 				} else {
-					tui.debug("smartReader/readLine: reached anonymous EOS");
-					return new ReadResult(ReadState.EOS, line);
+					tui.debug("reached anonymous EOS");
+					out = new ReadResult(ReadState.EOS, line);
+					break;
 				}
 			} else {
-				tui.debug(where, "read line '" + line.replaceAll("\r", "\\r").replaceAll("\n", "\\n") + "'");
+				if (line.isBlank())
+					tui.debug("read a blank line: reading another line");
+				else
+					tui.debug("read line '" + line.replaceAll("\r", "\\r").replaceAll("\n", "\\n") + "'");
 			}
 		} while (line.isBlank());
-		tui.debug(where, "returning line '" + line.replaceAll("\r", "\\r").replaceAll("\n", "\\n") + "'");
-		return new ReadResult(ReadState.LINE, line);
+
+		if (out == null) {
+			out = new ReadResult(ReadState.LINE, line);
+		}
+
+		tui.popWhere();
+		return out;
 	}
 }
