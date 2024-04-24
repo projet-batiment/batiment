@@ -31,6 +31,11 @@ public class TypeRevetement implements ToStringShort {
 		return prixUnitaire;
 	}
 
+	public double PrixRevetement(){
+		PrixRevetement = (SurfaceRevetement * this.prixUnitaire);
+		return PrixRevetement;
+	}
+
 	public void setPrixUnitaire(double prixUnitaire) {
 		this.prixUnitaire = prixUnitaire;
 	}
