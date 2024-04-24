@@ -28,8 +28,8 @@ public class Mur implements ToString, ToStringShort {
 		this.ouvertures = ouvertures;
 	}
         public void set area ( ){
-		dx = (this.pointDebut.getX() - this.pointDebut.getX() ;
-		dy = (this.pointFin.getY() - this.pointFin.getY();
+		dx = (this.pointDebut.getX() - this.pointFin.getX() ;
+		dy = (this.pointFin.getY() - this.pointDebut.getY();
 		dist = Math.sqrt(Math.pow (dx,2)+ Math.pow(dy,2));
 		
 		aireMur = (Math.pow( dist,2) * Math.pow(this.hauteur,2));
