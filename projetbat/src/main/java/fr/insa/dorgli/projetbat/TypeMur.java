@@ -45,6 +45,11 @@ public class TypeMur implements ToStringShort {
 		this.prixUnitaire = prixUnitaire;
 	}
 
+	public double PrixStructureMur(){
+		prixStructureMur = (aireMur * this.prixUnitaire);
+		return prixStructureMur;
+	}
+
 	public String toString() {
 		return "TypeMur { epaisseur: " + epaisseur + ", prixUnitaire: " + prixUnitaire + ", nom: " + nom + " }";
 	}
