@@ -23,6 +23,9 @@ public class RevetementMur implements ToStringShort {
 		this.typeRevetement = typeRevetement;
 	}
 
+	public static double calculerPrix(){
+		
+
 	public int getPos1L() {
 		return pos1L;
 	}
