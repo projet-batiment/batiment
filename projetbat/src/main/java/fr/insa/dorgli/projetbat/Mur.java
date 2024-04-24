@@ -11,6 +11,7 @@ public class Mur implements ToString, ToStringShort {
 	private ArrayList<RevetementMur> revetements2;
 	private ArrayList<OuvertureMur> ouvertures;
 	private double area;
+	private double prixMur;
 
 	public Mur(Point pointDebut, Point pointFin, double hauteur, TypeMur typeMur, ArrayList<RevetementMur> revetements1,
 			ArrayList<RevetementMur> revetements2, ArrayList<OuvertureMur> ouvertures) throws IllegalArgumentException {
@@ -117,6 +118,14 @@ public class Mur implements ToString, ToStringShort {
 				+ pfx + "revetements1: " + revetements1Out + ",\n"
 				+ pfx + "revetements2: " + revetements2Out + ",\n"
 				+ "}";
+	}
+
+	public double calculerPrix(){
+		for (RevetementMur r : this.revetements1){
+			prixMur += r.calculerPrix();
+		}
+		prixMur = (prixMur + PrixStructureMur + prixOuverture);
+		return prixMur;
 	}
 
 	public String toStringShort() {
