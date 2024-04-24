@@ -4,17 +4,19 @@ import java.util.ArrayList;
 
 public class Piece implements ToString, ToStringShort {
 	private String nom;
-	private ArrayList<Mur> murs;
+	private String description;
 	private ArrayList<Point> points;
+	private ArrayList<Mur> murs;
 	private PlafondSol plafond;
 	private PlafondSol sol;
 
-	public Piece(ArrayList<Point> points, ArrayList<Mur> murs, PlafondSol plafond, PlafondSol sol, String nom) throws IllegalArgumentException {
+	public Piece(String nom, String description, ArrayList<Point> points, ArrayList<Mur> murs, PlafondSol plafond, PlafondSol sol) {
+		this.nom = nom;
+		this.description = description;
 		this.points = points;
 		this.murs = murs;
 		this.plafond = plafond;
 		this.sol = sol;
-		this.nom = nom;
 	}
 
 	public String getNom() {
@@ -23,6 +25,14 @@ public class Piece implements ToString, ToStringShort {
 
 	public void setNom(String nom) {
 		this.nom = nom;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	public ArrayList<Mur> getMurs() {
