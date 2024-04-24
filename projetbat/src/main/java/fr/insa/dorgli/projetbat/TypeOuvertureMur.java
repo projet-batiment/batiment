@@ -55,11 +55,6 @@ public class TypeOuvertureMur implements ToStringShort {
 		this.largeur = largeur;
 	}
 
-	public void set surfaceOuv(){
-		surfaceOuverture = ( this.largeur * this.hauteur );
-		return surfaceOuverture;
-	}
-
 	public String toString() {
 		return "TypeOuvertureMur { prixUnitaire: " + prixUnitaire + ", hauteur: " + hauteur + ", largeur: " + largeur
 				+ ", nom: " + nom + " }";
