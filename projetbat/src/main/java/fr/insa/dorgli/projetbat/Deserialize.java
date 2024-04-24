@@ -58,24 +58,30 @@ public class Deserialize {
 		this.config = config;
 	}
 
-	private void log(String where, String text) {
-		config.tui.log("deserialize/" + where, sreader.getLineNumber() + ": " + text);
+	private void log(String text) {
+		config.tui.log(sreader.getLineNumber() + ": " + text);
 	}
-	private void debug(String where, String text) {
-		config.tui.debug("deserialize/" + where, sreader.getLineNumber() + ": " + text);
+	private void debug(String text) {
+		config.tui.debug(sreader.getLineNumber() + ": " + text);
 	}
-	private void error(String where, String text) {
-		config.tui.error("deserialize/" + where, sreader.getLineNumber() + ": " + text);
+	private void warn(String text) {
+		config.tui.warn(sreader.getLineNumber() + ": " + text);
+	}
+	private void error(String text) {
+		config.tui.error(sreader.getLineNumber() + ": " + text);
 	}
 
-	private void errorParse(String where, String text, String errMsg) {
-		error(where, "erreur lors de l'interprétation des valeurs: '" + text + "': " + errMsg);
+	private void errorParse(String text, String errMsg) {
+		error("erreur lors de l'interprétation des valeurs: '" + text + "': " + errMsg);
 	}
-	private void errorSyntax(String where, String text) {
-		error(where, "mauvaise syntaxe: '" + text + "'");
+	private void errorSyntax(String text) {
+		error("mauvaise syntaxe: '" + text + "'");
 	}
-	private void errorId(String where, int objectId) {
-		error(where, "ID déjà pris ou incorrect: ID " + objectId);
+	private void errorIdNone(String typeName, int objectId) {
+		error("l'ID " + objectId + " n'existe pas en tant que " + typeName );
+	}
+	private void errorIdAgain(int objectId) {
+		error("ID déjà pris ou incorrect: ID " + objectId);
 	}
 
 	// Méthode obscure, générique de type T, pour à la fois :
@@ -85,22 +91,24 @@ public class Deserialize {
 	// 3) ajouter les paires (id + objet) du newMap au olderMap
 	// Cette méthode est utile pour lire les objets qui nécessaitent des objets internes (mur, pièce, plafond, sol, etc), car dans ce
 	// cas de figure, on utilise directement les objets sous forme de ArrayList après les avoir lus au lieu de renvoyer un bête HashMap
-	private <T> ArrayList<T> manageHashMapToArrayList(String where, HashMap<Integer, T> newMap, HashMap<Integer, T> olderMap) {
+	private <T> ArrayList<T> manageHashMapToArrayList(HashMap<Integer, T> newMap, HashMap<Integer, T> olderMap) {
+		config.tui.diveWhere("manageHashMapToArray");
 		ArrayList<T> out = new ArrayList<>();
 		for (Integer key: newMap.keySet()) {
 			if (olderMap.containsKey(key)) {
-				errorId(where + "/manageHashMapToArrayList", key);
+				errorIdAgain(key);
 			} else {
 				out.add(newMap.get(key));
 				olderMap.put(key, newMap.get(key));
 			}
 		}
+		config.tui.popWhere();
 		return out;
 	}
 
 	public void deserializeFile(String path) throws FileNotFoundException {
-		final String where = "deserializeFile";
-		config.tui.begin(where);
+		config.tui.diveWhere("deserializeFile");
+		config.tui.begin();
 
 		Config newConfig = new Config();
 		newConfig.tui = config.tui;
@@ -115,7 +123,7 @@ public class Deserialize {
 			) {
 				//int sectionCount = 1;
 				if (result.getState() == SmartReader.ReadState.EOS) {
-					error(where, "reached an EOS outside any section !");
+					error("reached an EOS outside any section !");
 				} else {
 					String line = result.getText();
 
@@ -123,7 +131,7 @@ public class Deserialize {
 					if (line.startsWith("OBJECTS:")) {
 						String objectsKind = line.split(":")[1];
 
-						debug(where, "reading objects section " + TUI.blue("'" + objectsKind + "'") + "...");
+						debug("reading objects section " + TUI.blue("'" + objectsKind + "'") + "...");
 
 						HashMap map;
 						switch (objectsKind) {
@@ -134,40 +142,50 @@ public class Deserialize {
 							case "TypeMur" -> 		newConfig.objects.typesMur = typeMursFromString();
 							case "Mur" -> 			newConfig.objects.murs = mursFromString(newConfig.objects);
 							case "PlafondSol" -> 		newConfig.objects.plafondsSols = plafondSolsFromString(newConfig.objects);
-							default -> error(where, "section d'objects inconnue: '" + objectsKind + "'");
+							default -> error("section d'objects inconnue: '" + objectsKind + "'");
 						}
 
 						if (config.tui.getErrCounter() > 0) {
-							error(where, "erreur lors de la lecture de la section d'objets " + objectsKind);
+							error("erreur lors de la lecture de la section d'objets " + objectsKind);
 						} else {
-							debug(where, "reading objects section '" + objectsKind + "': success");
+							debug("reading objects section '" + objectsKind + "': success");
 						}
 					} else if (line.startsWith("FILE")) {
-						debug(where, "reading " + TUI.blue("FILE") + " statements");
+						debug("reading " + TUI.blue("FILE") + " statements");
 						fileStatements(newConfig);
 					} else {
-						error(where, "section inconnue: '" + line + "'");
+						error("section inconnue: '" + line + "'");
 					}
 
-					debug(where, "finished reading a section");
+					debug("finished reading a section");
 
 					//sectionCount++;
 				}
+
+				if (config.tui.getErrCounter() > 0) {
+					warn(TUI.red("triggering fake EOF because of " + config.tui.getErrCounter() + " errors"));
+					break;
+				}
 			}
 
-			debug(where, "reached EOF");
-			log(where, "les objets suivants ont été lus:\n" + newConfig.objects.toString());
-
 		} catch (IOException e) {
-			error(where, "erreur d'entrée/sortie lors de la lecture du fichier '" + path + "': " + e.getMessage());
+			error("erreur d'entrée/sortie lors de la lecture du fichier '" + path + "': " + e.getMessage());
 		}
 
-		config.tui.ended(where);
+		if (config.tui.getErrCounter() > 0) {
+			config.tui.ended(TUI.red(config.tui.getErrCounter() + " errors"));
+		} else {
+			config.tui.ended(TUI.green("success"));
+		}
+		debug("Les objets suivants ont été lus:\n" + newConfig.objects.toString());
+
+		config.tui.popWhere();
 	}
 
 	/// FileStatements
 	private void fileStatements(Config newConfig) throws IOException {
-		final String where = "fileStatements";
+		config.tui.diveWhere("fileStatements");
+		config.tui.begin();
 		String[] command;
 
 		for (
@@ -175,7 +193,7 @@ public class Deserialize {
 			result.getState() == SmartReader.ReadState.LINE;
 			result = sreader.readLine()
 		) {
-			debug(where, result.toString());
+			debug(result.toString());
 			String line = result.getText();
 			command = line.split(":", 2);
 			switch (command[0]) {
@@ -183,38 +201,41 @@ public class Deserialize {
 					try {
 						int savefileVersion = Integer.parseInt(command[1]);
 						if (savefileVersion < config.minimumSavefileVersion) {
-							error(where, "savefile is too old (v" + savefileVersion + " < min " + config.minimumSavefileVersion + ")");
+							error("savefile is too old (v" + savefileVersion + " < min " + config.minimumSavefileVersion + ")");
 						} else if (savefileVersion > config.minimumSavefileVersion) {
-							error(where, "savefile is too recent (v" + savefileVersion + " > max " + config.maximumSavefileVersion + ")");
+							error("savefile is too recent (v" + savefileVersion + " > max " + config.maximumSavefileVersion + ")");
 						} else {
-							debug(where, "savefile is of correct version " + savefileVersion);
+							debug("savefile is of correct version " + savefileVersion);
 						}
 					} catch (NumberFormatException e) {
-						errorParse(where, line, "failed parsing the version as an integer: " + e.getMessage());
+						errorParse(line, "failed parsing the version as an integer: " + e.getMessage());
 					}
 				}
 				case "projectName" -> {
 					String unescaped = unescapeString(command[1]);
 					newConfig.projectName = unescaped;
-					log(where, "set projectName = '" + unescaped + "'");
+					debug("set projectName = '" + unescaped + "'");
 				}
 				case "projectDescription" -> {
 					String unescaped = unescapeString(command[1]);
 					newConfig.projectDescription = unescaped;
-					log(where, "set projectDescription = '" + unescaped + "'");
+					debug("set projectDescription = '" + unescaped + "'");
 				}
-				default -> errorSyntax(where, line);
+				default -> errorSyntax(line);
 			}
 		}
+		config.tui.ended();
+		config.tui.popWhere();
 	}
 
 	/// Point
 	private HashMap<Integer, Point> pointsFromString() throws IOException {
-		final String where = "Points";
+		config.tui.diveWhere("Points");
+		config.tui.begin();
 		HashMap<Integer, Point> points = new HashMap<>();
 
 		final String regex = String.join(",", REGEX_INT, REGEX_DOUBLE, REGEX_DOUBLE, REGEX_INT);
-		debug(where, "regex: '" + regex + "'");
+		debug("regex: '" + regex + "'");
 		for (
 			SmartReader.ReadResult result = sreader.readLine();
 			result.getState() == SmartReader.ReadState.LINE;
@@ -227,7 +248,7 @@ public class Deserialize {
 				int id = Integer.parseInt(splitted[0]);
 
 				if (points.keySet().contains(id)) {
-					errorId(where, id);
+					errorIdAgain(id);
 				} else {
 					try {
 						double x = Double.parseDouble(splitted[1]);
@@ -236,26 +257,29 @@ public class Deserialize {
 
 						Point object = new Point(x, y, niveauId);
 						points.put(id, object);
-						debug(where, "read " + object);
+						debug("read " + object);
 					} catch (NumberFormatException e) {
-						errorParse(where, line, e.getMessage());
+						errorParse(line, e.getMessage());
 					}
 				}
 			} else {
-				errorSyntax(where, line);
+				errorSyntax(line);
 			}
 		}
 
+		config.tui.ended();
+		config.tui.popWhere();
 		return points;
 	}
 
 	/// TypeRevetement
 	private HashMap<Integer, TypeRevetement> typeRevetementsFromString() throws IOException {
-		final String where = "TypeRevetements";
+		config.tui.diveWhere("TypeRevetements");
+		config.tui.begin();
 		HashMap<Integer, TypeRevetement> typeRevetements = new HashMap<>();
 
 		final String regex = String.join(",", REGEX_INT, REGEX_STRING, REGEX_STRING, REGEX_DOUBLE);
-		debug(where, "regex: '" + regex + "'");
+		debug("regex: '" + regex + "'");
 		for (
 			SmartReader.ReadResult result = sreader.readLine();
 			result.getState() == SmartReader.ReadState.LINE;
@@ -268,33 +292,36 @@ public class Deserialize {
 				int id = Integer.parseInt(splitted[0]);
 
 				if (typeRevetements.keySet().contains(id)) {
-					errorId(where, id);
+					errorIdAgain(id);
 				} else {
 					try {
 						double prixUnitaire = Double.parseDouble(splitted[3]);
 
 						TypeRevetement object = new TypeRevetement(unescapeString(splitted[1]), unescapeString(splitted[2]), prixUnitaire);
 						typeRevetements.put(id, object);
-						debug(where, "read " + object);
+						debug("read " + object);
 					} catch (NumberFormatException e) {
-						errorParse(where, line, e.getMessage());
+						errorParse(line, e.getMessage());
 					}
 				}
 			} else {
-				errorSyntax(where, line);
+				errorSyntax(line);
 			}
 		}
 
+		config.tui.ended();
+		config.tui.popWhere();
 		return typeRevetements;
 	}
 
 	/// TypeOuvertureMur
 	private HashMap<Integer, TypeOuvertureMur> typeOuvertureMursFromString() throws IOException {
-		final String where = "TypeOuvertureMurs";
+		config.tui.diveWhere("TypeOuvertureMurs");
+		config.tui.begin();
 		HashMap<Integer, TypeOuvertureMur> typeOuvertureMurs = new HashMap<>();
 
 		final String regex = String.join(",", REGEX_INT, REGEX_STRING, REGEX_STRING, REGEX_DOUBLE, REGEX_DOUBLE, REGEX_DOUBLE);
-		debug(where, "regex: '" + regex + "'");
+		debug("regex: '" + regex + "'");
 		for (
 			SmartReader.ReadResult result = sreader.readLine();
 			result.getState() == SmartReader.ReadState.LINE;
@@ -307,7 +334,7 @@ public class Deserialize {
 				int id = Integer.parseInt(splitted[0]);
 
 				if (typeOuvertureMurs.keySet().contains(id)) {
-					errorId(where, id);
+					errorIdAgain(id);
 				} else {
 					try {
 						double hauteur = Double.parseDouble(splitted[3]);
@@ -316,26 +343,29 @@ public class Deserialize {
 
 						TypeOuvertureMur object = new TypeOuvertureMur(unescapeString(splitted[1]), unescapeString(splitted[2]), hauteur, largeur, prixUnitaire);
 						typeOuvertureMurs.put(id, object);
-						debug(where, "read " + object);
+						debug("read " + object);
 					} catch (NumberFormatException e) {
-						errorParse(where, line, e.getMessage());
+						errorParse(line, e.getMessage());
 					}
 				}
 			} else {
-				errorSyntax(where, line);
+				errorSyntax(line);
 			}
 		}
 
+		config.tui.ended();
+		config.tui.popWhere();
 		return typeOuvertureMurs;
 	}
 
 	/// TypeMur
 	private HashMap<Integer, TypeMur> typeMursFromString() throws IOException {
-		final String where = "TypeMurs";
+		config.tui.diveWhere("TypeMurs");
+		config.tui.begin();
 		HashMap<Integer, TypeMur> typeMurs = new HashMap<>();
 
 		final String regex = String.join(",", REGEX_INT, REGEX_STRING, REGEX_STRING, REGEX_DOUBLE, REGEX_DOUBLE);
-		debug(where, "regex: '" + regex + "'");
+		debug("regex: '" + regex + "'");
 		for (
 			SmartReader.ReadResult result = sreader.readLine();
 			result.getState() == SmartReader.ReadState.LINE;
@@ -348,7 +378,7 @@ public class Deserialize {
 				int id = Integer.parseInt(splitted[0]);
 
 				if (typeMurs.keySet().contains(id)) {
-					errorId(where, id);
+					errorIdAgain(id);
 				} else {
 					try {
 						double epaisseur = Double.parseDouble(splitted[3]);
@@ -356,26 +386,29 @@ public class Deserialize {
 
 						TypeMur object = new TypeMur(unescapeString(splitted[1]), unescapeString(splitted[2]), epaisseur, prixU);
 						typeMurs.put(id, object);
-						debug(where, "read " + object);
+						debug("read " + object);
 					} catch (NumberFormatException e) {
-						errorParse(where, line, e.getMessage());
+						errorParse(line, e.getMessage());
 					}
 				}
 			} else {
-				errorSyntax(where, line);
+				errorSyntax(line);
 			}
 		}
 
+		config.tui.ended();
+		config.tui.popWhere();
 		return typeMurs;
 	}
 
 	/// RevetementMur
 	private HashMap<Integer, RevetementMur> revetementMursFromString(HashMap<Integer, TypeRevetement> typeRevetements) throws IOException {
-		final String where = "RevetementMurs";
+		config.tui.diveWhere("RevetementMurs");
+		config.tui.begin();
 		HashMap<Integer, RevetementMur> revetementMurs = new HashMap<>();
 
-			final String regex = String.join(",", REGEX_INT, REGEX_INT, REGEX_INT, REGEX_INT, REGEX_INT, REGEX_INT);
-			debug(where, "regex: '" + regex + "'");
+			final String regex = String.join(",", REGEX_INT, REGEX_INT, REGEX_DOUBLE, REGEX_DOUBLE, REGEX_DOUBLE, REGEX_DOUBLE);
+			debug("regex: '" + regex + "'");
 		for (
 			SmartReader.ReadResult result = sreader.readLine();
 			result.getState() == SmartReader.ReadState.LINE;
@@ -388,37 +421,40 @@ public class Deserialize {
 				int id = Integer.parseInt(splitted[0]);
 
 				if (revetementMurs.keySet().contains(id)) {
-					errorId(where, id);
+					errorIdAgain(id);
 				} else {
 					try {
 						TypeRevetement tr = typeRevetements.get(Integer.parseInt(splitted[1]));
-						int p1l = Integer.parseInt(splitted[2]);
-						int p1h = Integer.parseInt(splitted[3]);
-						int p2l = Integer.parseInt(splitted[4]);
-						int p2h = Integer.parseInt(splitted[5]);
+						double p1l = Double.parseDouble(splitted[2]);
+						double p1h = Double.parseDouble(splitted[3]);
+						double p2l = Double.parseDouble(splitted[4]);
+						double p2h = Double.parseDouble(splitted[5]);
 
 						RevetementMur object = new RevetementMur(tr, p1l, p1h, p2l, p2h);
 						revetementMurs.put(id, object);
-						debug(where, "read " + object);
+						debug("read " + object);
 					} catch (NumberFormatException e) {
-						errorParse(where, line, e.getMessage());
+						errorParse(line, e.getMessage());
 					}
 				}
 			} else {
-				errorSyntax(where, line);
+				errorSyntax(line);
 			}
 		}
 
+		config.tui.ended();
+		config.tui.popWhere();
 		return revetementMurs;
 	}
 
 	/// OuvertureMur
 	private HashMap<Integer, OuvertureMur> ouvertureMursFromString(HashMap<Integer, TypeOuvertureMur> typeOuvertureMurs) throws IOException {
-		final String where = "OuvertureMurs";
+		config.tui.diveWhere("OuvertureMurs");
+		config.tui.begin();
 		HashMap<Integer, OuvertureMur> ouvertureMurs = new HashMap<>();
 
-		final String regex = String.join(",", REGEX_INT, REGEX_INT, REGEX_INT, REGEX_INT);
-		debug(where, "regex: '" + regex + "'");
+		final String regex = String.join(",", REGEX_INT, REGEX_INT, REGEX_DOUBLE, REGEX_DOUBLE);
+		debug("regex: '" + regex + "'");
 		for (
 			SmartReader.ReadResult result = sreader.readLine();
 			result.getState() == SmartReader.ReadState.LINE;
@@ -431,35 +467,38 @@ public class Deserialize {
 				int id = Integer.parseInt(splitted[0]);
 
 				if (ouvertureMurs.keySet().contains(id)) {
-					errorId(where, id);
+					errorIdAgain(id);
 				} else {
 					try {
 						TypeOuvertureMur tr = typeOuvertureMurs.get(Integer.parseInt(splitted[1]));
-						int p1l = Integer.parseInt(splitted[2]);
-						int p1h = Integer.parseInt(splitted[3]);
+						double p1l = Double.parseDouble(splitted[2]);
+						double p1h = Double.parseDouble(splitted[3]);
 
 						OuvertureMur object = new OuvertureMur(tr, p1l, p1h);
 						ouvertureMurs.put(id, object);
-						debug(where, "read " + object);
+						debug("read " + object);
 					} catch (NumberFormatException e) {
-						errorParse(where, line, e.getMessage());
+						errorParse(line, e.getMessage());
 					}
 				}
 			} else {
-				errorSyntax(where, line);
+				errorSyntax(line);
 			}
 		}
 
+		config.tui.ended();
+		config.tui.popWhere();
 		return ouvertureMurs;
 	}
 
 	/// Mur
 	private HashMap<Integer, Mur> mursFromString (Objects objects) throws IOException {
-		final String where = "Murs";
+		config.tui.diveWhere("Murs");
+		config.tui.begin();
 		HashMap<Integer, Mur> murs = new HashMap<>();
 
 		final String regex = String.join(",", REGEX_INT, REGEX_INT, REGEX_INT, REGEX_DOUBLE, REGEX_INT);
-		debug(where, "regex: '" + regex + "'");
+		debug("regex: '" + regex + "'");
 		for (
 			SmartReader.ReadResult result = sreader.readLine();
 			result.getState() == SmartReader.ReadState.LINE;
@@ -472,7 +511,7 @@ public class Deserialize {
 				int id = Integer.parseInt(splitted[0]);
 
 				if (murs.keySet().contains(id)) {
-					errorId(where, id);
+					errorIdAgain(id);
 				} else {
 					try {
 						// lire les propriétés directes du mur
@@ -488,51 +527,57 @@ public class Deserialize {
 						ArrayList<RevetementMur> r2_list = new ArrayList<>();
 						HashMap<Integer, OuvertureMur> o = new HashMap<>();
 						ArrayList<OuvertureMur> o_list = new ArrayList<>();
+						config.tui.diveWhere("props");
 						for (
 							SmartReader.ReadResult propResult = sreader.readLine();
 							propResult.getState() == SmartReader.ReadState.LINE;
 							propResult = sreader.readLine()
 						) {
-							debug(where, "reading mur prop '" + TUI.blue(propResult.getText().replaceFirst("PROP:", "")) + "'");
-							switch (propResult.getText()) {
-								case "PROP:RevetementMur:1" -> {
+							String propType = propResult.getText().replaceFirst("PROP:", "");
+							debug("reading mur prop '" + TUI.blue(propType) + "'");
+							switch (propType) {
+								case "RevetementMur:1" -> {
 									r1 = revetementMursFromString(objects.typesRevetement);
-									r1_list = manageHashMapToArrayList(where, r1, objects.revetementsMur);
+									r1_list = manageHashMapToArrayList(r1, objects.revetementsMur);
 								}
-								case "PROP:RevetementMur:2" -> {
+								case "RevetementMur:2" -> {
 									r2 = revetementMursFromString(objects.typesRevetement);
-									r2_list = manageHashMapToArrayList(where, r2, objects.revetementsMur);
+									r2_list = manageHashMapToArrayList(r2, objects.revetementsMur);
 								}
-								case "PROP:OuvertureMur" -> {
+								case "OuvertureMur" -> {
 									o = ouvertureMursFromString(objects.typesOuverturesMur);
-									o_list = manageHashMapToArrayList(where, o, objects.ouverturesMur);
+									o_list = manageHashMapToArrayList(o, objects.ouverturesMur);
 								}
-								default -> error(where, "propriété du mur inconnue: '" + propResult.getText() + "'");
+								default -> error("propriété du mur inconnue: '" + propResult.getText() + "'");
 							}
 						}
+						config.tui.popWhere();
 
 						Mur object = new Mur(p1, p2, hauteur, typeMur, r1_list, r2_list, o_list);
 						murs.put(id, object);
-						debug(where, "read " + object);
+						debug("read " + object);
 					} catch (NumberFormatException e) {
-						errorParse(where, line, e.getMessage());
+						errorParse(line, e.getMessage());
 					}
 				}
 			} else {
-				errorSyntax(where, line);
+				errorSyntax(line);
 			}
 		}
 
+		config.tui.ended();
+		config.tui.popWhere();
 		return murs;
 	}
 
 	/// TypeOuvertureNiveau
 	private HashMap<Integer, TypeOuvertureNiveau> typeOuvertureNiveauxFromString() throws IOException {
-		final String where = "TypeOuvertureNiveaux";
+		config.tui.diveWhere("TypeOuvertureNiveaux");
+		config.tui.begin();
 		HashMap<Integer, TypeOuvertureNiveau> typeOuvertureNiveaux = new HashMap<>();
 
 		final String regex = String.join(",", REGEX_INT, REGEX_STRING, REGEX_STRING, REGEX_DOUBLE, REGEX_DOUBLE, REGEX_DOUBLE);
-		debug(where, "regex: '" + regex + "'");
+		debug("regex: '" + regex + "'");
 		for (
 			SmartReader.ReadResult result = sreader.readLine();
 			result.getState() == SmartReader.ReadState.LINE;
@@ -545,7 +590,7 @@ public class Deserialize {
 				int id = Integer.parseInt(splitted[0]);
 
 				if (typeOuvertureNiveaux.keySet().contains(id)) {
-					errorId(where, id);
+					errorIdAgain(id);
 				} else {
 					try {
 						double hauteur = Double.parseDouble(splitted[3]);
@@ -554,26 +599,29 @@ public class Deserialize {
 
 						TypeOuvertureNiveau object = new TypeOuvertureNiveau(unescapeString(splitted[1]), unescapeString(splitted[2]), hauteur, largeur, prixUnitaire);
 						typeOuvertureNiveaux.put(id, object);
-						debug(where, "read " + object);
+						debug("read " + object);
 					} catch (NumberFormatException e) {
-						errorParse(where, line, e.getMessage());
+						errorParse(line, e.getMessage());
 					}
 				}
 			} else {
-				errorSyntax(where, line);
+				errorSyntax(line);
 			}
 		}
 
+		config.tui.ended();
+		config.tui.popWhere();
 		return typeOuvertureNiveaux;
 	}
 
 	/// RevetementPlafondSol
 	private HashMap<Integer, RevetementPlafondSol> revetementPlafondSolsFromString(HashMap<Integer, TypeRevetement> typeRevetements) throws IOException {
-		final String where = "RevetementPlafondSols";
+		config.tui.diveWhere("RevetementPlafondSols");
+		config.tui.begin();
 		HashMap<Integer, RevetementPlafondSol> revetementPlafondSols = new HashMap<>();
 
 			final String regex = String.join(",", REGEX_INT, REGEX_INT, REGEX_INT, REGEX_INT, REGEX_INT, REGEX_INT);
-			debug(where, "regex: '" + regex + "'");
+			debug("regex: '" + regex + "'");
 		for (
 			SmartReader.ReadResult result = sreader.readLine();
 			result.getState() == SmartReader.ReadState.LINE;
@@ -586,7 +634,7 @@ public class Deserialize {
 				int id = Integer.parseInt(splitted[0]);
 
 				if (revetementPlafondSols.keySet().contains(id)) {
-					errorId(where, id);
+					errorIdAgain(id);
 				} else {
 					try {
 						TypeRevetement tr = typeRevetements.get(Integer.parseInt(splitted[1]));
@@ -597,26 +645,29 @@ public class Deserialize {
 
 						RevetementPlafondSol object = new RevetementPlafondSol(tr, p1l, p1h, p2l, p2h);
 						revetementPlafondSols.put(id, object);
-						debug(where, "read " + object);
+						debug("read " + object);
 					} catch (NumberFormatException e) {
-						errorParse(where, line, e.getMessage());
+						errorParse(line, e.getMessage());
 					}
 				}
 			} else {
-				errorSyntax(where, line);
+				errorSyntax(line);
 			}
 		}
 
+		config.tui.ended();
+		config.tui.popWhere();
 		return revetementPlafondSols;
 	}
 
 	/// OuvertureNiveau
 	private HashMap<Integer, OuvertureNiveaux> ouvertureNiveauxFromString(HashMap<Integer, TypeOuvertureNiveau> typeOuvertureNiveaux) throws IOException {
-		final String where = "OuvertureNiveaux";
+		config.tui.diveWhere("OuvertureNiveaux");
+		config.tui.begin();
 		HashMap<Integer, OuvertureNiveaux> ouvertureNiveaux = new HashMap<>();
 
 		final String regex = String.join(",", REGEX_INT, REGEX_INT, REGEX_INT, REGEX_INT);
-		debug(where, "regex: '" + regex + "'");
+		debug("regex: '" + regex + "'");
 		for (
 			SmartReader.ReadResult result = sreader.readLine();
 			result.getState() == SmartReader.ReadState.LINE;
@@ -629,7 +680,7 @@ public class Deserialize {
 				int id = Integer.parseInt(splitted[0]);
 
 				if (ouvertureNiveaux.keySet().contains(id)) {
-					errorId(where, id);
+					errorIdAgain(id);
 				} else {
 					try {
 						TypeOuvertureNiveau tr = typeOuvertureNiveaux.get(Integer.parseInt(splitted[1]));
@@ -638,26 +689,109 @@ public class Deserialize {
 
 						OuvertureNiveaux object = new OuvertureNiveaux(tr, p1l, p1h);
 						ouvertureNiveaux.put(id, object);
-						debug(where, "read " + object);
+						debug("read " + object);
 					} catch (NumberFormatException e) {
-						errorParse(where, line, e.getMessage());
+						errorParse(line, e.getMessage());
 					}
 				}
 			} else {
-				errorSyntax(where, line);
+				errorSyntax(line);
 			}
 		}
 
+		config.tui.ended();
+		config.tui.popWhere();
 		return ouvertureNiveaux;
 	}
 
+	/// read 1 PlafondSol
+	private HashMap<Integer, PlafondSol> onePlafondSolFromString (HashMap<Integer, PlafondSol> plafondSols, String line, Objects objects) throws IOException {
+		config.tui.diveWhere("1_PlafondSol");
+
+		final String regex = String.join(",", REGEX_INT);
+		debug("regex: '" + regex + "'");
+		if (line.matches(regex)) {
+			String[] splitted = line.split(",");
+
+			int id = Integer.parseInt(splitted[0]);
+
+			if (plafondSols.keySet().contains(id)) {
+				errorIdAgain(id);
+			} else {
+				try {
+					// lire les RevetementPlafondSol et les OuvertureNiveaux
+					HashMap<Integer, RevetementPlafondSol> r = new HashMap<>();
+					ArrayList<RevetementPlafondSol> r_list = new ArrayList<>();
+					HashMap<Integer, OuvertureNiveaux> o = new HashMap<>();
+					ArrayList<OuvertureNiveaux> o_list = new ArrayList<>();
+					config.tui.diveWhere("props");
+					for (
+						SmartReader.ReadResult propResult = sreader.readLine();
+						propResult.getState() == SmartReader.ReadState.LINE;
+						propResult = sreader.readLine()
+					) {
+						String propType = propResult.getText().replaceFirst("PROP:", "");
+						debug("reading 1_plafondSol prop '" + TUI.blue(propType) + "'");
+						switch (propType) {
+							case "RevetementPlafondSol" -> {
+								r = revetementPlafondSolsFromString(objects.typesRevetement);
+								r_list = manageHashMapToArrayList(r, objects.revetementsPlafondSol);
+							}
+							case "OuvertureNiveaux" -> {
+								o = ouvertureNiveauxFromString(objects.typesOuverturesNiveau);
+								o_list = manageHashMapToArrayList(o, objects.ouverturesNiveaux);
+							}
+							default -> error("propriété du plafondSol inconnue: '" + propResult.getText() + "'");
+						}
+					}
+					config.tui.popWhere();
+
+					PlafondSol object = new PlafondSol(r_list, o_list);
+					plafondSols.put(id, object);
+					debug("read " + object);
+				} catch (NumberFormatException e) {
+					errorParse(line, e.getMessage());
+				}
+			}
+		} else {
+			errorSyntax(line);
+		}
+
+		config.tui.popWhere();
+		return plafondSols;
+	}
+
+
 	/// PlafondSol
 	private HashMap<Integer, PlafondSol> plafondSolsFromString (Objects objects) throws IOException {
-		final String where = "PlafondSols";
+		config.tui.diveWhere("PlafondSols");
+		config.tui.begin();
 		HashMap<Integer, PlafondSol> plafondSols = new HashMap<>();
 
 		final String regex = String.join(",", REGEX_INT);
-		debug(where, "regex: '" + regex + "'");
+		debug("regex: '" + regex + "'");
+		for (
+			SmartReader.ReadResult result = sreader.readLine();
+			result.getState() == SmartReader.ReadState.LINE;
+			result = sreader.readLine()
+		) {
+			String line = result.getText();
+			onePlafondSolFromString(plafondSols, line, objects);
+		}
+
+		config.tui.ended();
+		config.tui.popWhere();
+		return plafondSols;
+	}
+
+	/// Piece
+	private HashMap<Integer, Piece> piecesFromString (Objects objects) throws IOException {
+		config.tui.diveWhere("Pieces");
+		config.tui.begin();
+		HashMap<Integer, Piece> pieces = new HashMap<>();
+
+		final String regex = String.join(",", REGEX_INT, REGEX_STRING, REGEX_STRING);
+		debug("regex: '" + regex + "'");
 		for (
 			SmartReader.ReadResult result = sreader.readLine();
 			result.getState() == SmartReader.ReadState.LINE;
@@ -669,46 +803,111 @@ public class Deserialize {
 
 				int id = Integer.parseInt(splitted[0]);
 
-				if (plafondSols.keySet().contains(id)) {
-					errorId(where, id);
+				if (pieces.keySet().contains(id)) {
+					errorIdAgain(id);
 				} else {
-					try {
-						// lire les RevetementPlafondSol et les OuvertureNiveaux
-						HashMap<Integer, RevetementPlafondSol> r = new HashMap<>();
-						ArrayList<RevetementPlafondSol> r_list = new ArrayList<>();
-						HashMap<Integer, OuvertureNiveaux> o = new HashMap<>();
-						ArrayList<OuvertureNiveaux> o_list = new ArrayList<>();
-						for (
-							SmartReader.ReadResult propResult = sreader.readLine();
-							propResult.getState() == SmartReader.ReadState.LINE;
-							propResult = sreader.readLine()
-						) {
-							debug(where, "reading plafondSol prop '" + TUI.blue(propResult.getText().replaceFirst("PROP:", "")) + "'");
-							switch (propResult.getText()) {
-								case "PROP:RevetementPlafondSol" -> {
-									r = revetementPlafondSolsFromString(objects.typesRevetement);
-									r_list = manageHashMapToArrayList(where, r, objects.revetementsPlafondSol);
+					// lire les points, murs, le plafond et le sol
+					ArrayList<Point> points = new ArrayList<>();
+					ArrayList<Mur> murs = new ArrayList<>();
+					PlafondSol plafond = null;
+					PlafondSol sol = null;
+					config.tui.diveWhere("props");
+					for (
+						SmartReader.ReadResult propResult = sreader.readLine();
+						propResult.getState() == SmartReader.ReadState.LINE;
+						propResult = sreader.readLine()
+					) {
+						String propType = propResult.getText().replaceFirst("PROP:", "");
+						debug("reading piece prop '" + TUI.blue(propType) + "'");
+						switch (propType) {
+							case "points" -> {
+								SmartReader.ReadResult pointsResult = sreader.readLine();
+								if (pointsResult.getState() == SmartReader.ReadState.LINE) {
+									String text = pointsResult.getText();
+									if (text.matches(REGEX_INT + "(," + REGEX_INT + ")*")) {
+										String[] pointsIds = text.split(",");
+										for (String each: pointsIds) {
+											try {
+												int pointId = Integer.parseInt(each);
+												Point point = objects.points.get(pointId);
+												if (point == null) {
+													errorIdNone("Point", pointId);
+												} else {
+													points.add(point);
+												}
+											} catch (NumberFormatException e) {
+												errorParse(line, e.getMessage());
+											}
+										}
+									} else {
+										errorSyntax(text);
+									}
+								} else {
+									error("LINE expected but received " + result.getState() + " when reading points for Piece");
 								}
-								case "PROP:OuvertureNiveaux" -> {
-									o = ouvertureNiveauxFromString(objects.typesOuverturesNiveau);
-									o_list = manageHashMapToArrayList(where, o, objects.ouverturesNiveaux);
-								}
-								default -> error(where, "propriété du plafondSol inconnue: '" + propResult.getText() + "'");
 							}
+							case "murs" -> {
+								SmartReader.ReadResult mursResult = sreader.readLine();
+								if (mursResult.getState() == SmartReader.ReadState.LINE) {
+									String text = mursResult.getText();
+									if (text.matches(REGEX_INT + "(," + REGEX_INT + ")*")) {
+										String[] mursIds = text.split(",");
+										for (String each: mursIds) {
+											try {
+												int murId = Integer.parseInt(each);
+												Mur mur = objects.murs.get(murId);
+												if (mur == null) {
+													errorIdNone("Mur", murId);
+												} else {
+													murs.add(mur);
+												}
+											} catch (NumberFormatException e) {
+												errorParse(line, e.getMessage());
+											}
+										}
+									} else {
+										errorSyntax(text);
+									}
+								} else {
+									error("LINE expected but received " + result.getState() + " when reading murs for Piece");
+								}
+							}
+							case "plafond", "sol" -> {
+								SmartReader.ReadResult plafondSolsResult = sreader.readLine();
+								if (plafondSolsResult.getState() == SmartReader.ReadState.LINE) {
+									String plafondSolLine = plafondSolsResult.getText();
+									HashMap<Integer, PlafondSol> plafondSolMap = new HashMap<>();
+									onePlafondSolFromString(plafondSolMap, plafondSolLine, objects);
+									if (plafondSolMap.size() == 1) {
+										PlafondSol tmpPlafondSol = plafondSolMap.get(plafondSolMap.keySet().iterator().next());
+										if (propType.equals("sol"))
+											plafond = tmpPlafondSol;
+										else
+											sol = tmpPlafondSol;
+										debug(TUI.green("successfully") + "read one plafondSol for piece");
+									} else {
+										error("la lecture du plafondSol a échoué: aucun objet n'a été assigné à la pièce");
+									}
+								} else {
+									error("LINE expected but received " + result.getState() + " when reading plafondSols for Piece");
+								}
+							}
+							default -> error("propriété de la piece inconnue: '" + propResult.getText() + "'");
 						}
-
-						PlafondSol object = new PlafondSol(r_list, o_list);
-						plafondSols.put(id, object);
-						debug(where, "read " + object);
-					} catch (NumberFormatException e) {
-						errorParse(where, line, e.getMessage());
 					}
+					config.tui.popWhere();
+
+					Piece object = new Piece(unescapeString(splitted[1]), unescapeString(splitted[2]), points, murs, plafond, sol);
+					pieces.put(id, object);
+					debug("read " + object);
 				}
 			} else {
-				errorSyntax(where, line);
+				errorSyntax(line);
 			}
 		}
 
-		return plafondSols;
+		config.tui.ended();
+		config.tui.popWhere();
+		return pieces;
 	}
 }
