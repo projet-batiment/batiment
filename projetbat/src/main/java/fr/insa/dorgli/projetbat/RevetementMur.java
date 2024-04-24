@@ -24,13 +24,18 @@ public class RevetementMur implements ToStringShort {
 	}
 
 	public void set surface(){
+		if (((pos1L && pos2L ) || (pos1H && pos2H ))== 0 ){
+			surfaceRevetement = aireMur;
+		}else{
 		dL = (this.pos2L - this.pos1L);
 		dH = (this.pos1H - this.pos1L);
 		surfaceRevetement = (dL * dH);
+		}
 		return surfaceRevetement;
 	}
 
 	public double calculerPrix(){
+		
 		
 		
 
