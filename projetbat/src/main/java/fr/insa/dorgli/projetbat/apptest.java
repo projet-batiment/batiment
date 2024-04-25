@@ -1,6 +1,7 @@
 package fr.insa.dorgli.projetbat;
 package com.example;
 private ArrayList<Piece> pieces;
+private Appart appart;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -21,6 +22,8 @@ public class App extends Application{
   public void start(Stage Stage) {
     Label message = new Label("Devis piece");
     message.setFont(new Font(20));
+
+    
     
     Button refreshButton = new Button("actualiser");
     refreshButton.setOnAction(evt -> {System.out.println(Piece.prix););
@@ -35,6 +38,16 @@ public class App extends Application{
     totalButton.setonAction(evt -> {message.setText("TOTAL APPART:");
                                     System.out.println(pieces.prix + " € " );
                                    });
+    Button detailButton = new Button ("DetailPieces");
+    detailButton.setonAction(evt -> {message.setText("DETAIL PIECES");
+                                     System.out.println(get.appart.TypeAppart + " n°: " + get.appart.nom);
+                                     System.out.println("piece : " + get.pieces.nom + "| prix : " + get.pieces.prix );
+                                    });
+    
+    HBox buttonBar = new HBox(20, refreshButton, totalButton, detailButton);
+    buttonBar.setAlignment(Pos.BOTTOM);
+  }
+}
     
                        
     
