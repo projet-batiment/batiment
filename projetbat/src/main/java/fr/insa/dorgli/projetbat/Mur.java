@@ -124,16 +124,14 @@ public class Mur implements ToString, ToStringShort {
 		double prixMur == 0;
 		prixMur = typeMur.prixunitaire * surface;
 		for (RevetementMur r : this.revetements1){
-			prixMurRev1 += r.mur.calculerPrix();
+			prixMur += r.calculerPrix();
 		}
 		for (RevetementMur r : this.revetements2){
-			prixMurRev2 += r.mur.calculerPrix();
+			prixMur += r.calculerPrix();
 		}
 		for (OuvertureMur o : this.ouvertures){
-			prixMurOuv += o.mur.calculerPrix();
+			prixMur += o.prixUnitaire;
 		}
-		
-		prixMur = (prixMur + prixMurRev1 + prixMurRev2 + prixMurOuv );
 		return prixMur;
 	}
 
