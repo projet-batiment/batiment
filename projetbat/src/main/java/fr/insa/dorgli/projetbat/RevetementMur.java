@@ -23,21 +23,24 @@ public class RevetementMur implements ToStringShort {
 		this.typeRevetement = typeRevetement;
 	}
 
-	public void set surface(){
-		if (((pos1L && pos2L ) || (pos1H && pos2H ))== 0 ){
-			surfaceRevetement = aireMur;
-		}else{
-		dL = (this.pos2L - this.pos1L);
-		dH = (this.pos1H - this.pos1L);
-		surfaceRevetement = (dL * dH);
+	public double calculerSurface(double largeurMur, double hauteurMur) {
+		double largeur;
+		double hauteur;
+		
+		if ((pos1L == 0 ) && (pos2L == 0 )){
+			largeur = largeurMur;
+		} else {
+			largeur = this.pos1L - this.pos2L;
 		}
-		return surfaceRevetement;
-	}
+		if ((pos1H == 0) && (pos2H == 0)) {
+			hauteur = hauteurMur;
+		} else {
+			hauteur = this.pos1H - this.pos2H;
+		}
 
-	public double calculerPrix(){
-		
-		
-		
+		return largeur * hauteur;
+	}
+			
 
 	public int getPos1L() {
 		return pos1L;
