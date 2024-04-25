@@ -120,11 +120,20 @@ public class Mur implements ToString, ToStringShort {
 				+ "}";
 	}
 
-	public double calculerPrix(){
+	public double mur.calculerPrix(){
+		double prixMur == 0;
+		prixMur = typeMur.prixunitaire * surface;
 		for (RevetementMur r : this.revetements1){
-			prixMur += r.calculerPrix();
+			prixMurRev1 += r.mur.calculerPrix();
 		}
-		prixMur = (prixMur + PrixStructureMur + prixOuverture);
+		for (RevetementMur r : this.revetements2){
+			prixMurRev2 += r.mur.calculerPrix();
+		}
+		for (OuvertureMur o : this.ouvertures){
+			prixMurOuv += o.mur.calculerPrix();
+		}
+		
+		prixMur = (prixMur + prixMurRev1 + prixMurRev2 + prixMurOuv );
 		return prixMur;
 	}
 
