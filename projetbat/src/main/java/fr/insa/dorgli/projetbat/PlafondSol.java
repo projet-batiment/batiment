@@ -27,6 +27,20 @@ public class PlafondSol implements ToString, ToStringShort {
 		this.ouvertures = ouvertures;
 	}
 
+	public double calculerPrix(double airePiece) {
+		double prix = 0;
+
+		/// TODO!!! implement java.awt.Area -> interset the revetements' surfaces with the ouvertures' surfaces
+		for (RevetementPlafondSol each: revetements) {
+			prix += each.calculerPrix(airePiece);
+		}
+		for (RevetementPlafondSol each: revetements) {
+			prix += each.calculerPrix(airePiece);
+		}
+
+		return prix;
+	}
+
 	public String toString() {
 		return toString(0);
 	}
