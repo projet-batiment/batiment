@@ -26,7 +26,7 @@ public class Mur implements ToString, ToStringShort {
 		this.revetements2 = revetements2;
 		this.ouvertures = ouvertures;
 	}
-		
+
 	public Point getPointDebut() {
 		return this.pointDebut;
 	}
@@ -117,7 +117,7 @@ public class Mur implements ToString, ToStringShort {
 		return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
 	}
 
-        public double aire() {
+	public double aire() {
 		return longueur() * this.hauteur;
 	}
 
@@ -128,10 +128,10 @@ public class Mur implements ToString, ToStringShort {
 		double longueur = longueur();
 		/// TODO!!! implement java.awt.Area -> interset the revetements' surfaces with the ouvertures' surfaces
 		for (RevetementMur r: this.revetements1){
-			prixMur += r.calculerPrix(longueur(), hauteur);
+			prixMur += r.calculerPrix(longueur, hauteur);
 		}
 		for (RevetementMur r: this.revetements2){
-			prixMur += r.calculerPrix(longueur(), hauteur);
+			prixMur += r.calculerPrix(longueur, hauteur);
 		}
 		for (OuvertureMur o: this.ouvertures){
 			prixMur += o.getTypeOuverture().getPrixOuverture();
