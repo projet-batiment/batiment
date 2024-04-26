@@ -3,6 +3,7 @@ package fr.insa.dorgli.projetbat;
 public class TypeOuvertureNiveau implements ToStringShort {
 	// j'ai pris le parti d'utiliser "largeur" et "hauteur" pour mieux distinguer
 	//   les deux directions (largeur et longueurs peuvent prêter à confusion)
+	/// TODO!!! (utile ici ?) implement java.awt.Area -> interset the revetements' surfaces with the ouvertures' surfaces
 	public double prixOuverture;
 	private double largeur;
 	private double hauteur;
@@ -16,11 +17,11 @@ public class TypeOuvertureNiveau implements ToStringShort {
 	}
 
 	public double getPrixOuverture() {
-		return prixUnitaire;
+		return prixOuverture;
 	}
 
 	public void setPrixOuverture(double prixOuverture) {
-		this.prixUnitaire = prixUnitaire;
+		this.prixOuverture = prixOuverture;
 	}
 
 	public double getLargeur() {
@@ -48,7 +49,7 @@ public class TypeOuvertureNiveau implements ToStringShort {
 	}
 
 	public String toString() {
-		return "TypeOuvertureNiveau { prixUnitaire: " + prixOuverture + ", largeur: " + largeur + ", hauteur: " + hauteur + ", nom: " + nom + " }";
+		return "TypeOuvertureNiveau { prixOuverture: " + prixOuverture + ", largeur: " + largeur + ", hauteur: " + hauteur + ", nom: " + nom + " }";
 	}
 
 	public String toStringShort() {

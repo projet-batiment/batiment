@@ -93,27 +93,29 @@ public class Piece implements ToString, ToStringShort {
 		// TODO -> toStringShort -> afficher l'ID
 		return "( #" + nom + " )";
 	}
-	
- public double aire(){
-     double out=0;
-     for(int i=0; i < points.size(); i++){
-        Point current = points[i];
-        Point next = points[(i+1) % points.size()];
-        out += current.getX() * next.getY() - current.getY() * next.getX();
-     } 
-	 return 0.5*Math.abs(out);
- }
-	
- public double calculerPrix(){
-      double prix = 0;
-      prix += aire()*(this.plafond.revetements.prixunitaire);
-      prix =prix-(this.plafond.ouvertures.prixOuverture);
-      prix += aire()*(this.sol.revetements.prixunitaire);
-      prix =prix-(this.sol.ouvertures.prixOuverture);
-	
-	for (Mur mur: murs) {
-		prix += mur.calculerPrix();
+
+	public double aire() {
+		double out = 0;
+		/// TODO!!! implement java.awt.Area -> interset the revetements' surfaces with the ouvertures' surfaces
+		for (int i = 0; i < points.size(); i++) {
+			Point current = points.get(i);
+			Point next = points.get((i + 1) % points.size());
+			out += current.getX() * next.getY() - current.getY() * next.getX();
+		}
+		return 0.5 * Math.abs(out);
 	}
-	return prix;
- }
+
+	public double calculerPrix() {
+		double prix = 0;
+		double airePiece = aire();
+
+		// for (Mur eachMur: murs) {
+		// 	prix += eachMur.calculerPrix();
+		// }
+
+		prix += plafond.calculerPrix(airePiece);
+		prix += sol.calculerPrix(airePiece);
+
+		return prix;
+	}
 }
