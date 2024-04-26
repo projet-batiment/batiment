@@ -109,7 +109,7 @@ PROP:RevetementMur:2
 1642,210,1,0,3,0
 EOS:RevetementMur:2
 PROP:OuvertureMur
-1643,233,0.2,0
+1643,231,0.2,0
 EOS:OuvertureMur
 EOS:Entry
 
@@ -198,6 +198,42 @@ PROP:RevetementMur:2
 EOS:RevetementMur:2
 EOS:Entry
 
+172,111,112,2.2,201
+PROP:RevetementMur:1
+1720,210,0,0,0,0
+EOS:RevetementMur:1
+PROP:RevetementMur:2
+1721,215,0,0,0,0
+EOS:RevetementMur:2
+EOS:Entry
+
+173,112,113,2.2,203
+EOS:Entry
+
+174,113,114,2.2,201
+PROP:RevetementMur:1
+1740,210,0,0,0,0
+EOS:RevetementMur:1
+PROP:RevetementMur:2
+1741,215,0,0,0,0
+EOS:RevetementMur:2
+PROP:OuvertureMur
+1742,232,0.7,1.3
+EOS:OuvertureMur
+EOS:Entry
+
+175,114,111,2.2,202
+PROP:RevetementMur:1
+1750,210,0,0,0,0
+EOS:RevetementMur:1
+PROP:RevetementMur:2
+1751,215,0,0,0,0
+EOS:RevetementMur:2
+PROP:OuvertureMur
+1752,233,1.2,1.2
+EOS:OuvertureMur
+EOS:Entry
+
 EOS:Mur
 
 OBJECTS:Piece
@@ -255,13 +291,85 @@ EOS:OuvertureNiveaux
 EOS:sol
 EOS:Entry
 
+252,Chambre,Unique chambre à coucher de la maisonnette
+PROP:points
+101,102,109,108
+PROP:murs
+160,170,168,167
+PROP:plafond
+
+605
+PROP:RevetementPlafondSol
+6050,217,0,0,0,0
+EOS:RevetementPlafondSol
+
+EOS:plafond
+PROP:sol
+
+606
+PROP:RevetementPlafondSol
+6060,213,0,0,0,0
+EOS:RevetementPlafondSol
+
+EOS:sol
+EOS:Entry
+
+253,Espace d'eau,Salle de bain de la chambre
+PROP:points
+108,109,106,107
+PROP:murs
+165,166,168,169
+PROP:plafond
+
+607
+PROP:RevetementPlafondSol
+6070,217,0,0,0,0
+EOS:RevetementPlafondSol
+
+EOS:plafond
+PROP:sol
+
+608
+PROP:RevetementPlafondSol
+6080,213,0,0,0,0
+EOS:RevetementPlafondSol
+
+EOS:sol
+EOS:Entry
+
+254,Mezzanine,Fait à la fois une sorte de bureau et de salle de jour
+PROP:points
+111,112,113,114
+PROP:murs
+172,173,174,175
+PROP:plafond
+
+609
+PROP:RevetementPlafondSol
+6090,217,0,0,0,0
+EOS:RevetementPlafondSol
+
+EOS:plafond
+PROP:sol
+
+610
+PROP:RevetementPlafondSol
+6100,214,0,0,0,0
+EOS:RevetementPlafondSol
+PROP:OuvertureNiveaux
+6101,240,0,0
+EOS:OuvertureNiveaux
+
+EOS:sol
+EOS:Entry
+
 EOS:Piece
 
 OBJECTS:Appart
 
 701,La nouvelle maisonnette du jardin,Un projet qui se réalisera peut être un jour,299
 PROP:pieces
-250,251
+250,251,252,253,254
 EOS:Entry
 
 EOS:Appart
@@ -272,7 +380,14 @@ OBJECTS:Niveau
 PROP:apparts
 701
 PROP:pieces
-250,251
+250,251,252,253
+EOS:Entry
+
+752,Premier étage,Mezzanine,2.2
+PROP:apparts
+701
+PROP:pieces
+250,251,252,253
 EOS:Entry
 
 EOS:Niveau
