@@ -3,12 +3,12 @@ package fr.insa.dorgli.projetbat;
 public class RevetementPlafondSol implements ToStringShort {
 	TypeRevetement typeRevetement;
 	// TODO: à terme, définir les revetements plafond et sol avec des points verticaux sur les murs ?
-	int pos1L;
-	int pos1H;
-	int pos2L;
-	int pos2H;
+	double pos1L;
+	double pos1H;
+	double pos2L;
+	double pos2H;
 
-	public RevetementPlafondSol(TypeRevetement typeRevetement, int pos1L, int pos1H, int pos2L, int pos2H) {
+	public RevetementPlafondSol(TypeRevetement typeRevetement, double pos1L, double pos1H, double pos2L, double pos2H) {
 		this.typeRevetement = typeRevetement;
 		this.pos1L = pos1L;
 		this.pos1H = pos1H;
@@ -24,35 +24,35 @@ public class RevetementPlafondSol implements ToStringShort {
 		this.typeRevetement = typeRevetement;
 	}
 
-	public int getPos1L() {
+	public double getPos1L() {
 		return pos1L;
 	}
 
-	public void setPos1L(int pos1L) {
+	public void setPos1L(double pos1L) {
 		this.pos1L = pos1L;
 	}
 
-	public int getPos1H() {
+	public double getPos1H() {
 		return pos1H;
 	}
 
-	public void setPos1H(int pos1H) {
+	public void setPos1H(double pos1H) {
 		this.pos1H = pos1H;
 	}
 
-	public int getPos2L() {
+	public double getPos2L() {
 		return pos2L;
 	}
 
-	public void setPos2L(int pos2L) {
+	public void setPos2L(double pos2L) {
 		this.pos2L = pos2L;
 	}
 
-	public int getPos2H() {
+	public double getPos2H() {
 		return pos2H;
 	}
 
-	public void setPos2H(int pos2H) {
+	public void setPos2H(double pos2H) {
 		this.pos2H = pos2H;
 	}
 

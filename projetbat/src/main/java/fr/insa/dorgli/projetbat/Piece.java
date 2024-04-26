@@ -91,11 +91,12 @@ public class Piece implements ToString, ToStringShort {
 		mursOut += "]";
 
 		return "Piece {\n"
+				+ pfx + "nom: '" + nom + "',\n"
+				+ pfx + "description: '" + description + "',\n"
 				+ pfx + "points: " + pointsOut + ",\n"
 				+ pfx + "murs: " + mursOut + ",\n"
 				+ pfx + "plafond: " + plafond.toString(depth + 1) + ",\n"
 				+ pfx + "sol: " + sol.toString(depth + 1) + ",\n"
-				+ pfx + "nom: " + nom + ",\n"
 				+ "}";
 	}
 

@@ -4,13 +4,15 @@ import java.util.ArrayList;
 
 public class Appart {
 	private String nom;
+	private String description;
 	private ArrayList<Piece> pieces;
 	private TypeAppart typeAppart;
 
-	public Appart(ArrayList<Piece> pieces, TypeAppart typeAppart, String nom) {
+	public Appart(String nom, String description, ArrayList<Piece> pieces, TypeAppart typeAppart) {
+		this.nom = nom;
+		this.description = description;
 		this.pieces = pieces;
 		this.typeAppart = typeAppart;
-		this.nom = nom;
 	}
 
 	public String getNom() {
@@ -19,6 +21,14 @@ public class Appart {
 
 	public void setNom(String nom) {
 		this.nom = nom;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	public ArrayList<Piece> getPieces() {
@@ -35,5 +45,15 @@ public class Appart {
 
 	public void setTypeAppart(TypeAppart typeAppart) {
 		this.typeAppart = typeAppart;
+	}
+
+	@Override
+	public String toString() {
+		String piecesOut = "[ ";
+		for (Piece piece: pieces) {
+			piecesOut += piece.toStringShort() + ", ";
+		}
+		piecesOut += "]";
+		return "Appart {\n  nom: '" + nom + "',\n  description: '" + description + "',\n  pieces: " + piecesOut + ",\n  typeAppart: " + typeAppart.toStringShort() + "\n}";
 	}
 }

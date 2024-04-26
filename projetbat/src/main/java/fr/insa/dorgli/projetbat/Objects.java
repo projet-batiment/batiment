@@ -22,9 +22,10 @@ public class Objects {
 	HashMap<Integer, TypeOuvertureMur> typesOuverturesMur = new HashMap<>();
 	HashMap<Integer, TypeOuvertureNiveau> typesOuverturesNiveau = new HashMap<>();
 	HashMap<Integer, TypeRevetement> typesRevetement = new HashMap<>();
+	HashMap<Integer, TypeAppart> typesAppart = new HashMap<>();
 
 	private String entrySetCustomString(Map.Entry entry) {
-		return entry.getKey() + ": " + entry.getValue();
+		return TUI.green("" + entry.getKey()) + ": " + entry.getValue();
 	}
 
 	@Override
@@ -32,37 +33,37 @@ public class Objects {
 		String out = "Objects {\n";
 
 		// éléments principaux
-		out += "    niveaux " + niveaux.size() + " {\n";
+		out += "    " + TUI.blue("niveaux") + " " + niveaux.size() + " {\n";
 		for (Map.Entry each: niveaux.entrySet()) {
 			out += "        " + entrySetCustomString(each) + ",\n";
 		}
 		out += "    },\n";
 
-		out += "    apparts " + apparts.size() + " {\n";
+		out += "    " + TUI.blue("apparts") + " " + apparts.size() + " {\n";
 		for (Map.Entry each: apparts.entrySet()) {
 			out += "        " + entrySetCustomString(each) + ",\n";
 		}
 		out += "    },\n";
 		
-		out += "    pieces " + pieces.size() + " {\n";
+		out += "    " + TUI.blue("pieces") + " " + pieces.size() + " {\n";
 		for (Map.Entry each: pieces.entrySet()) {
 			out += "        " + entrySetCustomString(each) + ",\n";
 		}
 		out += "    },\n";
 		
-		out += "    murs " + murs.size() + " {\n";
+		out += "    " + TUI.blue("murs") + " " + murs.size() + " {\n";
 		for (Map.Entry each: murs.entrySet()) {
 			out += "        " + entrySetCustomString(each) + ",\n";
 		}
 		out += "    },\n";
 		
-		out += "    plafondsSols " + plafondsSols.size() + " {\n";
+		out += "    " + TUI.blue("plafondsSols") + " " + plafondsSols.size() + " {\n";
 		for (Map.Entry each: plafondsSols.entrySet()) {
 			out += "        " + entrySetCustomString(each) + ",\n";
 		}
 		out += "    },\n";
 		
-		out += "    points " + points.size() + " {\n";
+		out += "    " + TUI.blue("points") + " " + points.size() + " {\n";
 		for (Map.Entry each: points.entrySet()) {
 			out += "        " + entrySetCustomString(each) + ",\n";
 		}
@@ -70,13 +71,13 @@ public class Objects {
 		out += "\n";
 
 		// ouvertures
-		out += "    ouverturesMur " + ouverturesMur.size() + " {\n";
+		out += "    " + TUI.blue("ouverturesMur") + " " + ouverturesMur.size() + " {\n";
 		for (Map.Entry each: ouverturesMur.entrySet()) {
 			out += "        " + entrySetCustomString(each) + ",\n";
 		}
 		out += "    },\n";
 		
-		out += "    ouverturesNiveaux " + ouverturesNiveaux.size() + " {\n";
+		out += "    " + TUI.blue("ouverturesNiveaux") + " " + ouverturesNiveaux.size() + " {\n";
 		for (Map.Entry each: ouverturesNiveaux.entrySet()) {
 			out += "        " + entrySetCustomString(each) + ",\n";
 		}
@@ -84,13 +85,13 @@ public class Objects {
 		out += "\n";
 
 		// revetements
-		out += "    revetementsMur " + revetementsMur.size() + " {\n";
+		out += "    " + TUI.blue("revetementsMur") + " " + revetementsMur.size() + " {\n";
 		for (Map.Entry each: revetementsMur.entrySet()) {
 			out += "        " + entrySetCustomString(each) + ",\n";
 		}
 		out += "    },\n";
 
-		out += "    revetementsPlafondSol " + revetementsPlafondSol.size() + " {\n";
+		out += "    " + TUI.blue("revetementsPlafondSol") + " " + revetementsPlafondSol.size() + " {\n";
 		for (Map.Entry each: revetementsPlafondSol.entrySet()) {
 			out += "        " + entrySetCustomString(each) + ",\n";
 		}
@@ -98,27 +99,33 @@ public class Objects {
 		out += "\n";
 		
 		// types
-		out += "    typesMur " + typesMur.size() + " {\n";
+		out += "    " + TUI.blue("typesMur") + " " + typesMur.size() + " {\n";
 		for (Map.Entry each: typesMur.entrySet()) {
 			out += "        " + entrySetCustomString(each) + ",\n";
 		}
 		out += "    },\n";
 
-		out += "    typesOuverturesMur " + typesOuverturesMur.size() + " {\n";
+		out += "    " + TUI.blue("typesOuverturesMur") + " " + typesOuverturesMur.size() + " {\n";
 		for (Map.Entry each: typesOuverturesMur.entrySet()) {
 			out += "        " + entrySetCustomString(each) + ",\n";
 		}
 		out += "    },\n";
 		
-		out += "    typesOuverturesNiveau " + typesOuverturesNiveau.size() + " {\n";
+		out += "    " + TUI.blue("typesOuverturesNiveau") + " " + typesOuverturesNiveau.size() + " {\n";
 		for (Map.Entry each: typesOuverturesNiveau.entrySet()) {
 			out += "        " + entrySetCustomString(each) + ",\n";
 		}
 		out += "    },\n";
 		out += "\n";
 
-		out += "    typesRevetement " + typesRevetement.size() + " {\n";
+		out += "    " + TUI.blue("typesRevetement") + " " + typesRevetement.size() + " {\n";
 		for (Map.Entry each: typesRevetement.entrySet()) {
+			out += "        " + entrySetCustomString(each) + ",\n";
+		}
+		out += "    },\n";
+
+		out += "    " + TUI.blue("typesAppart") + " " + typesAppart.size() + " {\n";
+		for (Map.Entry each: typesAppart.entrySet()) {
 			out += "        " + entrySetCustomString(each) + ",\n";
 		}
 		out += "    },\n";
