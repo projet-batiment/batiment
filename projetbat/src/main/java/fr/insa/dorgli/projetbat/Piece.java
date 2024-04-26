@@ -4,17 +4,19 @@ import java.util.ArrayList;
 
 public class Piece implements ToString, ToStringShort {
 	private String nom;
-	private ArrayList<Mur> murs;
+	private String description;
 	private ArrayList<Point> points;
+	private ArrayList<Mur> murs;
 	private PlafondSol plafond;
 	private PlafondSol sol;
 
-	public Piece(ArrayList<Point> points, ArrayList<Mur> murs, PlafondSol plafond, PlafondSol sol, String nom) throws IllegalArgumentException {
+	public Piece(String nom, String description, ArrayList<Point> points, ArrayList<Mur> murs, PlafondSol plafond, PlafondSol sol) {
+		this.nom = nom;
+		this.description = description;
 		this.points = points;
 		this.murs = murs;
 		this.plafond = plafond;
 		this.sol = sol;
-		this.nom = nom;
 	}
 
 	public String getNom() {
@@ -23,6 +25,14 @@ public class Piece implements ToString, ToStringShort {
 
 	public void setNom(String nom) {
 		this.nom = nom;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	public ArrayList<Mur> getMurs() {
@@ -81,11 +91,12 @@ public class Piece implements ToString, ToStringShort {
 		mursOut += "]";
 
 		return "Piece {\n"
+				+ pfx + "nom: '" + nom + "',\n"
+				+ pfx + "description: '" + description + "',\n"
 				+ pfx + "points: " + pointsOut + ",\n"
 				+ pfx + "murs: " + mursOut + ",\n"
 				+ pfx + "plafond: " + plafond.toString(depth + 1) + ",\n"
 				+ pfx + "sol: " + sol.toString(depth + 1) + ",\n"
-				+ pfx + "nom: " + nom + ",\n"
 				+ "}";
 	}
 
@@ -93,27 +104,29 @@ public class Piece implements ToString, ToStringShort {
 		// TODO -> toStringShort -> afficher l'ID
 		return "( #" + nom + " )";
 	}
-	
- public double aire(){
-     double out=0;
-     for(int i=0; i < points.size(); i++){
-        Point current = points[i];
-        Point next = points[(i+1) % points.size()];
-        out += current.getX() * next.getY() - current.getY() * next.getX();
-     } 
-	 return 0.5*Math.abs(out);
- }
-	
- public double calculerPrix(){
-      double prix = 0;
-      prix += aire()*(this.plafond.revetements.prixunitaire);
-      prix =prix-(this.plafond.ouvertures.prixOuverture);
-      prix += aire()*(this.sol.revetements.prixunitaire);
-      prix =prix-(this.sol.ouvertures.prixOuverture);
-	
-	for (Mur mur: murs) {
-		prix += mur.calculerPrix();
+
+	public double aire() {
+		double out = 0;
+		/// TODO!!! implement java.awt.Area -> interset the revetements' surfaces with the ouvertures' surfaces
+		for (int i = 0; i < points.size(); i++) {
+			Point current = points.get(i);
+			Point next = points.get((i + 1) % points.size());
+			out += current.getX() * next.getY() - current.getY() * next.getX();
+		}
+		return 0.5 * Math.abs(out);
 	}
-	return prix;
- }
+
+	public double calculerPrix() {
+		double prix = 0;
+		double airePiece = aire();
+
+		// for (Mur eachMur: murs) {
+		// 	prix += eachMur.calculerPrix();
+		// }
+
+		prix += plafond.calculerPrix(airePiece);
+		prix += sol.calculerPrix(airePiece);
+
+		return prix;
+	}
 }

@@ -42,6 +42,6 @@ public class OuvertureNiveaux {
 
 	public String toStringShort() {
 		// TODO -> toStringShort -> afficher l'ID
-		return "( #" + "TODO" + ")";
+		return "( #" + "TODO" + " )";
 	}
 }

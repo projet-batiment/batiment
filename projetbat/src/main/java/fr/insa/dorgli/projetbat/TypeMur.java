@@ -46,11 +46,14 @@ public class TypeMur implements ToStringShort {
 	}
 
 	public String toString() {
-		return "TypeMur { epaisseur: " + epaisseur + ", prixUnitaire: " + prixUnitaire + ", nom: " + nom + " }";
+		return "TypeMur { nom: '" + nom + "'"
+		    + ", description: '" + description + "'"
+		    + ", epaisseur: " + epaisseur + " }"
+		    + ", prixUnitaire: " + prixUnitaire;
 	}
 
 	public String toStringShort() {
 		// TODO -> toStringShort -> afficher l'ID
-		return "( #" + "TODO" + ")";
+		return "( #" + "TODO" + " )";
 	}
 }

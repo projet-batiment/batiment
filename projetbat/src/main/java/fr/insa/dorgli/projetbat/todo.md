@@ -1,21 +1,65 @@
 # TODOS
 
-*(regarder les "TODO" dans les différents fichiers)*
+<span style="color: red; text-decoration: underline; font-style: italic; font-weight: bold">TOUJOURS se référer au <a href="https://github.com/projet-batiment/batiment/blob/master/projetbat/src/main/java/fr/insa/dorgli/projetbat/todo.md">fichier TODO de la branche MASTER</a></span>
 
-#### Notes
+*(regarder aussi les "TODO" dans les différents fichiers)*
 
-* La classe Test est un programme "principal" pour faire des tests avec les classes et compagnie, sans toucher au reste du programme
-* La classe Deserialize permet de créer une hiérarchie d'objets via une interface interactive très rustique
-  A terme, il faudrait séparer la partie interactive d'une future partie automatique (sur des fichiers de sauvegarde)
+## Sommaire des trucs à faire
 
-## Urgents
+À faire en premier(s) :
 
-- [ ] Normaliser les constructeurs qui se ressemblent
-  Typiquement, pour certaines classes, "nom" arrive en dernier argument tandis qu'il est premier pour d'autres classes...
+* Finioler l'OOP (manipuler les objets et le IDs)
+* Devis
+* Sauvegarde (serde)
+* GUI (interface graphique)
+
+Secondaire :
+
+* Géométrie, aires, intersections d'ouvertures et de revêtements
 
 ## Importants
 
 Dans l'ordre :
+
+- [x] OOP: Lister les objets et faire des IDs
+  - [x] Faire une liste de tous les objets par ID et les regrouper par type dans des map (id -> objet)
+  - [ ] Faire des méthodes permettant de manipuler les objets à partir d'ID / retrouver l'ID d'un objet
+  - [ ] Afficher l'ID de l'objet en question dans toStringShort, sans avoir à le stocker dans l'objet en question
+
+- [ ] Calculer un devis
+  - [ ] Calculer le prix de chaque sous-composant de manière récursive
+    - [ ] (Interface *CalculerPrix* ? *Aire* ?)
+    - Est-ce que le devis mérite une classe, pour avoir plusieurs devis en parallèle ?
+    - [ ] Sauvegarder / expotrer un devis
+      - [ ] Sous forme de texte
+      - [ ] Mis joliment en forme (si vraiment vraiment le temps ?)
+
+- [ ] Sauvegardes dans un fichier
+  - [ ] Classe à part pour dé/serialiser ? ou chaque classe le fait elle-même ?
+    en cours...
+  - [ ] Sauvegarder une session
+  - [x] Charger une session
+  - [x] Choisir un dossier de sauvegarde
+  - [x] ~~tar ? zip ? dossier ?? fichier unique ????~~
+    => pour l'instant la sauvegarde se fait dans une sorte de CVS boosté maison en `.batm`
+
+- [ ] Interface graphique (GUI)
+  - [ ] Afficher une fenêtre
+  - [ ] Dessiner bêtement les objets
+  - [ ] Ajouter un volet d'un côté ou de l'aautre pour éditer à la main les propriétés des objets
+  - [ ] Rendre les objets cliquables
+
+## Secondaires
+
+- [ ] Géométrie plus permissive
+  - [ ] Passer d'un système maison à des objets de `java.awt`, avec des `Area` et des `Point` en particulier
+  - [ ] Rendre utilisable des formes polygonales plus que rectangulaires
+  - [ ] Gérer les intersections de revêtements et d'ouvertures
+
+## Passés
+
+- [x] Normaliser les constructeurs qui se ressemblent
+  Typiquement, pour certaines classes, "nom" arrive en dernier argument tandis qu'il est premier pour d'autres classes...
 
 - [x] Faire les classes de base
     => Terminé 🥳
@@ -23,28 +67,12 @@ Dans l'ordre :
   - [x] Piece, Sol, Plafond, RevetementSolPlafond, OuvertureNiveaux, TypeOuvertureNiveaux
   - [x] ~~EtageAppart (à garder ou supprimer ??)~~, Niveau, Appart
   - [x] Batiment
-- [ ] Faire une classe principale / Main / App et une fonction principale, mais en gardant quand même Test
-- [ ] Lister les objets et faire des IDs
-  - [ ] Faire une liste de tous les objets par ID et les regroupper par type dans des map (id -> objet)
-  - [ ] Faire des méthodes permettant de manipuler les objets à partir d'ID / retrouver l'ID d'un objet
-  - [ ] Afficher l'ID de l'objet en question dans toStringShort, sans avoir à le stocker dans l'objet en question
-- [ ] Faire une *mini* interface interactive (TUI) pour manipuler de manière basique la hiérarchie des objets du batiment
-  - *(en cours)*
-- [ ] Calculer un devis
-  - [ ] Calculer le prix de chaque sous-composant de manière récursive
-    - [ ] Interface *Couts* ?
-  - Est-ce que le devis mérite une classe, pour avoir plusieurs devis en parallèle ?
-- [ ] Sauvegardes dans un fichier
-  - [ ] Classe à part pour dé/serialiser ? ou chaque classe le fait elle-même ?
-  - [ ] Sauvegarder une session
-  - [ ] Charger une session
-  - [ ] Choisir un dossier de sauvegarde
-  - [ ] tar ? zip ? dossier ?? fichier unique ????
+- [x] Faire une classe principale / Main / App et une fonction principale, ~~mais en gardant quand même Test~~
+- [x] ~~Faire une *mini* interface interactive (TUI) pour manipuler de manière basique la hiérarchie des objets du batiment~~
+  - ~~*(en cours)*~~
+  => interface TUI abandonnée car sauvegarde (serde)
 
-## Secondaires
-
-- [ ] Faire une classe `Config` 😎
-- [ ] Rendre le logging optionnel / mode verbeux
-- [ ] Sauvegarder / expotrer un devis
-  - [ ] Sous forme de texte
-  - [ ] Mis joliment en forme (?)
+- [x] Faire une classe `Config` 😎
+  => passe aussi par la classe `Objects`
+- [x] Rendre le logging optionnel / mode verbeux
+  => voir `TUI` et la couleur

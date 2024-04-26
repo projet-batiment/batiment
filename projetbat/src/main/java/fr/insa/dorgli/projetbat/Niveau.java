@@ -3,12 +3,34 @@ package fr.insa.dorgli.projetbat;
 import java.util.ArrayList;
 
 public class Niveau implements ToString, ToStringShort {
+	private String nom;
+	private String description;
 	private double hauteur;
 	private ArrayList<Piece> pieces;
+	private ArrayList<Appart> apparts;
 
-	public Niveau(double hauteur, ArrayList<Piece> pieces) {
+	public Niveau(String nom, String description, double hauteur, ArrayList<Piece> pieces, ArrayList<Appart> apparts) {
+		this.nom = nom;
+		this.description = description;
 		this.hauteur = hauteur;
 		this.pieces = pieces;
+		this.apparts = apparts;
+	}
+
+	public String getNom() {
+		return nom;
+	}
+
+	public void setNom(String nom) {
+		this.nom = nom;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	public double getHauteur() {
@@ -25,6 +47,14 @@ public class Niveau implements ToString, ToStringShort {
 
 	public void setPieces(ArrayList<Piece> pieces) {
 		this.pieces = pieces;
+	}
+
+	public ArrayList<Appart> getApparts() {
+		return apparts;
+	}
+
+	public void setApparts(ArrayList<Appart> apparts) {
+		this.apparts = apparts;
 	}
 
 	public String toString() {

@@ -6,9 +6,9 @@ public class PlafondSol implements ToString, ToStringShort {
 	private ArrayList<RevetementPlafondSol> revetements;
 	private ArrayList<OuvertureNiveaux> ouvertures;
 
-	public PlafondSol() throws IllegalArgumentException {
-		this.revetements = new ArrayList<RevetementPlafondSol>();
-		this.ouvertures = new ArrayList<OuvertureNiveaux>();
+	public PlafondSol(ArrayList<RevetementPlafondSol> revetements, ArrayList<OuvertureNiveaux> ouvertures) {
+		this.revetements = revetements;
+		this.ouvertures = ouvertures;
 	}
 
 	public ArrayList<RevetementPlafondSol> getRevetements() {
@@ -25,6 +25,23 @@ public class PlafondSol implements ToString, ToStringShort {
 
 	public void setOuvertures(ArrayList<OuvertureNiveaux> ouvertures) {
 		this.ouvertures = ouvertures;
+	}
+
+	public double calculerPrix(double airePiece) {
+		double prix = 0;
+
+		/// TODO!!! implement java.awt.Area -> interset the revetements' surfaces with the ouvertures' surfaces
+		for (RevetementPlafondSol each: revetements) {
+			prix += each.calculerPrix(airePiece);
+		}
+		for (RevetementPlafondSol each: revetements) {
+			prix += each.calculerPrix(airePiece);
+		}
+		for (OuvertureNiveaux each: ouvertures) {
+			prix += each.getTypeOuverture().getPrixOuverture();
+		}
+
+		return prix;
 	}
 
 	public String toString() {

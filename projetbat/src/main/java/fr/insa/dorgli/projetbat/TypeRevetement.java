@@ -36,12 +36,13 @@ public class TypeRevetement implements ToStringShort {
 	}
 
 	public String toString() {
-		return "TypeRevetement { prixUnitaire: " + prixUnitaire + ", nom: '" + nom + "', description: '" + description
-				+ "' }";
+		return "TypeRevetement { nom: '" + nom + "'"
+		    + ", description: '" + description + "'"
+		    + ", prixUnitaire: " + prixUnitaire + " }";
 	}
 
 	public String toStringShort() {
 		// TODO -> toStringShort -> afficher l'ID
-		return "( #" + "TODO" + ")";
+		return "( #" + "TODO" + " )";
 	}
 }

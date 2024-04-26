@@ -3,24 +3,29 @@ package fr.insa.dorgli.projetbat;
 public class TypeOuvertureNiveau implements ToStringShort {
 	// j'ai pris le parti d'utiliser "largeur" et "hauteur" pour mieux distinguer
 	//   les deux directions (largeur et longueurs peuvent prêter à confusion)
-	public double prixOuverture;
-	private double largeur;
-	private double hauteur;
+	// Si on ne change plus les TypeOuvertureNiveau ni les TypeOuvertureMur,
+	//   alors on pourrait même les rassembler en une seule classe puisqu'ils ont les même propriétés
+	/// TODO!!! (utile ici ?) implement java.awt.Area -> interset the revetements' surfaces with the ouvertures' surfaces
 	private String nom;
+	private String description;
+	private double hauteur;
+	private double largeur;
+	public double prixOuverture;
 
-	public TypeOuvertureNiveau(double prixOuverture, double largeur, double hauteur, String nom) {
-		this.prixOuverture = prixOuverture;
-		this.largeur = largeur;
-		this.hauteur = hauteur;
+	public TypeOuvertureNiveau(String nom, String description, double hauteur, double largeur, double prixOuverture) {
 		this.nom = nom;
+		this.description = description;
+		this.hauteur = hauteur;
+		this.largeur = largeur;
+		this.prixOuverture = prixOuverture;
 	}
 
 	public double getPrixOuverture() {
-		return prixUnitaire;
+		return prixOuverture;
 	}
 
 	public void setPrixOuverture(double prixOuverture) {
-		this.prixUnitaire = prixUnitaire;
+		this.prixOuverture = prixOuverture;
 	}
 
 	public double getLargeur() {
@@ -47,12 +52,24 @@ public class TypeOuvertureNiveau implements ToStringShort {
 		this.nom = nom;
 	}
 
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
 	public String toString() {
-		return "TypeOuvertureNiveau { prixUnitaire: " + prixOuverture + ", largeur: " + largeur + ", hauteur: " + hauteur + ", nom: " + nom + " }";
+		return "TypeOuvertureNiveau { nom: '" + nom + "'"
+		    + ", description: '" + description + "'"
+		    + ", hauteur: " + hauteur
+		    + ", largeur: " + largeur
+		    + ", prixOuverture: " + prixOuverture + " }";
 	}
 
 	public String toStringShort() {
 		// TODO -> toStringShort -> afficher l'ID
-		return "( #" + "TODO" + ")";
+		return "( #" + "TODO" + " )";
 	}
 }

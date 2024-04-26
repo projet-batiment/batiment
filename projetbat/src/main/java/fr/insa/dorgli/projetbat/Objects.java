@@ -22,100 +22,111 @@ public class Objects {
 	HashMap<Integer, TypeOuvertureMur> typesOuverturesMur = new HashMap<>();
 	HashMap<Integer, TypeOuvertureNiveau> typesOuverturesNiveau = new HashMap<>();
 	HashMap<Integer, TypeRevetement> typesRevetement = new HashMap<>();
+	HashMap<Integer, TypeAppart> typesAppart = new HashMap<>();
+
+	private String entrySetCustomString(Map.Entry entry) {
+		return TUI.green("" + entry.getKey()) + ": " + entry.getValue();
+	}
 
 	@Override
 	public String toString() {
 		String out = "Objects {\n";
 
 		// éléments principaux
-		out += "    niveaux {\n";
+		out += "    " + TUI.blue("niveaux") + " " + niveaux.size() + " {\n";
 		for (Map.Entry each: niveaux.entrySet()) {
-			out += "        " + each.toString() + ",\n";
+			out += "        " + entrySetCustomString(each) + ",\n";
 		}
 		out += "    },\n";
 
-		out += "    apparts {\n";
+		out += "    " + TUI.blue("apparts") + " " + apparts.size() + " {\n";
 		for (Map.Entry each: apparts.entrySet()) {
-			out += "        " + each.toString() + ",\n";
+			out += "        " + entrySetCustomString(each) + ",\n";
 		}
 		out += "    },\n";
 		
-		out += "    pieces {\n";
+		out += "    " + TUI.blue("pieces") + " " + pieces.size() + " {\n";
 		for (Map.Entry each: pieces.entrySet()) {
-			out += "        " + each.toString() + ",\n";
+			out += "        " + entrySetCustomString(each) + ",\n";
 		}
 		out += "    },\n";
 		
-		out += "    murs {\n";
+		out += "    " + TUI.blue("murs") + " " + murs.size() + " {\n";
 		for (Map.Entry each: murs.entrySet()) {
-			out += "        " + each.toString() + ",\n";
+			out += "        " + entrySetCustomString(each) + ",\n";
 		}
 		out += "    },\n";
 		
-		out += "    plafondsSols {\n";
+		out += "    " + TUI.blue("plafondsSols") + " " + plafondsSols.size() + " {\n";
 		for (Map.Entry each: plafondsSols.entrySet()) {
-			out += "        " + each.toString() + ",\n";
+			out += "        " + entrySetCustomString(each) + ",\n";
 		}
 		out += "    },\n";
 		
-		out += "    points {\n";
+		out += "    " + TUI.blue("points") + " " + points.size() + " {\n";
 		for (Map.Entry each: points.entrySet()) {
-			out += "        " + each.toString() + ",\n";
+			out += "        " + entrySetCustomString(each) + ",\n";
 		}
 		out += "    },\n";
 		out += "\n";
 
 		// ouvertures
-		out += "    ouverturesMur {\n";
+		out += "    " + TUI.blue("ouverturesMur") + " " + ouverturesMur.size() + " {\n";
 		for (Map.Entry each: ouverturesMur.entrySet()) {
-			out += "        " + each.toString() + ",\n";
+			out += "        " + entrySetCustomString(each) + ",\n";
 		}
 		out += "    },\n";
 		
-		out += "    ouverturesNiveaux {\n";
+		out += "    " + TUI.blue("ouverturesNiveaux") + " " + ouverturesNiveaux.size() + " {\n";
 		for (Map.Entry each: ouverturesNiveaux.entrySet()) {
-			out += "        " + each.toString() + ",\n";
+			out += "        " + entrySetCustomString(each) + ",\n";
 		}
 		out += "    },\n";
 		out += "\n";
 
 		// revetements
-		out += "    revetementsMur {\n";
+		out += "    " + TUI.blue("revetementsMur") + " " + revetementsMur.size() + " {\n";
 		for (Map.Entry each: revetementsMur.entrySet()) {
-			out += "        " + each.toString() + ",\n";
+			out += "        " + entrySetCustomString(each) + ",\n";
 		}
 		out += "    },\n";
 
-		out += "    revetementsPlafondSol {\n";
+		out += "    " + TUI.blue("revetementsPlafondSol") + " " + revetementsPlafondSol.size() + " {\n";
 		for (Map.Entry each: revetementsPlafondSol.entrySet()) {
-			out += "        " + each.toString() + ",\n";
+			out += "        " + entrySetCustomString(each) + ",\n";
 		}
 		out += "    },\n";
 		out += "\n";
 		
 		// types
-		out += "    typesMur {\n";
+		out += "    " + TUI.blue("typesMur") + " " + typesMur.size() + " {\n";
 		for (Map.Entry each: typesMur.entrySet()) {
-			out += "        " + each.toString() + ",\n";
+			out += "        " + entrySetCustomString(each) + ",\n";
 		}
 		out += "    },\n";
 
-		out += "    typesOuverturesMurs {\n";
+		out += "    " + TUI.blue("typesOuverturesMur") + " " + typesOuverturesMur.size() + " {\n";
 		for (Map.Entry each: typesOuverturesMur.entrySet()) {
-			out += "        " + each.toString() + ",\n";
+			out += "        " + entrySetCustomString(each) + ",\n";
 		}
 		out += "    },\n";
 		
-		out += "    typesOuverturesNiveaux {\n";
-		for (Map.Entry each: ouverturesNiveaux.entrySet()) {
-			out += "        " + each.toString() + ",\n";
+		out += "    " + TUI.blue("typesOuverturesNiveau") + " " + typesOuverturesNiveau.size() + " {\n";
+		for (Map.Entry each: typesOuverturesNiveau.entrySet()) {
+			out += "        " + entrySetCustomString(each) + ",\n";
 		}
 		out += "    },\n";
 		out += "\n";
 
-		out += "    TypesRevetements {\n";
-		for (Map.Entry each: revetementsMur.entrySet()) {
-			out += "        " + each.toString() + ",\n";
+		out += "    " + TUI.blue("typesRevetement") + " " + typesRevetement.size() + " {\n";
+		for (Map.Entry each: typesRevetement.entrySet()) {
+			out += "        " + entrySetCustomString(each) + ",\n";
+		}
+		out += "    },\n";
+
+		out += "    " + TUI.blue("typesAppart") + " " + typesAppart.size() + " {\n";
+		for (Map.Entry each: typesAppart.entrySet()) {
+			out += "        " + entrySetCustomString(each) + ",\n";
 		}
 		out += "    },\n";
 
