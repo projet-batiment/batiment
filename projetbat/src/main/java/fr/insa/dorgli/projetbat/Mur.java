@@ -10,8 +10,6 @@ public class Mur implements ToString, ToStringShort {
 	private ArrayList<RevetementMur> revetements1;
 	private ArrayList<RevetementMur> revetements2;
 	private ArrayList<OuvertureMur> ouvertures;
-	private double area;
-	private double prixMur;
 
 	public Mur(Point pointDebut, Point pointFin, double hauteur, TypeMur typeMur, ArrayList<RevetementMur> revetements1,
 			ArrayList<RevetementMur> revetements2, ArrayList<OuvertureMur> ouvertures) throws IllegalArgumentException {
@@ -28,15 +26,6 @@ public class Mur implements ToString, ToStringShort {
 		this.revetements2 = revetements2;
 		this.ouvertures = ouvertures;
 	}
-        public void set area ( ){
-		dx = (this.pointDebut.getX() - this.pointFin.getX() ;
-		dy = (this.pointFin.getY() - this.pointDebut.getY();
-		dist = Math.sqrt(Math.pow (dx,2)+ Math.pow(dy,2));
-		
-		aireMur = (Math.pow( dist,2) * Math.pow(this.hauteur,2));
-		return aireMur;	
-	
-	}	
 		
 	public Point getPointDebut() {
 		return this.pointDebut;
@@ -120,17 +109,32 @@ public class Mur implements ToString, ToStringShort {
 				+ "}";
 	}
 
-	public double mur.calculerPrix(){
-		double prixMur == 0;
-		prixMur = typeMur.prixunitaire * surface;
-		for (RevetementMur r : this.revetements1){
-			prixMur += r.calculerPrix();
+	// fonction temporaire si l'on passe un jour aux outils géométriques de java.awt...
+	// utile pour calculer les aires du mur et de ses revetments
+	private double longueur() {
+		double dx = pointDebut.getX() - pointFin.getX();
+		double dy = pointFin.getY() - pointDebut.getY();
+		return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+	}
+
+        public double aire() {
+		return longueur() * this.hauteur;
+	}
+
+	public double calculerPrix() {
+		double prixMur = 0;
+		prixMur = typeMur.getPrixUnitaire() * aire();
+
+		double longueur = longueur();
+		/// TODO!!! implement java.awt.Area -> interset the revetements' surfaces with the ouvertures' surfaces
+		for (RevetementMur r: this.revetements1){
+			prixMur += r.calculerPrix(longueur(), hauteur);
 		}
-		for (RevetementMur r : this.revetements2){
-			prixMur += r.calculerPrix();
+		for (RevetementMur r: this.revetements2){
+			prixMur += r.calculerPrix(longueur(), hauteur);
 		}
-		for (OuvertureMur o : this.ouvertures){
-			prixMur += o.prixUnitaire;
+		for (OuvertureMur o: this.ouvertures){
+			prixMur += o.getTypeOuverture().getPrixOuverture();
 		}
 		return prixMur;
 	}

@@ -23,25 +23,6 @@ public class RevetementMur implements ToStringShort {
 		this.typeRevetement = typeRevetement;
 	}
 
-	public double calculerSurface(double largeurMur, double hauteurMur) {
-		double largeur;
-		double hauteur;
-		
-		if ((pos1L == 0 ) && (pos2L == 0 )){
-			largeur = largeurMur;
-		} else {
-			largeur = this.pos1L - this.pos2L;
-		}
-		if ((pos1H == 0) && (pos2H == 0)) {
-			hauteur = hauteurMur;
-		} else {
-			hauteur = this.pos1H - this.pos2H;
-		}
-
-		return largeur * hauteur;
-	}
-			
-
 	public int getPos1L() {
 		return pos1L;
 	}
@@ -72,6 +53,30 @@ public class RevetementMur implements ToStringShort {
 
 	public void setPos2H(int pos2H) {
 		this.pos2H = pos2H;
+	}
+
+	public double aire(double largeurMur, double hauteurMur) {
+		double largeur;
+		double hauteur;
+
+		/// TODO!!! implement java.awt.Area -> intersect the revetements' surfaces with the ouvertures' surfaces
+		/// TODO: si un jour on implémente les PlafondSol polygonaux plus que rectangulaires...
+		if ((pos1L == 0 ) && (pos2L == 0 )){
+			largeur = largeurMur;
+		} else {
+			largeur = this.pos1L - this.pos2L;
+		}
+		if ((pos1H == 0) && (pos2H == 0)) {
+			hauteur = hauteurMur;
+		} else {
+			hauteur = this.pos1H - this.pos2H;
+		}
+
+		return largeur * hauteur;
+	}
+
+	public double calculerPrix(double largeurMur, double hauteurMur) {
+		return typeRevetement.getPrixUnitaire() * aire(largeurMur, hauteurMur);
 	}
 
 	public String toString() {
