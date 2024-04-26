@@ -26,13 +26,13 @@ public class Deserialize {
 	// - OuvertureMur
 	// - Mur
 	// - TypesOuvertureNiveau
+	// - RevetementsPlafondSol
+	// - OuverturesNiveaux
+	// - 1_PlafondSol
+	// - PlafondSols
+	// - Pieces
 	// 
 	// Reste à faire :
-	//  revetementsPlafondSol
-	//  ouverturesNiveaux
-	//  plafondsSols
-	//
-	//  pieces
 	//
 	//  niveaux
 	//  apparts
@@ -140,8 +140,12 @@ public class Deserialize {
 							case "TypeOuvertureMur" -> 	newConfig.objects.typesOuverturesMur = typeOuvertureMursFromString();
 							case "TypeOuvertureNiveau" -> 	newConfig.objects.typesOuverturesNiveau = typeOuvertureNiveauxFromString();
 							case "TypeMur" -> 		newConfig.objects.typesMur = typeMursFromString();
+							case "TypeAppart" -> 		newConfig.objects.typesAppart = typeAppartsFromString();
 							case "Mur" -> 			newConfig.objects.murs = mursFromString(newConfig.objects);
-							case "PlafondSol" -> 		newConfig.objects.plafondsSols = plafondSolsFromString(newConfig.objects);
+							case "Piece" ->			newConfig.objects.pieces = piecesFromString(newConfig.objects);
+							case "Appart" ->		newConfig.objects.apparts = appartsFromString(newConfig.objects);
+							case "Niveau" ->		newConfig.objects.niveaux = niveauxFromString(newConfig.objects);
+							//case "PlafondSol" -> 		newConfig.objects.plafondsSols = plafondSolsFromString(newConfig.objects);
 							default -> error("section d'objects inconnue: '" + objectsKind + "'");
 						}
 
@@ -249,18 +253,18 @@ public class Deserialize {
 
 				if (points.keySet().contains(id)) {
 					errorIdAgain(id);
-				} else {
-					try {
-						double x = Double.parseDouble(splitted[1]);
-						double y = Double.parseDouble(splitted[2]);
-						int niveauId = Integer.parseInt(splitted[3]);
+				}
 
-						Point object = new Point(x, y, niveauId);
-						points.put(id, object);
-						debug("read " + object);
-					} catch (NumberFormatException e) {
-						errorParse(line, e.getMessage());
-					}
+				try {
+					double x = Double.parseDouble(splitted[1]);
+					double y = Double.parseDouble(splitted[2]);
+					int niveauId = Integer.parseInt(splitted[3]);
+
+					Point object = new Point(x, y, niveauId);
+					points.put(id, object);
+					debug("read " + object);
+				} catch (NumberFormatException e) {
+					errorParse(line, e.getMessage());
 				}
 			} else {
 				errorSyntax(line);
@@ -293,16 +297,16 @@ public class Deserialize {
 
 				if (typeRevetements.keySet().contains(id)) {
 					errorIdAgain(id);
-				} else {
-					try {
-						double prixUnitaire = Double.parseDouble(splitted[3]);
+				}
 
-						TypeRevetement object = new TypeRevetement(unescapeString(splitted[1]), unescapeString(splitted[2]), prixUnitaire);
-						typeRevetements.put(id, object);
-						debug("read " + object);
-					} catch (NumberFormatException e) {
-						errorParse(line, e.getMessage());
-					}
+				try {
+					double prixUnitaire = Double.parseDouble(splitted[3]);
+
+					TypeRevetement object = new TypeRevetement(unescapeString(splitted[1]), unescapeString(splitted[2]), prixUnitaire);
+					typeRevetements.put(id, object);
+					debug("read " + object);
+				} catch (NumberFormatException e) {
+					errorParse(line, e.getMessage());
 				}
 			} else {
 				errorSyntax(line);
@@ -335,18 +339,18 @@ public class Deserialize {
 
 				if (typeOuvertureMurs.keySet().contains(id)) {
 					errorIdAgain(id);
-				} else {
-					try {
-						double hauteur = Double.parseDouble(splitted[3]);
-						double largeur = Double.parseDouble(splitted[4]);
-						double prixUnitaire = Double.parseDouble(splitted[5]);
+				}
 
-						TypeOuvertureMur object = new TypeOuvertureMur(unescapeString(splitted[1]), unescapeString(splitted[2]), hauteur, largeur, prixUnitaire);
-						typeOuvertureMurs.put(id, object);
-						debug("read " + object);
-					} catch (NumberFormatException e) {
-						errorParse(line, e.getMessage());
-					}
+				try {
+					double hauteur = Double.parseDouble(splitted[3]);
+					double largeur = Double.parseDouble(splitted[4]);
+					double prixUnitaire = Double.parseDouble(splitted[5]);
+
+					TypeOuvertureMur object = new TypeOuvertureMur(unescapeString(splitted[1]), unescapeString(splitted[2]), hauteur, largeur, prixUnitaire);
+					typeOuvertureMurs.put(id, object);
+					debug("read " + object);
+				} catch (NumberFormatException e) {
+					errorParse(line, e.getMessage());
 				}
 			} else {
 				errorSyntax(line);
@@ -379,17 +383,17 @@ public class Deserialize {
 
 				if (typeMurs.keySet().contains(id)) {
 					errorIdAgain(id);
-				} else {
-					try {
-						double epaisseur = Double.parseDouble(splitted[3]);
-						double prixU = Double.parseDouble(splitted[4]);
+				}
 
-						TypeMur object = new TypeMur(unescapeString(splitted[1]), unescapeString(splitted[2]), epaisseur, prixU);
-						typeMurs.put(id, object);
-						debug("read " + object);
-					} catch (NumberFormatException e) {
-						errorParse(line, e.getMessage());
-					}
+				try {
+					double epaisseur = Double.parseDouble(splitted[3]);
+					double prixU = Double.parseDouble(splitted[4]);
+
+					TypeMur object = new TypeMur(unescapeString(splitted[1]), unescapeString(splitted[2]), epaisseur, prixU);
+					typeMurs.put(id, object);
+					debug("read " + object);
+				} catch (NumberFormatException e) {
+					errorParse(line, e.getMessage());
 				}
 			} else {
 				errorSyntax(line);
@@ -422,20 +426,20 @@ public class Deserialize {
 
 				if (revetementMurs.keySet().contains(id)) {
 					errorIdAgain(id);
-				} else {
-					try {
-						TypeRevetement tr = typeRevetements.get(Integer.parseInt(splitted[1]));
-						double p1l = Double.parseDouble(splitted[2]);
-						double p1h = Double.parseDouble(splitted[3]);
-						double p2l = Double.parseDouble(splitted[4]);
-						double p2h = Double.parseDouble(splitted[5]);
+				}
 
-						RevetementMur object = new RevetementMur(tr, p1l, p1h, p2l, p2h);
-						revetementMurs.put(id, object);
-						debug("read " + object);
-					} catch (NumberFormatException e) {
-						errorParse(line, e.getMessage());
-					}
+				try {
+					TypeRevetement tr = typeRevetements.get(Integer.parseInt(splitted[1]));
+					double p1l = Double.parseDouble(splitted[2]);
+					double p1h = Double.parseDouble(splitted[3]);
+					double p2l = Double.parseDouble(splitted[4]);
+					double p2h = Double.parseDouble(splitted[5]);
+
+					RevetementMur object = new RevetementMur(tr, p1l, p1h, p2l, p2h);
+					revetementMurs.put(id, object);
+					debug("read " + object);
+				} catch (NumberFormatException e) {
+					errorParse(line, e.getMessage());
 				}
 			} else {
 				errorSyntax(line);
@@ -468,18 +472,18 @@ public class Deserialize {
 
 				if (ouvertureMurs.keySet().contains(id)) {
 					errorIdAgain(id);
-				} else {
-					try {
-						TypeOuvertureMur tr = typeOuvertureMurs.get(Integer.parseInt(splitted[1]));
-						double p1l = Double.parseDouble(splitted[2]);
-						double p1h = Double.parseDouble(splitted[3]);
+				}
 
-						OuvertureMur object = new OuvertureMur(tr, p1l, p1h);
-						ouvertureMurs.put(id, object);
-						debug("read " + object);
-					} catch (NumberFormatException e) {
-						errorParse(line, e.getMessage());
-					}
+				try {
+					TypeOuvertureMur tr = typeOuvertureMurs.get(Integer.parseInt(splitted[1]));
+					double p1l = Double.parseDouble(splitted[2]);
+					double p1h = Double.parseDouble(splitted[3]);
+
+					OuvertureMur object = new OuvertureMur(tr, p1l, p1h);
+					ouvertureMurs.put(id, object);
+					debug("read " + object);
+				} catch (NumberFormatException e) {
+					errorParse(line, e.getMessage());
 				}
 			} else {
 				errorSyntax(line);
@@ -512,53 +516,53 @@ public class Deserialize {
 
 				if (murs.keySet().contains(id)) {
 					errorIdAgain(id);
-				} else {
-					try {
-						// lire les propriétés directes du mur
-						Point p1 = objects.points.get(Integer.parseInt(splitted[1]));
-						Point p2 = objects.points.get(Integer.parseInt(splitted[2]));
-						double hauteur = Double.parseDouble(splitted[3]);
-						TypeMur typeMur = objects.typesMur.get(Integer.parseInt(splitted[4]));
+				}
 
-						// lire les RevetementMur des 2 côtés et les OuvertureMur
-						HashMap<Integer, RevetementMur> r1 = new HashMap<>();
-						ArrayList<RevetementMur> r1_list = new ArrayList<>();
-						HashMap<Integer, RevetementMur> r2 = new HashMap<>();
-						ArrayList<RevetementMur> r2_list = new ArrayList<>();
-						HashMap<Integer, OuvertureMur> o = new HashMap<>();
-						ArrayList<OuvertureMur> o_list = new ArrayList<>();
-						config.tui.diveWhere("props");
-						for (
-							SmartReader.ReadResult propResult = sreader.readLine();
-							propResult.getState() == SmartReader.ReadState.LINE;
-							propResult = sreader.readLine()
-						) {
-							String propType = propResult.getText().replaceFirst("PROP:", "");
-							debug("reading mur prop '" + TUI.blue(propType) + "'");
-							switch (propType) {
-								case "RevetementMur:1" -> {
-									r1 = revetementMursFromString(objects.typesRevetement);
-									r1_list = manageHashMapToArrayList(r1, objects.revetementsMur);
-								}
-								case "RevetementMur:2" -> {
-									r2 = revetementMursFromString(objects.typesRevetement);
-									r2_list = manageHashMapToArrayList(r2, objects.revetementsMur);
-								}
-								case "OuvertureMur" -> {
-									o = ouvertureMursFromString(objects.typesOuverturesMur);
-									o_list = manageHashMapToArrayList(o, objects.ouverturesMur);
-								}
-								default -> error("propriété du mur inconnue: '" + propResult.getText() + "'");
+				try {
+					// lire les propriétés directes du mur
+					Point p1 = objects.points.get(Integer.parseInt(splitted[1]));
+					Point p2 = objects.points.get(Integer.parseInt(splitted[2]));
+					double hauteur = Double.parseDouble(splitted[3]);
+					TypeMur typeMur = objects.typesMur.get(Integer.parseInt(splitted[4]));
+
+					// lire les RevetementMur des 2 côtés et les OuvertureMur
+					HashMap<Integer, RevetementMur> r1 = new HashMap<>();
+					ArrayList<RevetementMur> r1_list = new ArrayList<>();
+					HashMap<Integer, RevetementMur> r2 = new HashMap<>();
+					ArrayList<RevetementMur> r2_list = new ArrayList<>();
+					HashMap<Integer, OuvertureMur> o = new HashMap<>();
+					ArrayList<OuvertureMur> o_list = new ArrayList<>();
+					config.tui.diveWhere("props");
+					for (
+						SmartReader.ReadResult propResult = sreader.readLine();
+						propResult.getState() == SmartReader.ReadState.LINE;
+						propResult = sreader.readLine()
+					) {
+						String propType = propResult.getText().replaceFirst("PROP:", "");
+						debug("reading mur prop '" + TUI.blue(propType) + "'");
+						switch (propType) {
+							case "RevetementMur:1" -> {
+								r1 = revetementMursFromString(objects.typesRevetement);
+								r1_list = manageHashMapToArrayList(r1, objects.revetementsMur);
 							}
+							case "RevetementMur:2" -> {
+								r2 = revetementMursFromString(objects.typesRevetement);
+								r2_list = manageHashMapToArrayList(r2, objects.revetementsMur);
+							}
+							case "OuvertureMur" -> {
+								o = ouvertureMursFromString(objects.typesOuverturesMur);
+								o_list = manageHashMapToArrayList(o, objects.ouverturesMur);
+							}
+							default -> error("propriété du mur inconnue: '" + propResult.getText() + "'");
 						}
-						config.tui.popWhere();
-
-						Mur object = new Mur(p1, p2, hauteur, typeMur, r1_list, r2_list, o_list);
-						murs.put(id, object);
-						debug("read " + object);
-					} catch (NumberFormatException e) {
-						errorParse(line, e.getMessage());
 					}
+					config.tui.popWhere();
+
+					Mur object = new Mur(p1, p2, hauteur, typeMur, r1_list, r2_list, o_list);
+					murs.put(id, object);
+					debug("read " + object);
+				} catch (NumberFormatException e) {
+					errorParse(line, e.getMessage());
 				}
 			} else {
 				errorSyntax(line);
@@ -591,18 +595,18 @@ public class Deserialize {
 
 				if (typeOuvertureNiveaux.keySet().contains(id)) {
 					errorIdAgain(id);
-				} else {
-					try {
-						double hauteur = Double.parseDouble(splitted[3]);
-						double largeur = Double.parseDouble(splitted[4]);
-						double prixUnitaire = Double.parseDouble(splitted[5]);
+				}
 
-						TypeOuvertureNiveau object = new TypeOuvertureNiveau(unescapeString(splitted[1]), unescapeString(splitted[2]), hauteur, largeur, prixUnitaire);
-						typeOuvertureNiveaux.put(id, object);
-						debug("read " + object);
-					} catch (NumberFormatException e) {
-						errorParse(line, e.getMessage());
-					}
+				try {
+					double hauteur = Double.parseDouble(splitted[3]);
+					double largeur = Double.parseDouble(splitted[4]);
+					double prixUnitaire = Double.parseDouble(splitted[5]);
+
+					TypeOuvertureNiveau object = new TypeOuvertureNiveau(unescapeString(splitted[1]), unescapeString(splitted[2]), hauteur, largeur, prixUnitaire);
+					typeOuvertureNiveaux.put(id, object);
+					debug("read " + object);
+				} catch (NumberFormatException e) {
+					errorParse(line, e.getMessage());
 				}
 			} else {
 				errorSyntax(line);
@@ -620,8 +624,8 @@ public class Deserialize {
 		config.tui.begin();
 		HashMap<Integer, RevetementPlafondSol> revetementPlafondSols = new HashMap<>();
 
-			final String regex = String.join(",", REGEX_INT, REGEX_INT, REGEX_INT, REGEX_INT, REGEX_INT, REGEX_INT);
-			debug("regex: '" + regex + "'");
+		final String regex = String.join(",", REGEX_INT, REGEX_INT, REGEX_DOUBLE, REGEX_DOUBLE, REGEX_DOUBLE, REGEX_DOUBLE);
+		debug("regex: '" + regex + "'");
 		for (
 			SmartReader.ReadResult result = sreader.readLine();
 			result.getState() == SmartReader.ReadState.LINE;
@@ -635,20 +639,20 @@ public class Deserialize {
 
 				if (revetementPlafondSols.keySet().contains(id)) {
 					errorIdAgain(id);
-				} else {
-					try {
-						TypeRevetement tr = typeRevetements.get(Integer.parseInt(splitted[1]));
-						int p1l = Integer.parseInt(splitted[2]);
-						int p1h = Integer.parseInt(splitted[3]);
-						int p2l = Integer.parseInt(splitted[4]);
-						int p2h = Integer.parseInt(splitted[5]);
+				}
 
-						RevetementPlafondSol object = new RevetementPlafondSol(tr, p1l, p1h, p2l, p2h);
-						revetementPlafondSols.put(id, object);
-						debug("read " + object);
-					} catch (NumberFormatException e) {
-						errorParse(line, e.getMessage());
-					}
+				try {
+					TypeRevetement tr = typeRevetements.get(Integer.parseInt(splitted[1]));
+					double p1l = Double.parseDouble(splitted[2]);
+					double p1h = Double.parseDouble(splitted[3]);
+					double p2l = Double.parseDouble(splitted[4]);
+					double p2h = Double.parseDouble(splitted[5]);
+
+					RevetementPlafondSol object = new RevetementPlafondSol(tr, p1l, p1h, p2l, p2h);
+					revetementPlafondSols.put(id, object);
+					debug("read " + object);
+				} catch (NumberFormatException e) {
+					errorParse(line, e.getMessage());
 				}
 			} else {
 				errorSyntax(line);
@@ -660,7 +664,7 @@ public class Deserialize {
 		return revetementPlafondSols;
 	}
 
-	/// OuvertureNiveau
+	/// OuvertureNiveaux
 	private HashMap<Integer, OuvertureNiveaux> ouvertureNiveauxFromString(HashMap<Integer, TypeOuvertureNiveau> typeOuvertureNiveaux) throws IOException {
 		config.tui.diveWhere("OuvertureNiveaux");
 		config.tui.begin();
@@ -681,18 +685,18 @@ public class Deserialize {
 
 				if (ouvertureNiveaux.keySet().contains(id)) {
 					errorIdAgain(id);
-				} else {
-					try {
-						TypeOuvertureNiveau tr = typeOuvertureNiveaux.get(Integer.parseInt(splitted[1]));
-						int p1l = Integer.parseInt(splitted[2]);
-						int p1h = Integer.parseInt(splitted[3]);
+				}
 
-						OuvertureNiveaux object = new OuvertureNiveaux(tr, p1l, p1h);
-						ouvertureNiveaux.put(id, object);
-						debug("read " + object);
-					} catch (NumberFormatException e) {
-						errorParse(line, e.getMessage());
-					}
+				try {
+					TypeOuvertureNiveau tr = typeOuvertureNiveaux.get(Integer.parseInt(splitted[1]));
+					int p1l = Integer.parseInt(splitted[2]);
+					int p1h = Integer.parseInt(splitted[3]);
+
+					OuvertureNiveaux object = new OuvertureNiveaux(tr, p1l, p1h);
+					ouvertureNiveaux.put(id, object);
+					debug("read " + object);
+				} catch (NumberFormatException e) {
+					errorParse(line, e.getMessage());
 				}
 			} else {
 				errorSyntax(line);
@@ -713,45 +717,45 @@ public class Deserialize {
 		if (line.matches(regex)) {
 			String[] splitted = line.split(",");
 
-			int id = Integer.parseInt(splitted[0]);
+			try {
+				int id = Integer.parseInt(splitted[0]);
 
-			if (plafondSols.keySet().contains(id)) {
-				errorIdAgain(id);
-			} else {
-				try {
-					// lire les RevetementPlafondSol et les OuvertureNiveaux
-					HashMap<Integer, RevetementPlafondSol> r = new HashMap<>();
-					ArrayList<RevetementPlafondSol> r_list = new ArrayList<>();
-					HashMap<Integer, OuvertureNiveaux> o = new HashMap<>();
-					ArrayList<OuvertureNiveaux> o_list = new ArrayList<>();
-					config.tui.diveWhere("props");
-					for (
-						SmartReader.ReadResult propResult = sreader.readLine();
-						propResult.getState() == SmartReader.ReadState.LINE;
-						propResult = sreader.readLine()
-					) {
-						String propType = propResult.getText().replaceFirst("PROP:", "");
-						debug("reading 1_plafondSol prop '" + TUI.blue(propType) + "'");
-						switch (propType) {
-							case "RevetementPlafondSol" -> {
-								r = revetementPlafondSolsFromString(objects.typesRevetement);
-								r_list = manageHashMapToArrayList(r, objects.revetementsPlafondSol);
-							}
-							case "OuvertureNiveaux" -> {
-								o = ouvertureNiveauxFromString(objects.typesOuverturesNiveau);
-								o_list = manageHashMapToArrayList(o, objects.ouverturesNiveaux);
-							}
-							default -> error("propriété du plafondSol inconnue: '" + propResult.getText() + "'");
-						}
-					}
-					config.tui.popWhere();
-
-					PlafondSol object = new PlafondSol(r_list, o_list);
-					plafondSols.put(id, object);
-					debug("read " + object);
-				} catch (NumberFormatException e) {
-					errorParse(line, e.getMessage());
+				if (plafondSols.keySet().contains(id)) {
+					errorIdAgain(id);
 				}
+
+				// lire les RevetementPlafondSol et les OuvertureNiveaux
+				HashMap<Integer, RevetementPlafondSol> r = new HashMap<>();
+				ArrayList<RevetementPlafondSol> r_list = new ArrayList<>();
+				HashMap<Integer, OuvertureNiveaux> o = new HashMap<>();
+				ArrayList<OuvertureNiveaux> o_list = new ArrayList<>();
+				config.tui.diveWhere("props");
+				for (
+					SmartReader.ReadResult propResult = sreader.readLine();
+					propResult.getState() == SmartReader.ReadState.LINE;
+					propResult = sreader.readLine()
+				) {
+					String propType = propResult.getText().replaceFirst("PROP:", "");
+					debug("reading 1_plafondSol prop '" + TUI.blue(propType) + "'");
+					switch (propType) {
+						case "RevetementPlafondSol" -> {
+							r = revetementPlafondSolsFromString(objects.typesRevetement);
+							r_list = manageHashMapToArrayList(r, objects.revetementsPlafondSol);
+						}
+						case "OuvertureNiveaux" -> {
+							o = ouvertureNiveauxFromString(objects.typesOuverturesNiveau);
+							o_list = manageHashMapToArrayList(o, objects.ouverturesNiveaux);
+						}
+						default -> error("propriété du plafondSol inconnue: '" + propResult.getText() + "'");
+					}
+				}
+				config.tui.popWhere();
+
+				PlafondSol object = new PlafondSol(r_list, o_list);
+				plafondSols.put(id, object);
+				debug("read " + object);
+			} catch (NumberFormatException e) {
+				errorParse(line, e.getMessage());
 			}
 		} else {
 			errorSyntax(line);
@@ -805,102 +809,102 @@ public class Deserialize {
 
 				if (pieces.keySet().contains(id)) {
 					errorIdAgain(id);
-				} else {
-					// lire les points, murs, le plafond et le sol
-					ArrayList<Point> points = new ArrayList<>();
-					ArrayList<Mur> murs = new ArrayList<>();
-					PlafondSol plafond = null;
-					PlafondSol sol = null;
-					config.tui.diveWhere("props");
-					for (
-						SmartReader.ReadResult propResult = sreader.readLine();
-						propResult.getState() == SmartReader.ReadState.LINE;
-						propResult = sreader.readLine()
-					) {
-						String propType = propResult.getText().replaceFirst("PROP:", "");
-						debug("reading piece prop '" + TUI.blue(propType) + "'");
-						switch (propType) {
-							case "points" -> {
-								SmartReader.ReadResult pointsResult = sreader.readLine();
-								if (pointsResult.getState() == SmartReader.ReadState.LINE) {
-									String text = pointsResult.getText();
-									if (text.matches(REGEX_INT + "(," + REGEX_INT + ")*")) {
-										String[] pointsIds = text.split(",");
-										for (String each: pointsIds) {
-											try {
-												int pointId = Integer.parseInt(each);
-												Point point = objects.points.get(pointId);
-												if (point == null) {
-													errorIdNone("Point", pointId);
-												} else {
-													points.add(point);
-												}
-											} catch (NumberFormatException e) {
-												errorParse(line, e.getMessage());
-											}
-										}
-									} else {
-										errorSyntax(text);
-									}
-								} else {
-									error("LINE expected but received " + result.getState() + " when reading points for Piece");
-								}
-							}
-							case "murs" -> {
-								SmartReader.ReadResult mursResult = sreader.readLine();
-								if (mursResult.getState() == SmartReader.ReadState.LINE) {
-									String text = mursResult.getText();
-									if (text.matches(REGEX_INT + "(," + REGEX_INT + ")*")) {
-										String[] mursIds = text.split(",");
-										for (String each: mursIds) {
-											try {
-												int murId = Integer.parseInt(each);
-												Mur mur = objects.murs.get(murId);
-												if (mur == null) {
-													errorIdNone("Mur", murId);
-												} else {
-													murs.add(mur);
-												}
-											} catch (NumberFormatException e) {
-												errorParse(line, e.getMessage());
-											}
-										}
-									} else {
-										errorSyntax(text);
-									}
-								} else {
-									error("LINE expected but received " + result.getState() + " when reading murs for Piece");
-								}
-							}
-							case "plafond", "sol" -> {
-								SmartReader.ReadResult plafondSolsResult = sreader.readLine();
-								if (plafondSolsResult.getState() == SmartReader.ReadState.LINE) {
-									String plafondSolLine = plafondSolsResult.getText();
-									HashMap<Integer, PlafondSol> plafondSolMap = new HashMap<>();
-									onePlafondSolFromString(plafondSolMap, plafondSolLine, objects);
-									if (plafondSolMap.size() == 1) {
-										PlafondSol tmpPlafondSol = plafondSolMap.get(plafondSolMap.keySet().iterator().next());
-										if (propType.equals("sol"))
-											plafond = tmpPlafondSol;
-										else
-											sol = tmpPlafondSol;
-										debug(TUI.green("successfully") + "read one plafondSol for piece");
-									} else {
-										error("la lecture du plafondSol a échoué: aucun objet n'a été assigné à la pièce");
-									}
-								} else {
-									error("LINE expected but received " + result.getState() + " when reading plafondSols for Piece");
-								}
-							}
-							default -> error("propriété de la piece inconnue: '" + propResult.getText() + "'");
-						}
-					}
-					config.tui.popWhere();
-
-					Piece object = new Piece(unescapeString(splitted[1]), unescapeString(splitted[2]), points, murs, plafond, sol);
-					pieces.put(id, object);
-					debug("read " + object);
 				}
+
+				// lire les points, murs, le plafond et le sol
+				ArrayList<Point> points = new ArrayList<>();
+				ArrayList<Mur> murs = new ArrayList<>();
+				PlafondSol plafond = null;
+				PlafondSol sol = null;
+				config.tui.diveWhere("props");
+				for (
+					SmartReader.ReadResult propResult = sreader.readLine();
+					propResult.getState() == SmartReader.ReadState.LINE;
+					propResult = sreader.readLine()
+				) {
+					String propType = propResult.getText().replaceFirst("PROP:", "");
+					debug("reading piece prop '" + TUI.blue(propType) + "'");
+					switch (propType) {
+						case "points" -> {
+							SmartReader.ReadResult pointsResult = sreader.readLine();
+							if (pointsResult.getState() == SmartReader.ReadState.LINE) {
+								String text = pointsResult.getText();
+								if (text.matches(REGEX_INT + "(," + REGEX_INT + ")*")) {
+									String[] pointsIds = text.split(",");
+									for (String each: pointsIds) {
+										try {
+											int pointId = Integer.parseInt(each);
+											Point point = objects.points.get(pointId);
+											if (point == null) {
+												errorIdNone("Point", pointId);
+											} else {
+												points.add(point);
+											}
+										} catch (NumberFormatException e) {
+											errorParse(line, e.getMessage());
+										}
+									}
+								} else {
+									errorSyntax(text);
+								}
+							} else {
+								error("LINE expected but received " + result.getState() + " when reading points for Piece");
+							}
+						}
+						case "murs" -> {
+							SmartReader.ReadResult mursResult = sreader.readLine();
+							if (mursResult.getState() == SmartReader.ReadState.LINE) {
+								String text = mursResult.getText();
+								if (text.matches(REGEX_INT + "(," + REGEX_INT + ")*")) {
+									String[] mursIds = text.split(",");
+									for (String each: mursIds) {
+										try {
+											int murId = Integer.parseInt(each);
+											Mur mur = objects.murs.get(murId);
+											if (mur == null) {
+												errorIdNone("Mur", murId);
+											} else {
+												murs.add(mur);
+											}
+										} catch (NumberFormatException e) {
+											errorParse(line, e.getMessage());
+										}
+									}
+								} else {
+									errorSyntax(text);
+								}
+							} else {
+								error("LINE expected but received " + result.getState() + " when reading murs for Piece");
+							}
+						}
+						case "plafond", "sol" -> {
+							SmartReader.ReadResult plafondSolsResult = sreader.readLine();
+							if (plafondSolsResult.getState() == SmartReader.ReadState.LINE) {
+								String plafondSolLine = plafondSolsResult.getText();
+								HashMap<Integer, PlafondSol> plafondSolMap = new HashMap<>();
+								onePlafondSolFromString(plafondSolMap, plafondSolLine, objects);
+								if (plafondSolMap.size() == 1) {
+									PlafondSol tmpPlafondSol = plafondSolMap.get(plafondSolMap.keySet().iterator().next());
+									if (propType.equals("sol"))
+										plafond = tmpPlafondSol;
+									else
+										sol = tmpPlafondSol;
+									debug(TUI.green("successfully") + " read one plafondSol for piece");
+								} else {
+									error("la lecture du plafondSol a échoué: aucun objet n'a été assigné à la pièce");
+								}
+							} else {
+								error("LINE expected but received " + result.getState() + " when reading plafondSols for Piece");
+							}
+						}
+						default -> error("propriété de la piece inconnue: '" + propResult.getText() + "'");
+					}
+				}
+				config.tui.popWhere();
+
+				Piece object = new Piece(unescapeString(splitted[1]), unescapeString(splitted[2]), points, murs, plafond, sol);
+				pieces.put(id, object);
+				debug("read " + object);
 			} else {
 				errorSyntax(line);
 			}
@@ -909,5 +913,242 @@ public class Deserialize {
 		config.tui.ended();
 		config.tui.popWhere();
 		return pieces;
+	}
+
+	/// TypeAppart
+	private HashMap<Integer, TypeAppart> typeAppartsFromString() throws IOException {
+		config.tui.diveWhere("TypeApparts");
+		config.tui.begin();
+		HashMap<Integer, TypeAppart> typeApparts = new HashMap<>();
+
+		final String regex = String.join(",", REGEX_INT, REGEX_STRING, REGEX_STRING);
+		debug("regex: '" + regex + "'");
+		for (
+			SmartReader.ReadResult result = sreader.readLine();
+			result.getState() == SmartReader.ReadState.LINE;
+			result = sreader.readLine()
+		) {
+			String line = result.getText();
+			if (line.matches(regex)) {
+				String[] splitted = line.split(",");
+
+				int id = Integer.parseInt(splitted[0]);
+
+				if (typeApparts.keySet().contains(id)) {
+					errorIdAgain(id);
+				}
+
+				try {
+					TypeAppart object = new TypeAppart(unescapeString(splitted[1]), unescapeString(splitted[2]));
+					typeApparts.put(id, object);
+					debug("read " + object);
+				} catch (NumberFormatException e) {
+					errorParse(line, e.getMessage());
+				}
+			} else {
+				errorSyntax(line);
+			}
+		}
+
+		config.tui.ended();
+		config.tui.popWhere();
+		return typeApparts;
+	}
+
+	/// Appart
+	private HashMap<Integer, Appart> appartsFromString (Objects objects) throws IOException {
+		config.tui.diveWhere("Apparts");
+		config.tui.begin();
+		HashMap<Integer, Appart> apparts = new HashMap<>();
+
+		final String regex = String.join(",", REGEX_INT, REGEX_STRING, REGEX_STRING, REGEX_INT);
+		debug("regex: '" + regex + "'");
+		for (
+			SmartReader.ReadResult result = sreader.readLine();
+			result.getState() == SmartReader.ReadState.LINE;
+			result = sreader.readLine()
+		) {
+			String line = result.getText();
+			if (line.matches(regex)) {
+				String[] splitted = line.split(",");
+
+				int id = Integer.parseInt(splitted[0]);
+
+				if (apparts.keySet().contains(id)) {
+					errorIdAgain(id);
+				}
+
+				try {
+					// lire les propriétés directes du appart
+					TypeAppart ta = objects.typesAppart.get(Integer.parseInt(splitted[3]));
+
+					// lire les Pieces
+					ArrayList<Piece> pieces = new ArrayList<>();
+					config.tui.diveWhere("props");
+					for (
+						SmartReader.ReadResult propResult = sreader.readLine();
+						propResult.getState() == SmartReader.ReadState.LINE;
+						propResult = sreader.readLine()
+					) {
+						String propType = propResult.getText().replaceFirst("PROP:", "");
+						debug("reading appart prop '" + TUI.blue(propType) + "'");
+						switch (propType) {
+							case "pieces" -> {
+								SmartReader.ReadResult piecesResult = sreader.readLine();
+								if (piecesResult.getState() == SmartReader.ReadState.LINE) {
+									String text = piecesResult.getText();
+									if (text.matches(REGEX_INT + "(," + REGEX_INT + ")*")) {
+										String[] piecesIds = text.split(",");
+										for (String each: piecesIds) {
+											try {
+												int pieceId = Integer.parseInt(each);
+												Piece piece = objects.pieces.get(pieceId);
+												if (piece == null) {
+													errorIdNone("Piece", pieceId);
+												} else {
+													pieces.add(piece);
+												}
+											} catch (NumberFormatException e) {
+												errorParse(line, e.getMessage());
+											}
+										}
+									} else {
+										errorSyntax(text);
+									}
+								} else {
+									error("LINE expected but received " + result.getState() + " when reading pieces for Appart");
+								}
+							}
+							default -> error("propriété du appart inconnue: '" + propResult.getText() + "'");
+						}
+					}
+					config.tui.popWhere();
+
+					Appart object = new Appart(unescapeString(splitted[1]), unescapeString(splitted[2]), pieces, ta);
+					apparts.put(id, object);
+					debug("read " + object);
+				} catch (NumberFormatException e) {
+					errorParse(line, e.getMessage());
+				}
+			} else {
+				errorSyntax(line);
+			}
+		}
+
+		config.tui.ended();
+		config.tui.popWhere();
+		return apparts;
+	}
+
+	/// Niveau
+	private HashMap<Integer, Niveau> niveauxFromString (Objects objects) throws IOException {
+		config.tui.diveWhere("Niveaux");
+		config.tui.begin();
+		HashMap<Integer, Niveau> niveaux = new HashMap<>();
+
+		final String regex = String.join(",", REGEX_INT, REGEX_STRING, REGEX_STRING, REGEX_DOUBLE);
+		debug("regex: '" + regex + "'");
+		for (
+			SmartReader.ReadResult result = sreader.readLine();
+			result.getState() == SmartReader.ReadState.LINE;
+			result = sreader.readLine()
+		) {
+			String line = result.getText();
+			if (line.matches(regex)) {
+				String[] splitted = line.split(",");
+
+				int id = Integer.parseInt(splitted[0]);
+
+				if (niveaux.keySet().contains(id)) {
+					errorIdAgain(id);
+				}
+
+				try {
+					// lire les propriétés directes du niveau
+					double hauteur = Double.parseDouble(splitted[3]);
+
+					// lire les Pieces et les Apparts
+					ArrayList<Piece> pieces = new ArrayList<>();
+					ArrayList<Appart> apparts = new ArrayList<>();
+					config.tui.diveWhere("props");
+					for (
+						SmartReader.ReadResult propResult = sreader.readLine();
+						propResult.getState() == SmartReader.ReadState.LINE;
+						propResult = sreader.readLine()
+					) {
+						String propType = propResult.getText().replaceFirst("PROP:", "");
+						debug("reading niveau prop '" + TUI.blue(propType) + "'");
+						switch (propType) {
+							case "apparts" -> {
+								SmartReader.ReadResult appartsResult = sreader.readLine();
+								if (appartsResult.getState() == SmartReader.ReadState.LINE) {
+									String text = appartsResult.getText();
+									if (text.matches(REGEX_INT + "(," + REGEX_INT + ")*")) {
+										String[] appartsIds = text.split(",");
+										for (String each: appartsIds) {
+											try {
+												int appartId = Integer.parseInt(each);
+												Appart appart = objects.apparts.get(appartId);
+												if (appart == null) {
+													errorIdNone("Appart", appartId);
+												} else {
+													apparts.add(appart);
+												}
+											} catch (NumberFormatException e) {
+												errorParse(line, e.getMessage());
+											}
+										}
+									} else {
+										errorSyntax(text);
+									}
+								} else {
+									error("LINE expected but received " + result.getState() + " when reading apparts for Niveau");
+								}
+							}
+							case "pieces" -> {
+								SmartReader.ReadResult piecesResult = sreader.readLine();
+								if (piecesResult.getState() == SmartReader.ReadState.LINE) {
+									String text = piecesResult.getText();
+									if (text.matches(REGEX_INT + "(," + REGEX_INT + ")*")) {
+										String[] piecesIds = text.split(",");
+										for (String each: piecesIds) {
+											try {
+												int pieceId = Integer.parseInt(each);
+												Piece piece = objects.pieces.get(pieceId);
+												if (piece == null) {
+													errorIdNone("Piece", pieceId);
+												} else {
+													pieces.add(piece);
+												}
+											} catch (NumberFormatException e) {
+												errorParse(line, e.getMessage());
+											}
+										}
+									} else {
+										errorSyntax(text);
+									}
+								} else {
+									error("LINE expected but received " + result.getState() + " when reading pieces for Appart");
+								}
+							}
+							default -> error("propriété du niveau inconnue: '" + propResult.getText() + "'");
+						}
+					}
+					config.tui.popWhere();
+
+					Niveau object = new Niveau(unescapeString(splitted[1]), unescapeString(splitted[2]), hauteur, pieces, apparts);
+					niveaux.put(id, object);
+					debug("read " + object);
+				} catch (NumberFormatException e) {
+					errorParse(line, e.getMessage());
+				}
+			} else {
+				errorSyntax(line);
+			}
+		}
+
+		config.tui.ended();
+		config.tui.popWhere();
+		return niveaux;
 	}
 }

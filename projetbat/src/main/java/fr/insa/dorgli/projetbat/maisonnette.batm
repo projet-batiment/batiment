@@ -42,12 +42,21 @@ OBJECTS:TypeOuvertureMur
 234,Porte d'intérieur,,2.05,80,110
 EOS:TypeOuvertureMur
 
+OBJECTS:TypeOuvertureNiveau
+240,Escalier d'angle,,4.2,1,950
+241,Escalier en colimaçon,,2,2,680
+EOS:TypeOuvertureNiveau
+
 OBJECTS:TypeMur
 200,Mur extérieur,En brique,0.35,180
 201,Mur intérieur,En placo,0.10,35
 202,Mur intérieur porteur,En brique,0.25,157.8
 203,Barrière,Barrière de mezzanine,0.07,32
 EOS:TypeMur
+
+OBJECTS:TypeAppart
+299,Intérieur,Partie intérieure de la maison
+EOS:TypeAppart
 
 OBJECTS:Mur
 
@@ -190,3 +199,80 @@ EOS:RevetementMur:2
 EOS:Entry
 
 EOS:Mur
+
+OBJECTS:Piece
+
+250,Pièce principale,Entrée&c cuisine
+PROP:points
+102,103,110,115,106,109
+PROP:murs
+161,171,176,169,170
+PROP:plafond
+
+601
+PROP:RevetementPlafondSol
+6010,217,0,0,0,0
+EOS:RevetementPlafondSol
+PROP:OuvertureNiveaux
+6011,240,0,0
+EOS:OuvertureNiveaux
+
+EOS:plafond
+PROP:sol
+
+602
+PROP:RevetementPlafondSol
+6020,212,0,0,0,1
+6021,213,0,1,0,3
+EOS:RevetementPlafondSol
+
+EOS:sol
+EOS:Entry
+
+251,Salon,Fait aussi salle à manger
+PROP:points
+103,104,105,115,110
+PROP:murs
+162,163,164,171
+PROP:plafond
+
+603
+PROP:RevetementPlafondSol
+6030,217,0,0,0,0
+EOS:RevetementPlafondSol
+
+EOS:plafond
+PROP:sol
+
+604
+PROP:RevetementPlafondSol
+6040,212,0,0,0,1
+EOS:RevetementPlafondSol
+PROP:OuvertureNiveaux
+6041,241,2,2
+EOS:OuvertureNiveaux
+
+EOS:sol
+EOS:Entry
+
+EOS:Piece
+
+OBJECTS:Appart
+
+701,La nouvelle maisonnette du jardin,Un projet qui se réalisera peut être un jour,299
+PROP:pieces
+250,251
+EOS:Entry
+
+EOS:Appart
+
+OBJECTS:Niveau
+
+751,Rez de chaussée,L'étage des pièces de vie et des chambres,2.4
+PROP:apparts
+701
+PROP:pieces
+250,251
+EOS:Entry
+
+EOS:Niveau

@@ -112,6 +112,6 @@ public class Mur implements ToString, ToStringShort {
 
 	public String toStringShort() {
 		// TODO -> toStringShort -> afficher l'ID
-		return "( #" + "TODO" + ")";
+		return "( #" + "TODO" + " )";
 	}
 }
