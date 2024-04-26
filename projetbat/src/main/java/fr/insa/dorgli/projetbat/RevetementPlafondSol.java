@@ -56,6 +56,27 @@ public class RevetementPlafondSol implements ToStringShort {
 		this.pos2H = pos2H;
 	}
 
+	public double aire(double airePiece) {
+		if ((pos1L == 0) && (pos2L == 0) && (pos1H == 0) && (pos2H == 0)) {
+			return airePiece;
+		} else {
+			return Math.abs((pos1L - pos2L) * (pos1H - pos2H));
+			/// TODO!!! implement java.awt.Area -> interset the revetements' surfaces with the ouvertures' surfaces
+			/// pour si un jour on implémente les PlafondSol polygonaux plus que rectangulaires :
+			// double out = 0;
+			// for (int i = 0; i < points.size(); i++) {
+			// 	Point current = points.get(i);
+			// 	Point next = points.get((i + 1) % points.size());
+			// 	out += current.getX() * next.getY() - current.getY() * next.getX();
+			// }
+			// return 0.5 * Math.abs(out);
+		}
+	}
+
+	public double calculerPrix(double airePiece) {
+		return typeRevetement.getPrixUnitaire() * aire(airePiece);
+	}
+
 	public String toString() {
 		return "RevetementMur { type -> '" + typeRevetement.getNom() + "'"
 		    + ", positions: (" + pos1L + ", " + pos1H + ") -- (" + pos2L + ", " + pos2H + ") }";

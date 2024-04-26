@@ -110,6 +110,36 @@ public class Mur implements ToString, ToStringShort {
 				+ "}";
 	}
 
+	// fonction temporaire si l'on passe un jour aux outils géométriques de java.awt...
+	// utile pour calculer les aires du mur et de ses revetments
+	private double longueur() {
+		double dx = pointDebut.getX() - pointFin.getX();
+		double dy = pointFin.getY() - pointDebut.getY();
+		return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+	}
+
+	public double aire() {
+		return longueur() * this.hauteur;
+	}
+
+	public double calculerPrix() {
+		double prixMur = 0;
+		prixMur = typeMur.getPrixUnitaire() * aire();
+
+		double longueur = longueur();
+		/// TODO!!! implement java.awt.Area -> interset the revetements' surfaces with the ouvertures' surfaces
+		for (RevetementMur r: this.revetements1){
+			prixMur += r.calculerPrix(longueur, hauteur);
+		}
+		for (RevetementMur r: this.revetements2){
+			prixMur += r.calculerPrix(longueur, hauteur);
+		}
+		for (OuvertureMur o: this.ouvertures){
+			prixMur += o.getTypeOuverture().getPrixOuverture();
+		}
+		return prixMur;
+	}
+
 	public String toStringShort() {
 		// TODO -> toStringShort -> afficher l'ID
 		return "( #" + "TODO" + " )";

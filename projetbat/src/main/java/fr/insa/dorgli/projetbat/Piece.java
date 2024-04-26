@@ -104,4 +104,29 @@ public class Piece implements ToString, ToStringShort {
 		// TODO -> toStringShort -> afficher l'ID
 		return "( #" + nom + " )";
 	}
+
+	public double aire() {
+		double out = 0;
+		/// TODO!!! implement java.awt.Area -> interset the revetements' surfaces with the ouvertures' surfaces
+		for (int i = 0; i < points.size(); i++) {
+			Point current = points.get(i);
+			Point next = points.get((i + 1) % points.size());
+			out += current.getX() * next.getY() - current.getY() * next.getX();
+		}
+		return 0.5 * Math.abs(out);
+	}
+
+	public double calculerPrix() {
+		double prix = 0;
+		double airePiece = aire();
+
+		// for (Mur eachMur: murs) {
+		// 	prix += eachMur.calculerPrix();
+		// }
+
+		prix += plafond.calculerPrix(airePiece);
+		prix += sol.calculerPrix(airePiece);
+
+		return prix;
+	}
 }

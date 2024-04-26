@@ -5,14 +5,14 @@ public class TypeOuvertureMur implements ToStringShort {
 	private String description;
 	private double hauteur;
 	private double largeur;
-	private double prixUnitaire;
+	private double prixOuverture;
 
-	public TypeOuvertureMur(String nom, String description, double hauteur, double largeur, double prixUnitaire) {
+	public TypeOuvertureMur(String nom, String description, double hauteur, double largeur, double prixOuverture) {
 		this.nom = nom;
 		this.description = description;
 		this.hauteur = hauteur;
 		this.largeur = largeur;
-		this.prixUnitaire = prixUnitaire;
+		this.prixOuverture = prixOuverture;
 	}
 
 	public String getNom() {
@@ -31,12 +31,12 @@ public class TypeOuvertureMur implements ToStringShort {
 		this.description = description;
 	}
 
-	public double getPrixUnitaire() {
-		return prixUnitaire;
+	public double getPrixOuverture() {
+		return prixOuverture;
 	}
 
-	public void setPrixUnitaire(double prixUnitaire) {
-		this.prixUnitaire = prixUnitaire;
+	public void setPrixOuverture(double prixOuverture) {
+		this.prixOuverture = prixOuverture;
 	}
 
 	public double getHauteur() {
@@ -60,7 +60,7 @@ public class TypeOuvertureMur implements ToStringShort {
 		    + ", description: '" + description + "'"
 		    + ", hauteur: " + hauteur
 		    + ", largeur: " + largeur
-		    + ", prixUnitaire: " + prixUnitaire + " }";
+		    + ", prixOuverture: " + prixOuverture + " }";
 	}
 
 	public String toStringShort() {

@@ -5,18 +5,43 @@ public class TypeOuvertureNiveau implements ToStringShort {
 	//   les deux directions (largeur et longueurs peuvent prêter à confusion)
 	// Si on ne change plus les TypeOuvertureNiveau ni les TypeOuvertureMur,
 	//   alors on pourrait même les rassembler en une seule classe puisqu'ils ont les même propriétés
+	/// TODO!!! (utile ici ?) implement java.awt.Area -> interset the revetements' surfaces with the ouvertures' surfaces
 	private String nom;
 	private String description;
 	private double hauteur;
 	private double largeur;
-	private double prixUnitaire;
+	public double prixOuverture;
 
-	public TypeOuvertureNiveau(String nom, String description, double hauteur, double largeur, double prixUnitaire) {
+	public TypeOuvertureNiveau(String nom, String description, double hauteur, double largeur, double prixOuverture) {
 		this.nom = nom;
 		this.description = description;
 		this.hauteur = hauteur;
 		this.largeur = largeur;
-		this.prixUnitaire = prixUnitaire;
+		this.prixOuverture = prixOuverture;
+	}
+
+	public double getPrixOuverture() {
+		return prixOuverture;
+	}
+
+	public void setPrixOuverture(double prixOuverture) {
+		this.prixOuverture = prixOuverture;
+	}
+
+	public double getLargeur() {
+		return largeur;
+	}
+
+	public void setLargeur(double largeur) {
+		this.largeur = largeur;
+	}
+
+	public double getHauteur() {
+		return hauteur;
+	}
+
+	public void setHauteur(double hauteur) {
+		this.hauteur = hauteur;
 	}
 
 	public String getNom() {
@@ -35,36 +60,12 @@ public class TypeOuvertureNiveau implements ToStringShort {
 		this.description = description;
 	}
 
-	public double getHauteur() {
-		return hauteur;
-	}
-
-	public void setHauteur(double hauteur) {
-		this.hauteur = hauteur;
-	}
-
-	public double getLargeur() {
-		return largeur;
-	}
-
-	public void setLargeur(double largeur) {
-		this.largeur = largeur;
-	}
-
-	public double getPrixUnitaire() {
-		return prixUnitaire;
-	}
-
-	public void setPrixUnitaire(double prixUnitaire) {
-		this.prixUnitaire = prixUnitaire;
-	}
-
 	public String toString() {
 		return "TypeOuvertureNiveau { nom: '" + nom + "'"
 		    + ", description: '" + description + "'"
 		    + ", hauteur: " + hauteur
 		    + ", largeur: " + largeur
-		    + ", prixUnitaire: " + prixUnitaire + " }";
+		    + ", prixOuverture: " + prixOuverture + " }";
 	}
 
 	public String toStringShort() {
