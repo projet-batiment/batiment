@@ -2,6 +2,7 @@ package fr.insa.dorgli.projetbat;
 
 import java.util.HashMap;
 import java.util.Map;
+import javafx.scene.canvas.GraphicsContext;
 
 public class Objects {
 	// liste des objets
@@ -23,6 +24,13 @@ public class Objects {
 	HashMap<Integer, TypeOuvertureNiveau> typesOuverturesNiveau = new HashMap<>();
 	HashMap<Integer, TypeRevetement> typesRevetement = new HashMap<>();
 	HashMap<Integer, TypeAppart> typesAppart = new HashMap<>();
+
+	public void drawAll(GraphicsContext ctxt) {
+		System.out.println("INF: draw/objects: points " + points.size() + ": " + points.toString());
+		for (Point p: points.values()) {
+			p.draw(ctxt);
+		}
+	}
 
 	private String entrySetCustomString(Map.Entry entry) {
 		return TUI.green("" + entry.getKey()) + ": " + entry.getValue();
