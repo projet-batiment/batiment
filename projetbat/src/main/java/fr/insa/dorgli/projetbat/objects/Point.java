@@ -1,5 +1,7 @@
-package fr.insa.dorgli.projetbat;
+package fr.insa.dorgli.projetbat.objects;
 
+import fr.insa.dorgli.projetbat.ToStringShort;
+import fr.insa.dorgli.projetbat.gui.CanvasContainer;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
@@ -38,11 +40,9 @@ public class Point implements ToStringShort {
 		this.niveauId = niveauId;
 	}
 
-	public void draw(GraphicsContext ctxt) {
-		ctxt.setFill(Color.RED);
-		int radius = 5;
-		ctxt.fillOval(x*30 - radius, y*30 - radius, radius, radius);
-		System.out.println("INF: draw/Point: drew " + (x - radius) + "," + (y - radius) + "," + radius);
+	public void draw(CanvasContainer canvasContainer) {
+		// NOTE: (( !!! FAUX !!! )) on passe ici de double(mètres) en int(CENTIMÈTRES) car java.awt ne marche qu'avec des int 🤦‍️
+		canvasContainer.drawPoint(x, y);
 	}
 
 	public String toString() {

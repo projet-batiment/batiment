@@ -9,12 +9,12 @@ public class Config {
 		public static double MIN_HEIGHT = 400;
 	}
 
-	final int version = 3;
+	final int version = 4;
 	final int minimumSavefileVersion = 2;
 	final int maximumSavefileVersion = 2;
 
 	// TODO: classe UI (abstraite??) pour gérer les logs tui/gui
-	TUI tui = new TUI();
+	public TUI tui = new TUI(TUI.LogLevel.DEBUG);
 
-	Project project = new Project();
+	public Project project = new Project();
 }

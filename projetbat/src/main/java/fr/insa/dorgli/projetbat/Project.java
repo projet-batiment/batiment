@@ -1,9 +1,11 @@
 package fr.insa.dorgli.projetbat;
 
-public class Project {
-	Objects objects = new Objects();
+import fr.insa.dorgli.projetbat.objects.Objects;
 
-	String projectName = new String();
-	String projectDescription = new String();
-	String savefilePath = new String();
+public class Project {
+	public Objects objects = new Objects();
+
+	public String projectName = new String();
+	public String projectDescription = new String();
+	public String savefilePath = new String();
 }

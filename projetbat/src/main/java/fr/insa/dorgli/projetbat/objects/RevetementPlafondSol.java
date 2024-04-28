@@ -1,4 +1,6 @@
-package fr.insa.dorgli.projetbat;
+package fr.insa.dorgli.projetbat.objects;
+
+import fr.insa.dorgli.projetbat.ToStringShort;
 
 public class RevetementPlafondSol implements ToStringShort {
 	TypeRevetement typeRevetement;

@@ -1,5 +1,6 @@
 package fr.insa.dorgli.projetbat;
 
+import fr.insa.dorgli.projetbat.gui.MainPane;
 import java.io.FileNotFoundException;
 import javafx.application.Application;
 import javafx.application.Application;

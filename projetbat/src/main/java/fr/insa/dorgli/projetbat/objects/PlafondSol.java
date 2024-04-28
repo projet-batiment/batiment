@@ -1,5 +1,7 @@
-package fr.insa.dorgli.projetbat;
+package fr.insa.dorgli.projetbat.objects;
 
+import fr.insa.dorgli.projetbat.ToString;
+import fr.insa.dorgli.projetbat.ToStringShort;
 import java.util.ArrayList;
 
 public class PlafondSol implements ToString, ToStringShort {

@@ -1,10 +1,16 @@
 package fr.insa.dorgli.projetbat;
 
+import fr.insa.dorgli.projetbat.gui.CanvasContainer;
+import fr.insa.dorgli.projetbat.gui.Direction;
+import fr.insa.dorgli.projetbat.gui.MainPane;
 import java.io.File;
 import java.io.FileNotFoundException;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.transform.Affine;
+import javafx.scene.transform.Scale;
+import javafx.scene.transform.Translate;
 import javafx.stage.FileChooser;
 
 public class Controller {
@@ -56,25 +62,7 @@ public class Controller {
 		config.tui.popWhere();
 	}
 
-	public void zoomIn() {
-		CanvasContainer canvas = mainPane.getCanvasContainer();
-		canvas.zoomScale(0.5);
-		canvas.redraw();
+	public void moveCanvasView(Direction direction) {
+		mainPane.getCanvasContainer().moveView(direction);
 	}
-
-	public void zoomOut() {
-		CanvasContainer canvas = mainPane.getCanvasContainer();
-		canvas.zoomScale(2);
-		canvas.redraw();
-	}
-
-//	public void zoomOut() {
-//		mainPane.setZoneModelVue(mainPane.getZoneModelVue().scale(2));
-//		mainPane.redrawAll();
-//	}
-//
-//	public void zoomFit() {
-//		mainPane.fitAll();
-//		mainPane.getCanvasContainer().redraw();
-//	}
 }

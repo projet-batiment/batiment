@@ -1,4 +1,4 @@
-package fr.insa.dorgli.projetbat;
+package fr.insa.dorgli.projetbat.objects;
 
 import java.util.ArrayList;
 

@@ -1,4 +1,4 @@
-package fr.insa.dorgli.projetbat;
+package fr.insa.dorgli.projetbat.objects;
 
 // Note pour plus tard :
 //   - Est ce que l'utilisateur peut créer différents types d'apparts lors de l'exécution ?

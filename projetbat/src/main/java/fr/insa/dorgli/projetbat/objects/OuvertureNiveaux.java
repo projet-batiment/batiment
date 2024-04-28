@@ -1,4 +1,4 @@
-package fr.insa.dorgli.projetbat;
+package fr.insa.dorgli.projetbat.objects;
 
 public class OuvertureNiveaux {
 	TypeOuvertureNiveau typeOuverture;

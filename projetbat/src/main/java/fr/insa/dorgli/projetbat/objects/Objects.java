@@ -1,34 +1,36 @@
-package fr.insa.dorgli.projetbat;
+package fr.insa.dorgli.projetbat.objects;
 
+import fr.insa.dorgli.projetbat.TUI;
+import fr.insa.dorgli.projetbat.gui.CanvasContainer;
 import java.util.HashMap;
 import java.util.Map;
-import javafx.scene.canvas.GraphicsContext;
+import java.util.Map.Entry;
 
 public class Objects {
 	// liste des objets
-	HashMap<Integer, Niveau> niveaux = new HashMap<>();
-	HashMap<Integer, Appart> apparts = new HashMap<>();
-	HashMap<Integer, Piece> pieces = new HashMap<>();
-	HashMap<Integer, Mur> murs = new HashMap<>();
-	HashMap<Integer, PlafondSol> plafondsSols = new HashMap<>();
-	HashMap<Integer, Point> points = new HashMap<>();
+	public HashMap<Integer, Niveau> niveaux = new HashMap<>();
+	public HashMap<Integer, Appart> apparts = new HashMap<>();
+	public HashMap<Integer, Piece> pieces = new HashMap<>();
+	public HashMap<Integer, Mur> murs = new HashMap<>();
+	public HashMap<Integer, PlafondSol> plafondsSols = new HashMap<>();
+	public HashMap<Integer, Point> points = new HashMap<>();
 
-	HashMap<Integer, OuvertureMur> ouverturesMur = new HashMap<>();
-	HashMap<Integer, OuvertureNiveaux> ouverturesNiveaux = new HashMap<>();
+	public HashMap<Integer, OuvertureMur> ouverturesMur = new HashMap<>();
+	public HashMap<Integer, OuvertureNiveaux> ouverturesNiveaux = new HashMap<>();
 
-	HashMap<Integer, RevetementMur> revetementsMur = new HashMap<>();
-	HashMap<Integer, RevetementPlafondSol> revetementsPlafondSol = new HashMap<>();
+	public HashMap<Integer, RevetementMur> revetementsMur = new HashMap<>();
+	public HashMap<Integer, RevetementPlafondSol> revetementsPlafondSol = new HashMap<>();
 
-	HashMap<Integer, TypeMur> typesMur = new HashMap<>();
-	HashMap<Integer, TypeOuvertureMur> typesOuverturesMur = new HashMap<>();
-	HashMap<Integer, TypeOuvertureNiveau> typesOuverturesNiveau = new HashMap<>();
-	HashMap<Integer, TypeRevetement> typesRevetement = new HashMap<>();
-	HashMap<Integer, TypeAppart> typesAppart = new HashMap<>();
+	public HashMap<Integer, TypeMur> typesMur = new HashMap<>();
+	public HashMap<Integer, TypeOuvertureMur> typesOuverturesMur = new HashMap<>();
+	public HashMap<Integer, TypeOuvertureNiveau> typesOuverturesNiveau = new HashMap<>();
+	public HashMap<Integer, TypeRevetement> typesRevetement = new HashMap<>();
+	public HashMap<Integer, TypeAppart> typesAppart = new HashMap<>();
 
-	public void drawAll(GraphicsContext ctxt) {
+	public void drawAll(CanvasContainer canvasContainer) {
 		System.out.println("INF: draw/objects: points " + points.size() + ": " + points.toString());
-		for (Point p: points.values()) {
-			p.draw(ctxt);
+		for (Entry<Integer, Point> p: points.entrySet()) {
+			p.getValue().draw(canvasContainer);
 		}
 	}
 

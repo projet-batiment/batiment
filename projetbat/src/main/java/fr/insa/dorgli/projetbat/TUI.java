@@ -16,6 +16,11 @@ public class TUI {
 		TRACE,
 	}
 
+	public TUI(LogLevel level) {
+		logLevel = level;
+		debug("TUI: initialized TUI instance with loglevel " + logLevel);
+	}
+
 	public static String red(String text) {
 		return "\033[0;31m" + text + "\033[0m";
 	}
