@@ -1,6 +1,7 @@
 package fr.insa.dorgli.projetbat.gui;
 
 import fr.insa.dorgli.projetbat.Config;
+import fr.insa.dorgli.projetbat.objects.Niveau;
 import java.awt.Rectangle;
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
@@ -16,6 +17,7 @@ public class CanvasContainer extends Pane {
 	private Canvas canvas;
 	private GraphicsContext ctxt;
 
+	private Niveau currentNiveau;
 	private Rectangle totalDrawingRectangle;
 
 	private double zoomFactor;
@@ -34,15 +36,13 @@ public class CanvasContainer extends Pane {
 		canvas = new Canvas(this.getWidth(), this.getHeight());
 		canvas.widthProperty().bind(this.widthProperty());
 		canvas.widthProperty().addListener((o) -> {
-			config.tui.debug("canvasContainer: width has changed: refitting the canvas inside the totalDrawingRectangle...");
-			fitPoint((int)canvas.getWidth(), (int)canvas.getHeight());
-			redraw();
+			config.tui.debug("canvasContainer: width has changed");
+			rescaleBufferedScaledValues();
 		});
 		canvas.heightProperty().bind(this.heightProperty());
 		canvas.heightProperty().addListener((o) -> {
-			config.tui.debug("canvasContainer: height has changed: refitting the canvas inside the totalDrawingRectangle...");
-			fitPoint((int)canvas.getWidth(), (int)canvas.getHeight());
-			redraw();
+			config.tui.debug("canvasContainer: height has changed");
+			rescaleBufferedScaledValues();
 		});
 
  		ctxt = canvas.getGraphicsContext2D();
@@ -54,18 +54,39 @@ public class CanvasContainer extends Pane {
 		super.getChildren().add(canvas);
 	}
 
+	// Renvoie dans les dimensions du canvas l'équivalent d'une dimension dans "la vue" (d'unité arbitraire, à zoom=1)
+	private double scaleToView(double incoming) {
+		// Mxx est un coef de la matrice de transformation du canvas, donc en partie de son zoom
+		// Comme le zoom est orthonormal, mxx=myy=mzz, donc on choisit mxx arbitrairement
+		return incoming * (zoomFactor * 1/ctxt.getTransform().getMxx());
+	}
+
 	// moveFactor définit un pas fixe qui ne s'adapte pas au zoom
 	// scaledMoveFactor définit la taille réelle du pas fixe ramené au zoom actuel
 	// scaleMoveFactor() permet de calculer scaledMoveFactor après un changement de zoom
 	private void scaleMoveFactor() {
- 		scaledMoveFactor = moveFactor * (zoomFactor * 1/ctxt.getTransform().getMxx());
+ 		scaledMoveFactor = scaleToView(moveFactor);
+		config.tui.debug("canvasContainer/scaleMoveFactor: new: " + moveFactor + " scaled -> " + scaledMoveFactor);
+	}
+
+	// Rescale after dimensions having resized
+	public void rescaleBufferedScaledValues() {
+		config.tui.debug("canvasContainer/rescale Etc: rescaling the buffered values and refiting the canvas within the totalDrawingRectangle");
+
+		// first off: fit the canvas inside the totalDrawingRectangle
+		fitPoint((int)canvas.getWidth(), (int)canvas.getHeight());
+
+		// then: rescale all the buffered values
+		scaleMoveFactor();
+
+		// finally: redraw
+		redraw();
 	}
 
 	public void moveView(Direction direction) {
 		config.tui.diveWhere("canvasContainer/moveView");
 
 		clear();
-		double scaledMoveFactor = moveFactor * (zoomFactor * 1/ctxt.getTransform().getMxx());
 
 		switch (direction) {
 			// TODO: le zoom s'effectue vers l'origine du canvas, pas vers le centre de la vue
@@ -95,21 +116,6 @@ public class CanvasContainer extends Pane {
 
 		redraw();
 		config.tui.popWhere();
-	}
-
-	public void clear() {
-		ctxt.clearRect(totalDrawingRectangle.getMinX(), totalDrawingRectangle.getMinY(), totalDrawingRectangle.getWidth(), totalDrawingRectangle.getHeight());
-
-		Bounds thisBoundsInScene = super.localToScene(super.getBoundsInLocal());
-		Node parent = super.getParent();
-		Bounds parentBoundsInScene = parent.localToScene(parent.getBoundsInLocal());
-
-		double parentRelativeMinX = parentBoundsInScene.getMinX() - thisBoundsInScene.getMinX();
-		double parentRelativeMinY = parentBoundsInScene.getMinY() - thisBoundsInScene.getMinY();
-		double parentWidth = parentBoundsInScene.getMaxX() - parentBoundsInScene.getMinX();
-		double parentHeight = parentBoundsInScene.getMaxY() - parentBoundsInScene.getMinY();
-
-		config.tui.debug("canvasContainer/clear: parentRelativeCoordinates: (" + parentRelativeMinX + ":" + parentRelativeMinY + ") -> (" + parentWidth + ":"+ parentHeight + ")");
 	}
 
 	private void fitPoint(double x, double y) {
@@ -151,6 +157,21 @@ public class CanvasContainer extends Pane {
 		config.tui.debug("canvasContainer/logEtc: " + totalDrawingRectangle.getMinX() + "," + totalDrawingRectangle.getMinY() + "," + totalDrawingRectangle.getWidth() + "," + totalDrawingRectangle.getHeight());
 	}
 
+	public void clear() {
+		ctxt.clearRect(totalDrawingRectangle.getMinX(), totalDrawingRectangle.getMinY(), totalDrawingRectangle.getWidth(), totalDrawingRectangle.getHeight());
+
+		Bounds thisBoundsInScene = super.localToScene(super.getBoundsInLocal());
+		Node parent = super.getParent();
+		Bounds parentBoundsInScene = parent.localToScene(parent.getBoundsInLocal());
+
+		double parentRelativeMinX = parentBoundsInScene.getMinX() - thisBoundsInScene.getMinX();
+		double parentRelativeMinY = parentBoundsInScene.getMinY() - thisBoundsInScene.getMinY();
+		double parentWidth = parentBoundsInScene.getMaxX() - parentBoundsInScene.getMinX();
+		double parentHeight = parentBoundsInScene.getMaxY() - parentBoundsInScene.getMinY();
+
+		config.tui.debug("canvasContainer/clear: parentRelativeCoordinates: (" + parentRelativeMinX + ":" + parentRelativeMinY + ") -> (" + parentWidth + ":"+ parentHeight + ")");
+	}
+
 	public void redraw() {
 		clear();
 		config.tui.debug("canvasContainer/redraw: graphicsContext.transform (affine): " + canvas.getGraphicsContext2D().getTransform().toString());
@@ -161,10 +182,14 @@ public class CanvasContainer extends Pane {
 //		ctxt.setFill(Color.BLUE);
 //		ctxt.fillRect(10, 10, 20, 20);
 
-		//config.project.objects.drawAll(this);
+		config.project.objects.drawAll(this);
 	}
 
-	public Canvas getCanvas() {
-		return canvas;
+	public Niveau getCurrentNiveau() {
+		return currentNiveau;
+	}
+
+	public void setCurrentNiveau(Niveau currentNiveau) {
+		this.currentNiveau = currentNiveau;
 	}
 }

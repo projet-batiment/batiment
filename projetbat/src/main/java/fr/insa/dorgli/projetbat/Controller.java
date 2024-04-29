@@ -1,16 +1,13 @@
 package fr.insa.dorgli.projetbat;
 
-import fr.insa.dorgli.projetbat.gui.CanvasContainer;
 import fr.insa.dorgli.projetbat.gui.Direction;
 import fr.insa.dorgli.projetbat.gui.MainPane;
+import fr.insa.dorgli.projetbat.objects.Niveau;
 import java.io.File;
 import java.io.FileNotFoundException;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.transform.Affine;
-import javafx.scene.transform.Scale;
-import javafx.scene.transform.Translate;
 import javafx.stage.FileChooser;
 
 public class Controller {
@@ -38,6 +35,13 @@ public class Controller {
 					config.tui.clearErrCounter();
 				} else {
 					config.project = newProject;
+					config.tui.log("successfully loaded the project!");
+					if (! config.project.objects.niveaux.isEmpty()) {
+						// toute l'efficacité de java en une ligne pour avoir le premier niveau :
+						Niveau currentNiveau = config.project.objects.niveaux.values().iterator().next();
+						mainPane.getCanvasContainer().setCurrentNiveau(currentNiveau);
+						config.tui.debug("set the currentNiveau to " + currentNiveau.toString());
+					}
 					mainPane.getCanvasContainer().redraw();
 				}
 

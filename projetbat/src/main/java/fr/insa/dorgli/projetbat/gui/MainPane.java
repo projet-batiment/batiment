@@ -6,12 +6,10 @@ import fr.insa.dorgli.projetbat.TUI;
 import fr.insa.dorgli.projetbat.objects.Point;
 import java.util.Iterator;
 import java.util.Map.Entry;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class MainPane extends BorderPane {
