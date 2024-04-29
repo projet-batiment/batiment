@@ -18,6 +18,7 @@ import javafx.scene.control.Button;
 import javafx.scene.text.Font;
 import javafx.scene.media.AudioClip;
 
+
 public class App extends Application{
   public void start(Stage Stage) {
     Label message = new Label("Devis piece");
@@ -43,9 +44,25 @@ public class App extends Application{
                                      System.out.println(get.appart.TypeAppart + " n°: " + get.appart.nom);
                                      System.out.println("piece : " + get.pieces.nom + "| prix : " + get.pieces.prix );
                                     });
+    Button totouvButton = new Button ("TotalOuverture");
+    totouvButton.setonAction(evt -> {message.setText("TOTAL OUVERTURE");
+                                     System.out.println("ouvertures du plafond : " + get.pieces.plafond.ouvertures.TypeOuvertureNiveau + "| prix ouverture : " + get.pieces.plafond.ouvertures.TypeOuvertureNiveau.prixOuverture);
+                                     System.out.println("ouvertures du plafond : " + get.pieces.sol.ouvertures.TypeOuvertureNiveau + "| prix ouverture : " + get.pieces.sol.ouvertures.TypeOuvertureNiveau.prixOuverture);
+                                     System.out.println("ouvertures des murs : " + get.pieces.murs.ouvertures.TypeOuvertureMur + "| prix ouverture : " + get.pieces.murs.ouvertures.TypeOuvertureMur.prixUnitaire);
+                                    });
+
+    Button totrevButton = new Button ("TotalRevetement");
+    totrevButton.setonAction(evt -> {message.setText(" TOTAL REVETEMENT");
+                                     System.out.println(" revetement mur: " + get.pieces.murs.revetements1.typeRevetement + "| prix revetement : " + get.pieces.murs.revetement1.typeRevetement.prixUnitaire);
+                                     System.out.println(" revetement plafond: " + get.pieces.plafond.revetements.typeRevetement + "|prix revetement : " + get.pieces.plafond.revetements.typeRevetement.prixUnitaire);
+                                     System.out.println(" revetement sol: " + get.pieces.sol.revetements.typeRevetement + "|prix revetement : " + get.pieces.sol.revetements.typeRevetement.prixUnitaire);
+                                    });
     
-    HBox buttonBar = new HBox(20, refreshButton, totalButton, detailButton);
-    buttonBar.setAlignment(Pos.BOTTOM);
+    HBox buttonBar = new HBox(20, refreshButton, detailButton);
+    buttonBar.setAlignment(Pos.Top);
+    Hbox button2Bar= new HBox(20, totalButton, totrevButton, totouvButton)
+    button2Bar.setAlignement(Pos.Bottom);
+      
   }
 }
     
