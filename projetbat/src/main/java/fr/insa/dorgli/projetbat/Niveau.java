@@ -80,6 +80,15 @@ public class Niveau implements ToString, ToStringShort {
 				+ "}";
 	}
 
+	public double calculerPrix() {
+		double prixNiveau = 0;
+
+		for (Piece eachPiece: pieces){
+			prixNiveau += eachPiece.calculerPrix();
+		}
+		return prixNiveau;
+	}
+
 	public String toStringShort() {
 		// TODO -> toStringShort -> afficher l'ID
 		return "( #" + "TODO" + " )";

@@ -117,16 +117,16 @@ public class Piece implements ToString, ToStringShort {
 	}
 
 	public double calculerPrix() {
-		double prix = 0;
+		double prixPiece = 0;
 		double airePiece = aire();
 
-		// for (Mur eachMur: murs) {
-		// 	prix += eachMur.calculerPrix();
-		// }
+		 for (Mur eachMur: murs) {
+			prixPiece += eachMur.calculerPrix();
+		 }
 
-		prix += plafond.calculerPrix(airePiece);
-		prix += sol.calculerPrix(airePiece);
+		prixPiece += plafond.calculerPrix(airePiece);
+		prixPiece += sol.calculerPrix(airePiece);
 
-		return prix;
+		return prixPiece;
 	}
 }
