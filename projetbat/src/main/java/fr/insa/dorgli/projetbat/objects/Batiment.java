@@ -37,4 +37,13 @@ public class Batiment {
 		this.appart = appart;
 	}
 
+	public double calculerPrix() {
+		double prixBatiment = 0;
+
+		for (Niveau eachNiveau: niveau){
+			prixBatiment += eachNiveau.calculerPrix();
+		}
+		return prixBatiment;
+	}
+
 }
