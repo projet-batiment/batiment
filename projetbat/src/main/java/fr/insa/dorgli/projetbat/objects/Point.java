@@ -2,8 +2,6 @@ package fr.insa.dorgli.projetbat.objects;
 
 import fr.insa.dorgli.projetbat.ToStringShort;
 import fr.insa.dorgli.projetbat.gui.CanvasContainer;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
 
 public class Point implements ToStringShort {
 	private double x;
@@ -41,7 +39,6 @@ public class Point implements ToStringShort {
 	}
 
 	public void draw(CanvasContainer canvasContainer) {
-		// NOTE: (( !!! FAUX !!! )) on passe ici de double(mètres) en int(CENTIMÈTRES) car java.awt ne marche qu'avec des int 🤦‍️
 		canvasContainer.drawPoint(x, y);
 	}
 

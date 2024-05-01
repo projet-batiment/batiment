@@ -3,9 +3,6 @@ package fr.insa.dorgli.projetbat.gui;
 import fr.insa.dorgli.projetbat.Config;
 import fr.insa.dorgli.projetbat.Controller;
 import fr.insa.dorgli.projetbat.TUI;
-import fr.insa.dorgli.projetbat.objects.Point;
-import java.util.Iterator;
-import java.util.Map.Entry;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -32,7 +29,6 @@ public class MainPane extends BorderPane {
 	private Button buttonFancy;
 	private Button buttonFancy2;
 	private Button buttonFancy3;
-	private Iterator<Entry<Integer, Point>> iterator;
 
 	private Label labelCanvasScale;
 
@@ -97,18 +93,11 @@ public class MainPane extends BorderPane {
 		buttonFancy2 = new Button("Fancy2 !");
 		buttonFancy2.setOnAction(event -> {
 			config.tui.log("clicked: fancy2");
-			if (iterator.hasNext()) {
-				Entry<Integer, Point> e = iterator.next();
-				config.tui.debug("mainPane: drawing next point: " + e.toString());
-				e.getValue().draw(canvasContainer);
-			} else {
-				config.tui.warn("mainPane: no more points to draw !");
-			}
+			canvasContainer.logTotalDrawingRectangle();
 		});
 		buttonFancy3 = new Button("Fancy3 !");
 		buttonFancy3.setOnAction(event -> {
 			config.tui.log("clicked: fancy3");
-			iterator = config.project.objects.points.entrySet().iterator();
 		});
 
 		labelCanvasScale = new Label("canvasScale: 1");

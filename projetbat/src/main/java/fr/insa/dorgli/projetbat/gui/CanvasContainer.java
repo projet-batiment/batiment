@@ -3,8 +3,6 @@ package fr.insa.dorgli.projetbat.gui;
 import fr.insa.dorgli.projetbat.Config;
 import fr.insa.dorgli.projetbat.objects.Niveau;
 import java.awt.Rectangle;
-import javafx.geometry.Bounds;
-import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
@@ -47,6 +45,7 @@ public class CanvasContainer extends Pane {
 
  		ctxt = canvas.getGraphicsContext2D();
 		totalDrawingRectangle = new Rectangle( (int)Math.ceil(super.getWidth()), (int)Math.ceil(super.getHeight()) );
+		fitPoint(0, 0); // origin doesn't move once it is initialized
 
 		zoomFactor = 2;
 		moveFactor = 20;
@@ -81,6 +80,12 @@ public class CanvasContainer extends Pane {
 
 		// finally: redraw
 		redraw();
+	}
+
+	// convertit les distances de la partie "structure" en distances sur le canvas
+	// actuellement (première norme) : (double) 1 mètre <=> (double) 100 pointsCanvas
+	public double dataToCanvasUnit(double dataUnit) {
+		return 100 * dataUnit;
 	}
 
 	public void moveView(Direction direction) {
@@ -118,14 +123,8 @@ public class CanvasContainer extends Pane {
 		config.tui.popWhere();
 	}
 
-	private void fitPoint(double x, double y) {
-		config.tui.diveWhere("canvasContainer/fitPoint");
-
-		int topLeftX = (int)(x - pointRadius);
-		int topLeftY = (int)(y - pointRadius);
-
-		Rectangle pointArea = new Rectangle(topLeftX, topLeftY, pointRadius, pointRadius);
-		config.tui.debug("IntPoint (" + x + ":" + y + ") lives in pointArea: " + pointArea);
+	private void fitArea(Rectangle pointArea) {
+		config.tui.diveWhere("canvasContainer/fitArea");
 
 		if (! totalDrawingRectangle.contains(pointArea)) {
 			config.tui.debug("Recalculating the totalDrawingRectangle: old " + totalDrawingRectangle.toString());
@@ -138,38 +137,51 @@ public class CanvasContainer extends Pane {
 		config.tui.popWhere();
 	}
 
+	private void fitPoint(double x, double y) {
+		config.tui.diveWhere("canvasContainer/fitPoint");
+
+		int topLeftX = (int)Math.floor(x - pointRadius - 1);
+		int topLeftY = (int)Math.floor(y - pointRadius - 1);
+		int diameter = 2 * pointRadius + 2; // +2 catches the double.floor
+
+		Rectangle pointArea = new Rectangle(topLeftX, topLeftY, diameter, diameter);
+		config.tui.debug("IntPoint (" + x + ":" + y + ") lives in pointArea: " + pointArea);
+
+		fitArea(pointArea);
+		config.tui.popWhere();
+	}
+
+	/**
+	 * @param x x coordinate in DATA standards, the coordinates are then converted into CANVAS standards
+	 * @param y x coordinate in DATA standards, the coordinates are then converted into CANVAS standards
+	 */
 	public void drawPoint(double x, double y) {
 		config.tui.diveWhere("canvasContainer/drawPoint");
 
-		double topLeftX = x - pointRadius;
-		double topLeftY = y - pointRadius;
-		fitPoint(x, y);
+		// convertir les distances (cf normalisations)
+		double canvasX = dataToCanvasUnit(x);
+		double canvasY = dataToCanvasUnit(y);
 
+		// ajouter le nouveau point au totalDrawingRectangle
+		fitPoint(canvasX, canvasY);
+
+		// dessiner + log
 		ctxt.setFill(pointColor);
-		ctxt.fillOval(topLeftX, topLeftY, pointRadius*2, pointRadius*2);
-		config.tui.debug("Drew point with center (" + x + ":" + y + "), radius " + pointRadius);
+		ctxt.fillOval(canvasX - pointRadius, canvasY - pointRadius, pointRadius*2, pointRadius*2);
+		config.tui.debug("Drew point with center (" + canvasX + ":" + canvasY + "), radius " + pointRadius);
 
 		config.tui.popWhere();
 	}
 
 	public void logTotalDrawingRectangle() {
+		ctxt.setStroke(Color.GREEN);
 		ctxt.strokeRect(totalDrawingRectangle.getMinX(), totalDrawingRectangle.getMinY(), totalDrawingRectangle.getWidth(), totalDrawingRectangle.getHeight());
-		config.tui.debug("canvasContainer/logEtc: " + totalDrawingRectangle.getMinX() + "," + totalDrawingRectangle.getMinY() + "," + totalDrawingRectangle.getWidth() + "," + totalDrawingRectangle.getHeight());
+		config.tui.debug("canvasContainer/logTotalDrawingRectangle: " + totalDrawingRectangle.getMinX() + "," + totalDrawingRectangle.getMinY() + "," + totalDrawingRectangle.getWidth() + "," + totalDrawingRectangle.getHeight());
 	}
 
 	public void clear() {
 		ctxt.clearRect(totalDrawingRectangle.getMinX(), totalDrawingRectangle.getMinY(), totalDrawingRectangle.getWidth(), totalDrawingRectangle.getHeight());
-
-		Bounds thisBoundsInScene = super.localToScene(super.getBoundsInLocal());
-		Node parent = super.getParent();
-		Bounds parentBoundsInScene = parent.localToScene(parent.getBoundsInLocal());
-
-		double parentRelativeMinX = parentBoundsInScene.getMinX() - thisBoundsInScene.getMinX();
-		double parentRelativeMinY = parentBoundsInScene.getMinY() - thisBoundsInScene.getMinY();
-		double parentWidth = parentBoundsInScene.getMaxX() - parentBoundsInScene.getMinX();
-		double parentHeight = parentBoundsInScene.getMaxY() - parentBoundsInScene.getMinY();
-
-		config.tui.debug("canvasContainer/clear: parentRelativeCoordinates: (" + parentRelativeMinX + ":" + parentRelativeMinY + ") -> (" + parentWidth + ":"+ parentHeight + ")");
+		config.tui.debug("canvasContainer/clear: parentRelativeCoordinates: (" + totalDrawingRectangle.getMinX() + ":" + totalDrawingRectangle.getMinY() + ") -> (" + totalDrawingRectangle.getWidth() + ":" + totalDrawingRectangle.getHeight() + ")");
 	}
 
 	public void redraw() {
@@ -178,9 +190,6 @@ public class CanvasContainer extends Pane {
 
 		ctxt.setFill(Color.TEAL);
 		ctxt.fillRect(0, 0, getWidth(), getHeight());
-
-//		ctxt.setFill(Color.BLUE);
-//		ctxt.fillRect(10, 10, 20, 20);
 
 		config.project.objects.drawAll(this);
 	}
