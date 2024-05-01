@@ -23,10 +23,12 @@ public class CanvasContainer extends Pane {
 	private double moveFactor;
 	private double scaledMoveFactor;
 
+	private boolean disableDrawing = true;
+
 	private int pointRadius = 5;
 	private Color pointColor = Color.RED;
 
-	private double scaleLabelValue = 1;
+//	private double scaleLabelValue = 1;
 
 	public CanvasContainer(Config config, MainPane mainPane) {
 		this.config = config;
@@ -35,13 +37,15 @@ public class CanvasContainer extends Pane {
 		canvas = new Canvas(this.getWidth(), this.getHeight());
 		canvas.widthProperty().bind(this.widthProperty());
 		canvas.widthProperty().addListener((o) -> {
-			config.tui.debug("canvasContainer: width has changed");
+			config.tui.debug("canvasContainer: widht has changed, recsaling and redrawing");
 			rescaleBufferedScaledValues();
+			redraw();
 		});
 		canvas.heightProperty().bind(this.heightProperty());
 		canvas.heightProperty().addListener((o) -> {
-			config.tui.debug("canvasContainer: height has changed");
+			config.tui.debug("canvasContainer: height has changed, recsaling and redrawing");
 			rescaleBufferedScaledValues();
+			redraw();
 		});
 
  		ctxt = canvas.getGraphicsContext2D();
@@ -49,6 +53,7 @@ public class CanvasContainer extends Pane {
 
 		zoomFactor = Math.sqrt(2);
 		moveFactor = 20;
+		disableDrawing = false;
 
 		super.getChildren().add(canvas);
 	}
@@ -82,7 +87,8 @@ public class CanvasContainer extends Pane {
 		scaleMoveFactor();
 
 		// finally: redraw
-		redraw();
+		config.tui.debug("canvasContainer/rescale Etc: triggering a redraw");
+//		redraw();
 	}
 
 	// convertit les distances de la partie "structure" en distances sur le canvas
@@ -93,13 +99,11 @@ public class CanvasContainer extends Pane {
 
 	//////////////// zoom and movement stuff
 
-	private void zoomWithScale(double scale) {
-		clear();
-
-//		Affine newAffine = ctxt.getTransform();
-//		newAffine.appendTranslation(- super.getWidth() / 2, - super.getHeight() / 2);
-//		newAffine.appendScale(scale, scale);
-//		newAffine.appendTranslation(super.getWidth() / (2 * scale), super.getHeight() / (2 * scale));
+	private Affine zoomWithScale(double scale) {
+		return zoomWithScale(scale, true);
+	}
+	private Affine zoomWithScale(double scale, boolean setIt) {
+		config.tui.debug("zoomWithScale: applying zoom with scale " + scale);
 
 		Affine affine = ctxt.getTransform();
 		double ourCenterX = scaleToView(super.getWidth() / 2 - affine.getTx());
@@ -107,13 +111,15 @@ public class CanvasContainer extends Pane {
 		affine.appendScale(scale, scale, ourCenterX, ourCenterY);
 
 		// apply the changes + GUI log
-		scaleLabelValue *= scale;
-		ctxt.setTransform(affine);
-		mainPane.setLabelCanvasScaleText(scaleLabelValue);
+		mainPane.setLabelCanvasScaleText(affine.getMxx());
+
+		// only apply if ask to do so
+		if (setIt)
+			ctxt.setTransform(affine);
 
 		// rescale every buffered scaling value
 		rescaleBufferedScaledValues();
-		redraw();
+		return affine;
 	}
 
 	public void TMPDrawOriginPoint() {
@@ -139,26 +145,71 @@ public class CanvasContainer extends Pane {
 		clear();
 
 		switch (direction) {
-			// TODO: le zoom s'effectue vers l'origine du canvas, pas vers le centre de la vue
 			// TODO: mauvaise adaptation lors d'un changement de taille de fenêtre (bugs visuels lors de redraw, formes étirées
 			//       => à cause du bind des Properties width et height
-			case Direction.FORWARDS -> {
-				zoomWithScale(zoomFactor);
-			}
-			case Direction.BACKWARDS -> {
-				zoomWithScale(1 / zoomFactor);
-			}
-
-			case Direction.CENTER, Direction.FIT -> config.tui.error("direction " + direction + " is not implemented yet!");
 
 			case Direction.LEFT -> ctxt.translate(- scaledMoveFactor, 0);
 			case Direction.RIGHT -> ctxt.translate(scaledMoveFactor, 0);
 			case Direction.UP -> ctxt.translate(0, - scaledMoveFactor);
 			case Direction.DOWN -> ctxt.translate(0, scaledMoveFactor);
 
+			case Direction.FORWARDS -> zoomWithScale(zoomFactor);
+			case Direction.BACKWARDS -> zoomWithScale(1 / zoomFactor);
+
+			case Direction.CENTER -> config.tui.error("direction " + direction + " is not implemented yet!");
+			case Direction.RESET -> {
+				Affine affine = zoomWithScale(1 / ctxt.getTransform().getMxx(), false);
+				affine.setTx(0);
+				affine.setTy(0);
+				ctxt.setTransform(affine);
+			}
+
+			case Direction.FIT -> {
+				disableDrawing = true;
+				recalculateTotalDrawingRectangle();
+				disableDrawing = false;
+
+				// totalDrawingRectangle ne peut techniquement jamais avoir des dimensions nulles
+				// donc on omet le contrôle d'une division par zéro
+				double fitScaleX = (double)Math.round(scaleToView(super.getWidth()) * 100 / totalDrawingRectangle.width) / 100;
+				double fitScaleY = (double)Math.round(scaleToView(super.getHeight()) * 100 / totalDrawingRectangle.height) / 100;
+				config.tui.debug("FIT: fitScaleX: " + scaleToView(super.getWidth()) + " / " + totalDrawingRectangle.width);
+				config.tui.debug("FIT: fitScaleY: " + scaleToView(super.getHeight()) + " / " + totalDrawingRectangle.height);
+				config.tui.debug("FIT: scales " + fitScaleX + ", " + fitScaleY);
+
+				Affine affine;
+				if (fitScaleX == fitScaleY) {
+					config.tui.debug("FIT: equals");
+					affine = zoomWithScale(fitScaleX, false);
+					affine.setTx((totalDrawingRectangle.width - canvas.getWidth()) / 2);
+					affine.setTy((canvas.getHeight()) / 2);
+					ctxt.setTransform(affine);
+				} else if (fitScaleX < fitScaleY) {
+					config.tui.debug("FIT: x < y");
+					affine = zoomWithScale(fitScaleX, false);
+					double ourCenterX = scaleToView(super.getWidth() / 2 - affine.getTx());
+//					affine.setTx(ourCenterX - totalDrawingRectangle.width / 2);
+//					affine.setTy(- totalDrawingRectangle.height / 2);
+					ctxt.setTransform(affine);
+//					affine.appendScale(fitScaleX, fitScaleX);
+//					affine.setTy(0);
+				} else {
+					config.tui.debug("FIT: y < x");
+					affine = zoomWithScale(fitScaleY, false);
+//					affine.setTx(- totalDrawingRectangle.width / 2);
+					double ourCenterY = scaleToView(super.getHeight() / 2 - affine.getTy());
+//					affine.setTy(ourCenterY - totalDrawingRectangle.height / 2);
+//					affine.appendScale(fitScaleY, fitScaleY);
+//					affine.setTx(0);
+				}
+
+				ctxt.setTransform(affine);
+			}
+
 			default -> config.tui.error("bad direction: " + direction);
 		}
 
+		config.tui.debug("triggering redraw");
 		redraw();
 		config.tui.popWhere();
 	}
@@ -220,9 +271,13 @@ public class CanvasContainer extends Pane {
 		fitPoint(x, y);
 
 		// dessiner + log
-		ctxt.setFill(pointColor);
-		ctxt.fillOval(x - pointRadius, y - pointRadius, pointRadius*2, pointRadius*2);
-		config.tui.debug("Drew point with center (" + x + ":" + y + "), radius " + pointRadius);
+		if (disableDrawing) {
+			config.tui.debug("NODRAW - processed point with center (" + x + ":" + y + "), radius " + pointRadius);
+		} else {
+			ctxt.setFill(pointColor);
+			ctxt.fillOval(x - pointRadius, y - pointRadius, pointRadius*2, pointRadius*2);
+			config.tui.debug("Drew point with center (" + x + ":" + y + "), radius " + pointRadius);
+		}
 
 		config.tui.popWhere();
 	}
@@ -241,20 +296,29 @@ public class CanvasContainer extends Pane {
 		fitPoint(0, 0);
 		fitPoint((int)canvas.getWidth(), (int)canvas.getHeight());
 
+		config.tui.debug("recalculateTotalDrawingRectangle: triggering redraw in order to place all the canvas-objects in that holly rectangle again");
 		redraw();
+	}
+
+	public void clearFancy() {
+		ctxt.setFill(Color.ORANGERED);
+		ctxt.fillRect(totalDrawingRectangle.getMinX(), totalDrawingRectangle.getMinY(), totalDrawingRectangle.getWidth(), totalDrawingRectangle.getHeight());
+		config.tui.debug("canvasContainer/clearFancy: totalDrawingRectangle coordinates: (" + totalDrawingRectangle.getMinX() + ":" + totalDrawingRectangle.getMinY() + ") -> (" + totalDrawingRectangle.getWidth() + ":" + totalDrawingRectangle.getHeight() + ")");
 	}
 
 	public void clear() {
 		ctxt.clearRect(totalDrawingRectangle.getMinX(), totalDrawingRectangle.getMinY(), totalDrawingRectangle.getWidth(), totalDrawingRectangle.getHeight());
-		config.tui.debug("canvasContainer/clear: parentRelativeCoordinates: (" + totalDrawingRectangle.getMinX() + ":" + totalDrawingRectangle.getMinY() + ") -> (" + totalDrawingRectangle.getWidth() + ":" + totalDrawingRectangle.getHeight() + ")");
+		config.tui.debug("canvasContainer/clear: totalDrawingRectangle coordinates: (" + totalDrawingRectangle.getMinX() + ":" + totalDrawingRectangle.getMinY() + ") -> (" + totalDrawingRectangle.getWidth() + ":" + totalDrawingRectangle.getHeight() + ")");
 	}
 
 	public void redraw() {
 		clear();
 		config.tui.debug("canvasContainer/redraw: graphicsContext.transform (affine): " + canvas.getGraphicsContext2D().getTransform().toString());
 
-		ctxt.setFill(Color.TEAL);
-		ctxt.fillRect(0, 0, getWidth(), getHeight());
+		if (! disableDrawing) {
+			ctxt.setFill(Color.TEAL);
+			ctxt.fillRect(0, 0, getWidth(), getHeight());
+		}
 
 		config.project.objects.drawAll(this);
 	}

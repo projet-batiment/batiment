@@ -20,6 +20,7 @@ public class MainPane extends BorderPane {
 	private Button buttonZoomIn;
 	private Button buttonZoomOut;
 	private Button buttonZoomFit;
+	private Button buttonResetView;
 
 	private Button buttonMoveLeft;
 	private Button buttonMoveRight;
@@ -64,6 +65,11 @@ public class MainPane extends BorderPane {
 			config.tui.log("clicked: zoom fit");
 			controller.moveCanvasView(Direction.FIT);
 		});
+		buttonResetView = new Button("Reset View");
+		buttonResetView.setOnAction(event -> {
+			config.tui.log("clicked: reset view");
+			controller.moveCanvasView(Direction.RESET);
+		});
 		buttonMoveLeft = new Button("Move Left");
 		buttonMoveLeft.setOnAction(event -> {
 			config.tui.log("clicked: move left");
@@ -93,7 +99,7 @@ public class MainPane extends BorderPane {
 		buttonFancy2 = new Button("Fancy2 !");
 		buttonFancy2.setOnAction(event -> {
 			config.tui.log("clicked: fancy2");
-			canvasContainer.logTotalDrawingRectangle();
+			canvasContainer.clearFancy();
 		});
 		buttonFancy3 = new Button("Fancy3 !");
 		buttonFancy3.setOnAction(event -> {
@@ -110,6 +116,7 @@ public class MainPane extends BorderPane {
 		    buttonZoomIn,
 		    buttonZoomOut,
 		    buttonZoomFit,
+		    buttonResetView,
 
 		    buttonMoveLeft,
 		    buttonMoveRight,
@@ -132,7 +139,7 @@ public class MainPane extends BorderPane {
 
 	public void setLabelCanvasScaleText(double value) {
 		// java et vive l'optimisation : round(value * 100) / 100 🥳
-		this.labelCanvasScale.setText("x" + (Math.round(value * 100) / 100));
+		this.labelCanvasScale.setText("x" + ((double)Math.round(value * 100) / 100));
 	}
 
 	public Stage getMainStage() {

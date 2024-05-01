@@ -8,6 +8,7 @@ public enum Direction {
 
 	CENTER,
 	FIT,
+	RESET,
 
 	FORWARDS,
 	BACKWARDS,
