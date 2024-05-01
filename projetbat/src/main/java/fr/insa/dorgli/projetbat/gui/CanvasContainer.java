@@ -7,6 +7,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.transform.Affine;
 
 public class CanvasContainer extends Pane {
 	private Config config;
@@ -45,19 +46,20 @@ public class CanvasContainer extends Pane {
 
  		ctxt = canvas.getGraphicsContext2D();
 		totalDrawingRectangle = new Rectangle( (int)Math.ceil(super.getWidth()), (int)Math.ceil(super.getHeight()) );
-		fitPoint(0, 0); // origin doesn't move once it is initialized
 
-		zoomFactor = 2;
+		zoomFactor = Math.sqrt(2);
 		moveFactor = 20;
 
 		super.getChildren().add(canvas);
 	}
 
+	//////////////// scaling stuff
+
 	// Renvoie dans les dimensions du canvas l'équivalent d'une dimension dans "la vue" (d'unité arbitraire, à zoom=1)
 	private double scaleToView(double incoming) {
 		// Mxx est un coef de la matrice de transformation du canvas, donc en partie de son zoom
 		// Comme le zoom est orthonormal, mxx=myy=mzz, donc on choisit mxx arbitrairement
-		return incoming * (zoomFactor * 1/ctxt.getTransform().getMxx());
+		return incoming * (1/ctxt.getTransform().getMxx());
 	}
 
 	// moveFactor définit un pas fixe qui ne s'adapte pas au zoom
@@ -73,6 +75,7 @@ public class CanvasContainer extends Pane {
 		config.tui.debug("canvasContainer/rescale Etc: rescaling the buffered values and refiting the canvas within the totalDrawingRectangle");
 
 		// first off: fit the canvas inside the totalDrawingRectangle
+		fitPoint(0, 0); // origin doesn't move once it is initialized
 		fitPoint((int)canvas.getWidth(), (int)canvas.getHeight());
 
 		// then: rescale all the buffered values
@@ -88,6 +91,48 @@ public class CanvasContainer extends Pane {
 		return 100 * dataUnit;
 	}
 
+	//////////////// zoom and movement stuff
+
+	private void zoomWithScale(double scale) {
+		clear();
+
+//		Affine newAffine = ctxt.getTransform();
+//		newAffine.appendTranslation(- super.getWidth() / 2, - super.getHeight() / 2);
+//		newAffine.appendScale(scale, scale);
+//		newAffine.appendTranslation(super.getWidth() / (2 * scale), super.getHeight() / (2 * scale));
+
+		Affine affine = ctxt.getTransform();
+		double ourCenterX = scaleToView(super.getWidth() / 2 - affine.getTx());
+		double ourCenterY = scaleToView(super.getHeight() / 2 - affine.getTy());
+		affine.appendScale(scale, scale, ourCenterX, ourCenterY);
+
+		// apply the changes + GUI log
+		scaleLabelValue *= scale;
+		ctxt.setTransform(affine);
+		mainPane.setLabelCanvasScaleText(scaleLabelValue);
+
+		// rescale every buffered scaling value
+		rescaleBufferedScaledValues();
+		redraw();
+	}
+
+	public void TMPDrawOriginPoint() {
+		Affine affine = ctxt.getTransform();
+		double ourCenterX = scaleToView(super.getWidth() / 2 - affine.getTx());
+		double ourCenterY = scaleToView(super.getHeight() / 2 - affine.getTy());
+		drawPoint(ourCenterX, ourCenterY, false);
+
+		double ourMaxX = scaleToView(super.getWidth() - affine.getTx());
+		double ourMaxY = scaleToView(super.getHeight() - affine.getTy());
+		double ourMinX = scaleToView(- affine.getTx());
+		double ourMinY = scaleToView(- affine.getTy());
+
+		drawPoint(ourMinX, ourMinY, false);
+		drawPoint(ourMaxX, ourMinY, false);
+		drawPoint(ourMaxX, ourMaxY, false);
+		drawPoint(ourMinX, ourMaxY, false);
+	}
+
 	public void moveView(Direction direction) {
 		config.tui.diveWhere("canvasContainer/moveView");
 
@@ -96,17 +141,12 @@ public class CanvasContainer extends Pane {
 		switch (direction) {
 			// TODO: le zoom s'effectue vers l'origine du canvas, pas vers le centre de la vue
 			// TODO: mauvaise adaptation lors d'un changement de taille de fenêtre (bugs visuels lors de redraw, formes étirées
+			//       => à cause du bind des Properties width et height
 			case Direction.FORWARDS -> {
-				ctxt.scale(zoomFactor, zoomFactor);
-				scaleLabelValue *= zoomFactor;
-				mainPane.setLabelCanvasScaleText(scaleLabelValue);
-				scaleMoveFactor();
+				zoomWithScale(zoomFactor);
 			}
 			case Direction.BACKWARDS -> {
-				ctxt.scale(1/zoomFactor, 1/zoomFactor);
-				scaleLabelValue /= zoomFactor;
-				mainPane.setLabelCanvasScaleText(scaleLabelValue);
-				scaleMoveFactor();
+				zoomWithScale(1 / zoomFactor);
 			}
 
 			case Direction.CENTER, Direction.FIT -> config.tui.error("direction " + direction + " is not implemented yet!");
@@ -122,6 +162,8 @@ public class CanvasContainer extends Pane {
 		redraw();
 		config.tui.popWhere();
 	}
+
+	//////////////// fit stuff
 
 	private void fitArea(Rectangle pointArea) {
 		config.tui.diveWhere("canvasContainer/fitArea");
@@ -151,32 +193,55 @@ public class CanvasContainer extends Pane {
 		config.tui.popWhere();
 	}
 
+	//////////////// draw stuff
+
 	/**
 	 * @param x x coordinate in DATA standards, the coordinates are then converted into CANVAS standards
 	 * @param y x coordinate in DATA standards, the coordinates are then converted into CANVAS standards
 	 */
 	public void drawPoint(double x, double y) {
+		drawPoint(x, y, true);
+	}
+	/**
+	 * @param x x coordinate
+	 * @param y x coordinate
+	 * @param convert wether to convert coordinates from DATA into CANVAS or not
+	 */
+	public void drawPoint(double x, double y, boolean convert) {
 		config.tui.diveWhere("canvasContainer/drawPoint");
 
-		// convertir les distances (cf normalisations)
-		double canvasX = dataToCanvasUnit(x);
-		double canvasY = dataToCanvasUnit(y);
+		if (convert) {
+			// convertir les distances (cf normalisations)
+			x = dataToCanvasUnit(x);
+			y = dataToCanvasUnit(y);
+		}
 
 		// ajouter le nouveau point au totalDrawingRectangle
-		fitPoint(canvasX, canvasY);
+		fitPoint(x, y);
 
 		// dessiner + log
 		ctxt.setFill(pointColor);
-		ctxt.fillOval(canvasX - pointRadius, canvasY - pointRadius, pointRadius*2, pointRadius*2);
-		config.tui.debug("Drew point with center (" + canvasX + ":" + canvasY + "), radius " + pointRadius);
+		ctxt.fillOval(x - pointRadius, y - pointRadius, pointRadius*2, pointRadius*2);
+		config.tui.debug("Drew point with center (" + x + ":" + y + "), radius " + pointRadius);
 
 		config.tui.popWhere();
 	}
+
+	//////////////// general purposal managing stuff
 
 	public void logTotalDrawingRectangle() {
 		ctxt.setStroke(Color.GREEN);
 		ctxt.strokeRect(totalDrawingRectangle.getMinX(), totalDrawingRectangle.getMinY(), totalDrawingRectangle.getWidth(), totalDrawingRectangle.getHeight());
 		config.tui.debug("canvasContainer/logTotalDrawingRectangle: " + totalDrawingRectangle.getMinX() + "," + totalDrawingRectangle.getMinY() + "," + totalDrawingRectangle.getWidth() + "," + totalDrawingRectangle.getHeight());
+	}
+
+	public void recalculateTotalDrawingRectangle() {
+		totalDrawingRectangle = new Rectangle();
+
+		fitPoint(0, 0);
+		fitPoint((int)canvas.getWidth(), (int)canvas.getHeight());
+
+		redraw();
 	}
 
 	public void clear() {

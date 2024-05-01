@@ -98,9 +98,10 @@ public class MainPane extends BorderPane {
 		buttonFancy3 = new Button("Fancy3 !");
 		buttonFancy3.setOnAction(event -> {
 			config.tui.log("clicked: fancy3");
+			canvasContainer.TMPDrawOriginPoint();
 		});
 
-		labelCanvasScale = new Label("canvasScale: 1");
+		labelCanvasScale = new Label("x1");
 
 		super.setRight(new VBox(
 		    buttonOpenFile,
@@ -130,7 +131,8 @@ public class MainPane extends BorderPane {
 	}
 
 	public void setLabelCanvasScaleText(double value) {
-		this.labelCanvasScale.setText("canvasScale: " + value);
+		// java et vive l'optimisation : round(value * 100) / 100 🥳
+		this.labelCanvasScale.setText("x" + (Math.round(value * 100) / 100));
 	}
 
 	public Stage getMainStage() {
