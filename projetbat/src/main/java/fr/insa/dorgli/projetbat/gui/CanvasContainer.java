@@ -62,9 +62,17 @@ public class CanvasContainer extends Pane {
 
 	// Renvoie dans les dimensions du canvas l'équivalent d'une dimension dans "la vue" (d'unité arbitraire, à zoom=1)
 	private double scaleToView(double incoming) {
+		return scaleToView(ctxt.getTransform(), incoming);
+	}
+	private double scaleToView(Affine affine, double incoming) {
 		// Mxx est un coef de la matrice de transformation du canvas, donc en partie de son zoom
 		// Comme le zoom est orthonormal, mxx=myy=mzz, donc on choisit mxx arbitrairement
-		return incoming * (1/ctxt.getTransform().getMxx());
+		return incoming / affine.getMxx();
+	}
+	private double scaleFromView(double incoming) {
+		// Mxx est un coef de la matrice de transformation du canvas, donc en partie de son zoom
+		// Comme le zoom est orthonormal, mxx=myy=mzz, donc on choisit mxx arbitrairement
+		return incoming * ctxt.getTransform().getMxx();
 	}
 
 	// moveFactor définit un pas fixe qui ne s'adapte pas au zoom
@@ -165,45 +173,39 @@ public class CanvasContainer extends Pane {
 			}
 
 			case Direction.FIT -> {
-				disableDrawing = true;
+				// on recalcule le totalDrawingRectangle
 				recalculateTotalDrawingRectangle();
-				disableDrawing = false;
+				config.tui.diveWhere("zoom FIT");
 
+				// on calcul le zoom à appliquer
 				// totalDrawingRectangle ne peut techniquement jamais avoir des dimensions nulles
 				// donc on omet le contrôle d'une division par zéro
-				double fitScaleX = (double)Math.round(scaleToView(super.getWidth()) * 100 / totalDrawingRectangle.width) / 100;
-				double fitScaleY = (double)Math.round(scaleToView(super.getHeight()) * 100 / totalDrawingRectangle.height) / 100;
-				config.tui.debug("FIT: fitScaleX: " + scaleToView(super.getWidth()) + " / " + totalDrawingRectangle.width);
-				config.tui.debug("FIT: fitScaleY: " + scaleToView(super.getHeight()) + " / " + totalDrawingRectangle.height);
-				config.tui.debug("FIT: scales " + fitScaleX + ", " + fitScaleY);
+				double fitScaleX = scaleToView(super.getWidth()) / totalDrawingRectangle.width;
+				double fitScaleY = scaleToView(super.getHeight()) / totalDrawingRectangle.height;
 
-				Affine affine;
-				if (fitScaleX == fitScaleY) {
-					config.tui.debug("FIT: equals");
-					affine = zoomWithScale(fitScaleX, false);
-					affine.setTx((totalDrawingRectangle.width - canvas.getWidth()) / 2);
-					affine.setTy((canvas.getHeight()) / 2);
-					ctxt.setTransform(affine);
-				} else if (fitScaleX < fitScaleY) {
-					config.tui.debug("FIT: x < y");
-					affine = zoomWithScale(fitScaleX, false);
-					double ourCenterX = scaleToView(super.getWidth() / 2 - affine.getTx());
-//					affine.setTx(ourCenterX - totalDrawingRectangle.width / 2);
-//					affine.setTy(- totalDrawingRectangle.height / 2);
-					ctxt.setTransform(affine);
-//					affine.appendScale(fitScaleX, fitScaleX);
-//					affine.setTy(0);
-				} else {
-					config.tui.debug("FIT: y < x");
-					affine = zoomWithScale(fitScaleY, false);
-//					affine.setTx(- totalDrawingRectangle.width / 2);
-					double ourCenterY = scaleToView(super.getHeight() / 2 - affine.getTy());
-//					affine.setTy(ourCenterY - totalDrawingRectangle.height / 2);
-//					affine.appendScale(fitScaleY, fitScaleY);
-//					affine.setTx(0);
+				// on applique le zoom voulu suivant si les fitScales présentent x<y ou x>y (cas x==y trivial)
+				double newRelativeScale = fitScaleY; // relative => par rapport au zoom actuel
+				if (Math.ceil(scaleToView(super.getWidth()) * 100 / totalDrawingRectangle.width) / 100 < Math.ceil(scaleToView(super.getHeight()) * 100 / totalDrawingRectangle.height) / 100) {
+					newRelativeScale = fitScaleX;
 				}
+				Affine affine = zoomWithScale(newRelativeScale);
 
+				// on ajoute une translation qui ramène le canvas au bon endroit (suivant le rectangle avec un nom trop long)
+				double newAbsoluteScale = affine.getMxx(); // absolute => par rapport au parent
+				affine.setTx(Math.max(0, super.getWidth() - totalDrawingRectangle.width * newAbsoluteScale) / 2 - scaleFromView(totalDrawingRectangle.x));
+				affine.setTy(Math.max(0, super.getHeight() - totalDrawingRectangle.height * newAbsoluteScale) / 2 - scaleFromView(totalDrawingRectangle.y));
+
+				// et on applique la nouvelle transformation !
 				ctxt.setTransform(affine);
+
+				// deux trois debugs qui ont été utiles et qui le seront peut être encore
+				config.tui.debug("fitScaleX: " + scaleToView(super.getWidth()) + " / " + totalDrawingRectangle.width);
+				config.tui.debug("fitScaleY: " + scaleToView(super.getHeight()) + " / " + totalDrawingRectangle.height);
+				config.tui.debug("scales " + fitScaleX + ", " + fitScaleY);
+				config.tui.debug("x " + super.getWidth() + ", " + totalDrawingRectangle.width * newAbsoluteScale + ", " + (Math.max(0, super.getWidth() - totalDrawingRectangle.width * newAbsoluteScale) / 2 - scaleFromView(totalDrawingRectangle.x)));
+				config.tui.debug("y " + super.getHeight() + ", " + totalDrawingRectangle.height * newAbsoluteScale + ", " + (Math.max(0, super.getHeight() - totalDrawingRectangle.height * newAbsoluteScale) / 2 - scaleFromView(totalDrawingRectangle.y)));
+
+				config.tui.popWhere();
 			}
 
 			default -> config.tui.error("bad direction: " + direction);
@@ -233,9 +235,9 @@ public class CanvasContainer extends Pane {
 	private void fitPoint(double x, double y) {
 		config.tui.diveWhere("canvasContainer/fitPoint");
 
-		int topLeftX = (int)Math.floor(x - pointRadius - 1);
-		int topLeftY = (int)Math.floor(y - pointRadius - 1);
-		int diameter = 2 * pointRadius + 2; // +2 catches the double.floor
+		int topLeftX = (int)Math.round(x - pointRadius - 1);
+		int topLeftY = (int)Math.round(y - pointRadius - 1);
+		int diameter = 2 * pointRadius + 2; // +2 catched a double.floor but not anymore. though is it really disturbing?
 
 		Rectangle pointArea = new Rectangle(topLeftX, topLeftY, diameter, diameter);
 		config.tui.debug("IntPoint (" + x + ":" + y + ") lives in pointArea: " + pointArea);
@@ -292,12 +294,16 @@ public class CanvasContainer extends Pane {
 
 	public void recalculateTotalDrawingRectangle() {
 		totalDrawingRectangle = new Rectangle();
+		boolean localDisableDrawing = disableDrawing;
+		disableDrawing = true; // do not draw anything !!
 
 		fitPoint(0, 0);
 		fitPoint((int)canvas.getWidth(), (int)canvas.getHeight());
 
 		config.tui.debug("recalculateTotalDrawingRectangle: triggering redraw in order to place all the canvas-objects in that holly rectangle again");
 		redraw();
+
+		disableDrawing = localDisableDrawing; // restore the original disableDrawing flag
 	}
 
 	public void clearFancy() {
@@ -316,6 +322,8 @@ public class CanvasContainer extends Pane {
 		config.tui.debug("canvasContainer/redraw: graphicsContext.transform (affine): " + canvas.getGraphicsContext2D().getTransform().toString());
 
 		if (! disableDrawing) {
+			Color c = Color.TEAL;
+			config.tui.debug("canvasContainer/redraw: drawing canvas with a " + c + " background");
 			ctxt.setFill(Color.TEAL);
 			ctxt.fillRect(0, 0, getWidth(), getHeight());
 		}

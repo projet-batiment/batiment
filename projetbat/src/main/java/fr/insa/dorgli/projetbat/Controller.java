@@ -42,7 +42,7 @@ public class Controller {
 						mainPane.getCanvasContainer().setCurrentNiveau(currentNiveau);
 						config.tui.debug("set the currentNiveau to " + currentNiveau.toString());
 					}
-					mainPane.getCanvasContainer().redraw();
+					mainPane.getCanvasContainer().moveView(Direction.FIT); // implies a redraw
 				}
 
 			} catch (FileNotFoundException ex) {
