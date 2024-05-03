@@ -1,6 +1,7 @@
 package fr.insa.dorgli.projetbat;
 
 import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Map;
 
 public class Objects {
@@ -23,6 +24,8 @@ public class Objects {
 	HashMap<Integer, TypeOuvertureNiveau> typesOuverturesNiveau = new HashMap<>();
 	HashMap<Integer, TypeRevetement> typesRevetement = new HashMap<>();
 	HashMap<Integer, TypeAppart> typesAppart = new HashMap<>();
+
+	private int idCounter = 0;
 
 	private String entrySetCustomString(Map.Entry entry) {
 		return TUI.green("" + entry.getKey()) + ": " + entry.getValue();
@@ -189,10 +192,6 @@ public class Objects {
 		return revetementsPlafondSol.get(id);
 	}
 
-//	public static void main(String[] args) {
-//		Deserialize.main(args); // pour l'instant
-//	}
-	
 	public int getIdOfMur(Mur murRecherche){
 		for (int i: murs.keySet()) {
 			if (murs.get(i) == murRecherche) {
@@ -319,4 +318,120 @@ public class Objects {
 		}
 		return -1;
 	}
+
+	public Point createPoint(double x, double y, int niveauId) {
+		Point point = new Point(x, y, niveauId);
+		int id = generateId();
+		points.put(id, point);
+		return point;
+	}
+
+	public Appart createAppart(String nom, String description, ArrayList<Piece> pieces, TypeAppart typeAppart) {
+		Appart appart = new Appart(nom, description, pieces, typeAppart);
+		int id = generateId();
+		apparts.put(id, appart);
+		return appart;
+	}
+
+	public Mur createMur(Point pointDebut, Point pointFin, double hauteur, TypeMur typeMur,
+			ArrayList<RevetementMur> revetements1, ArrayList<RevetementMur> revetements2,
+			ArrayList<OuvertureMur> ouvertures) {
+		Mur mur = new Mur(pointDebut, pointFin, hauteur, typeMur, revetements1, revetements2, ouvertures);
+		int id = generateId();
+		murs.put(id, mur);
+		return mur;
+	}
+
+	public Niveau createNiveau(String nom, String description, double hauteur, ArrayList<Piece> pieces, ArrayList<Appart> apparts) {
+		Niveau niveau = new Niveau(nom, description, hauteur, pieces, apparts);
+		int id = generateId();
+		niveaux.put(id, niveau);
+		return niveau;
+	}
+
+	public OuvertureMur createOuvertureMur(TypeOuvertureMur typeOuverture, double posL, double posH) {
+		OuvertureMur ouvertureMur = new OuvertureMur(typeOuverture, posL, posH);
+		int id = generateId();
+		ouverturesMur.put(id, ouvertureMur);
+		return ouvertureMur;
+	}
+
+	public OuvertureNiveaux createOuvertureNiveaux(TypeOuvertureNiveau typeOuvertureNiveau, double posL, double posH) {
+		OuvertureNiveaux ouvertureNiveaux = new OuvertureNiveaux(typeOuvertureNiveau, posL, posH);
+		int id = generateId();
+		ouverturesNiveaux.put(id, ouvertureNiveaux);
+		return ouvertureNiveaux;
+	}
+
+	public Piece createPiece(String nom, String description, ArrayList<Point> points, ArrayList<Mur> murs, PlafondSol plafond, PlafondSol sol) {
+		Piece piece = new Piece(nom, description, points, murs, plafond, sol);
+		int id = generateId();
+		pieces.put(id, piece);
+		return piece;
+	}
+
+	public PlafondSol createPlafondSol(ArrayList<RevetementPlafondSol> revetements, ArrayList<OuvertureNiveaux> ouvertures) {
+		PlafondSol plafondSol = new PlafondSol(revetements, ouvertures);
+		int id = generateId();
+		plafondsSols.put(id, plafondSol);
+		return plafondSol;
+	}
+
+	public RevetementMur createRevetementMur(TypeRevetement typeRevetement, double pos1L, double pos1H, double pos2L, double pos2H) {
+		RevetementMur revetementMur = new RevetementMur(typeRevetement, pos1L, pos1H, pos2L, pos2H);
+		int id = generateId();
+		revetementsMur.put(id, revetementMur);
+		return revetementMur;
+	}
+
+	public RevetementPlafondSol createRevetementPlafondSol(TypeRevetement typeRevetement, double pos1L, double pos1H, double pos2L, double pos2H) {
+		RevetementPlafondSol revetementPlafondSol = new RevetementPlafondSol(typeRevetement, pos1L, pos1H, pos2L, pos2H);
+		int id = generateId();
+		revetementsPlafondSol.put(id, revetementPlafondSol);
+		return revetementPlafondSol;
+	}
+
+	public TypeAppart createTypeAppart(String name, String description) {
+		TypeAppart typeAppart = new TypeAppart(name, description);
+		int id = generateId();
+		typesAppart.put(id, typeAppart);
+		return typeAppart;
+	}
+
+	public TypeMur createTypeMur(String nom, String description, double epaisseur, double prixUnitaire) {
+		TypeMur typeMur = new TypeMur(nom, description, epaisseur, prixUnitaire);
+		int id = generateId();
+		typesMur.put(id, typeMur);
+		return typeMur;
+	}
+
+	public TypeOuvertureMur createTypeOuvertureMur(String nom, String description, double hauteur, double largeur, double prixOuverture) {
+		TypeOuvertureMur typeOuvertureMur = new TypeOuvertureMur(nom, description, hauteur, largeur, prixOuverture);
+		int id = generateId();
+		typesOuverturesMur.put(id, typeOuvertureMur);
+		return typeOuvertureMur;
+	}
+
+	public TypeOuvertureNiveau createTypeOuvertureNiveau(String nom, String description, double hauteur, double largeur, double prixOuverture) {
+		TypeOuvertureNiveau typeOuvertureNiveau = new TypeOuvertureNiveau(nom, description, hauteur, largeur, prixOuverture);
+		int id = generateId();
+		typesOuverturesNiveau.put(id, typeOuvertureNiveau);
+		return typeOuvertureNiveau;
+	}
+
+	public TypeRevetement createTypeRevetement(String nom, String description, double prixUnitaire) {
+		TypeRevetement typeRevetement = new TypeRevetement(nom, description, prixUnitaire);
+		int id = generateId();
+		typesRevetement.put(id, typeRevetement);
+		return typeRevetement;
+	}
+
+	public int generateId() {
+		idCounter++;
+		return idCounter;
+	}
+
+    public void setIdCounter(int newIdCounter) {
+        idCounter = newIdCounter;
+    }
 }
