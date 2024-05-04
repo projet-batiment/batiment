@@ -8,7 +8,7 @@ public class Config {
 
 	final int version = 3;
 	final int minimumSavefileVersion = 2;
-	final int maximumSavefileVersion = 2;
+	final int maximumSavefileVersion = 3;
 
 	String projectName;
 	String projectDescription;

@@ -133,8 +133,8 @@ public class Deserialize {
 
 						debug("reading objects section " + TUI.blue("'" + objectsKind + "'") + "...");
 
-						HashMap map;
 						switch (objectsKind) {
+							case "Batiment" ->		newConfig.objects.batiments = batimentsFromString(newConfig.objects);
 							case "Point" -> 		newConfig.objects.points = pointsFromString();
 							case "TypeRevetement" -> 	newConfig.objects.typesRevetement = typeRevetementsFromString();
 							case "TypeOuvertureMur" -> 	newConfig.objects.typesOuverturesMur = typeOuvertureMursFromString();
@@ -215,6 +215,7 @@ public class Deserialize {
 						errorParse(line, "failed parsing the version as an integer: " + e.getMessage());
 					}
 				}
+
 				case "projectName" -> {
 					String unescaped = unescapeString(command[1]);
 					newConfig.projectName = unescaped;
@@ -225,6 +226,34 @@ public class Deserialize {
 					newConfig.projectDescription = unescaped;
 					debug("set projectDescription = '" + unescaped + "'");
 				}
+
+				case "default Batiment" -> {
+					try {
+						int batimentId = Integer.parseInt(command[1]);
+						Batiment batiment = newConfig.objects.batiments.get(batimentId);
+						if (batiment == null) {
+							errorIdNone("Batiment", batimentId);
+						} else {
+							debug("default Batiment read: " + batimentId);
+						}
+					} catch (NumberFormatException e) {
+						errorParse(line, e.getMessage());
+					}
+				}
+				case "default Niveau" -> {
+					try {
+						int niveauId = Integer.parseInt(command[1]);
+						Niveau niveau = newConfig.objects.niveaux.get(niveauId);
+						if (niveau == null) {
+							errorIdNone("Niveau", niveauId);
+						} else {
+							debug("default Niveau read: " + niveauId);
+						}
+					} catch (NumberFormatException e) {
+						errorParse(line, e.getMessage());
+					}
+				}
+
 				default -> errorSyntax(line);
 			}
 		}
@@ -1151,4 +1180,117 @@ public class Deserialize {
 		config.tui.popWhere();
 		return niveaux;
 	}
+
+	/// Batiment
+	private HashMap<Integer, Batiment> batimentsFromString (Objects objects) throws IOException {
+		config.tui.diveWhere("Batiments");
+		config.tui.begin();
+		HashMap<Integer, Batiment> batiments = new HashMap<>();
+
+		final String regex = String.join(",", REGEX_INT, REGEX_STRING, REGEX_STRING, REGEX_STRING); // TODO: typeBatiment (VALUE->id)
+		debug("regex: '" + regex + "'");
+		for (
+			SmartReader.ReadResult result = sreader.readLine();
+			result.getState() == SmartReader.ReadState.LINE;
+			result = sreader.readLine()
+		) {
+			String line = result.getText();
+			if (line.matches(regex)) {
+				String[] splitted = line.split(",");
+
+				int id = Integer.parseInt(splitted[0]);
+
+				if (batiments.keySet().contains(id)) {
+					errorIdAgain(id);
+				}
+
+				try {
+					// lire les propriétés directes du batiment
+					// TODO!!! typeBatiment: changer enum->classe
+					TypeBatiment tb = TypeBatiment.valueOf(splitted[3]);
+
+					ArrayList<Appart> apparts = new ArrayList<>();
+					ArrayList<Niveau> niveaux = new ArrayList<>();
+					config.tui.diveWhere("props");
+					for (
+						SmartReader.ReadResult propResult = sreader.readLine();
+						propResult.getState() == SmartReader.ReadState.LINE;
+						propResult = sreader.readLine()
+					) {
+						String propType = propResult.getText().replaceFirst("PROP:", "");
+						debug("reading batiment prop '" + TUI.blue(propType) + "'");
+						switch (propType) {
+							case "apparts" -> {
+								SmartReader.ReadResult appartsResult = sreader.readLine();
+								if (appartsResult.getState() == SmartReader.ReadState.LINE) {
+									String text = appartsResult.getText();
+									if (text.matches(REGEX_INT + "(," + REGEX_INT + ")*")) {
+										String[] appartsIds = text.split(",");
+										for (String each: appartsIds) {
+											try {
+												int appartId = Integer.parseInt(each);
+												Appart appart = objects.apparts.get(appartId);
+												if (appart == null) {
+													errorIdNone("Appart", appartId);
+												} else {
+													apparts.add(appart);
+												}
+											} catch (NumberFormatException e) {
+												errorParse(line, e.getMessage());
+											}
+										}
+									} else {
+										errorSyntax(text);
+									}
+								} else {
+									error("LINE expected but received " + result.getState() + " when reading apparts for Batiment");
+								}
+							}
+							case "niveaux" -> {
+								SmartReader.ReadResult niveauxResult = sreader.readLine();
+								if (niveauxResult.getState() == SmartReader.ReadState.LINE) {
+									String text = niveauxResult.getText();
+									if (text.matches(REGEX_INT + "(," + REGEX_INT + ")*")) {
+										String[] niveauxIds = text.split(",");
+										for (String each: niveauxIds) {
+											try {
+												int niveauId = Integer.parseInt(each);
+												Niveau niveau = objects.niveaux.get(niveauId);
+												if (niveau == null) {
+													errorIdNone("Niveau", niveauId);
+												} else {
+													niveaux.add(niveau);
+												}
+											} catch (NumberFormatException e) {
+												errorParse(line, e.getMessage());
+											}
+										}
+									} else {
+										errorSyntax(text);
+									}
+								} else {
+									error("LINE expected but received " + result.getState() + " when reading niveaux for Batiment");
+								}
+							}
+							default -> error("propriété du batiment inconnue: '" + propResult.getText() + "'");
+						}
+					}
+					config.tui.popWhere();
+
+					Batiment object = new Batiment(unescapeString(splitted[1]), unescapeString(splitted[2]), tb, niveaux, apparts);
+					batiments.put(id, object);
+					debug("read " + object);
+				} catch (NumberFormatException e) {
+					errorParse(line, e.getMessage());
+				}
+			} else {
+				errorSyntax(line);
+			}
+		}
+
+		config.tui.ended();
+		config.tui.popWhere();
+		return batiments;
+	}
+
 }

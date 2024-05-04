@@ -6,6 +6,7 @@ import java.util.Map;
 
 public class Objects {
 	// liste des objets
+	HashMap<Integer, Batiment> batiments = new HashMap<>();
 	HashMap<Integer, Niveau> niveaux = new HashMap<>();
 	HashMap<Integer, Appart> apparts = new HashMap<>();
 	HashMap<Integer, Piece> pieces = new HashMap<>();
@@ -27,18 +28,18 @@ public class Objects {
 
 	private int idCounter = 0;
 
-    ///// idCounter generator + setter
+	///// idCounter generator + setter
 
 	public int generateId() {
 		idCounter++;
 		return idCounter;
 	}
 
-    public void setIdCounter(int newIdCounter) {
-        idCounter = newIdCounter;
-    }
+	public void setIdCounter(int newIdCounter) {
+		idCounter = newIdCounter;
+	}
 
-    ///// create objects (with ID & into matching HashMap)
+	///// create objects (with ID & into matching HashMap)
 
 	public Point createPoint(double x, double y, int niveauId) {
 		Point point = new Point(x, y, niveauId);
@@ -61,6 +62,13 @@ public class Objects {
 		int id = generateId();
 		murs.put(id, mur);
 		return mur;
+	}
+
+	public Batiment createBatiment(String nom, String description, TypeBatiment typeBatiment, ArrayList<Niveau> niveaux, ArrayList<Appart> apparts) {
+		Batiment batiment = new Batiment(nom, description, typeBatiment, niveaux, apparts);
+		int id = generateId();
+		batiments.put(id, batiment);
+		return batiment;
 	}
 
 	public Niveau createNiveau(String nom, String description, double hauteur, ArrayList<Piece> pieces, ArrayList<Appart> apparts) {
@@ -147,7 +155,7 @@ public class Objects {
 		return typeRevetement;
 	}
 
-    ///// get object according to ID, return null (HashMap.get) if not found
+	///// get object according to ID, return null (HashMap.get) if not found
 
 	public Mur getMurById(int id) {
 		return murs.get(id);
@@ -159,6 +167,10 @@ public class Objects {
 
 	public Appart getAppartById(int id) {
 		return apparts.get(id);
+	}
+
+	public Batiment getBatimentById(int id) {
+		return batiments.get(id);
 	}
 
 	public Niveau getNiveauById(int id) {
@@ -205,7 +217,7 @@ public class Objects {
 		return revetementsPlafondSol.get(id);
 	}
 
-    ///// get ID of object, return -1 if not found
+	///// get ID of object, return -1 if not found
 
 	public int getIdOfMur(Mur murRecherche){
 		for (int i: murs.keySet()) {
@@ -216,7 +228,16 @@ public class Objects {
 		return -1;
 	}
 
-	public int getIdOfNiveau(Niveau niveauRecherche){			
+	public int getIdOfBatiment(Batiment batimentRecherche){
+		for (int i: batiments.keySet()){
+			if (batiments.get(i) == batimentRecherche){
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	public int getIdOfNiveau(Niveau niveauRecherche){
 		for (int i: niveaux.keySet()){
 			if (niveaux.get(i) == niveauRecherche){
 				return i;
@@ -334,7 +355,7 @@ public class Objects {
 		return -1;
 	}
 
-    ///// toString custom implementation
+	///// toString custom implementation
 
 	private String entrySetCustomString(Map.Entry entry) {
 		return TUI.green("" + entry.getKey()) + ": " + entry.getValue();
@@ -345,6 +366,12 @@ public class Objects {
 		String out = "Objects {\n";
 
 		// éléments principaux
+		out += "    " + TUI.blue("batiments") + " " + batiments.size() + " {\n";
+		for (Map.Entry each: batiments.entrySet()) {
+			out += "        " + entrySetCustomString(each) + ",\n";
+		}
+		out += "    },\n";
+
 		out += "    " + TUI.blue("niveaux") + " " + niveaux.size() + " {\n";
 		for (Map.Entry each: niveaux.entrySet()) {
 			out += "        " + entrySetCustomString(each) + ",\n";

@@ -74,9 +74,18 @@ public class Niveau implements ToString, ToStringShort {
 		}
 		piecesOut += "]";
 
+		String appartsOut = "[ ";
+		for (Appart each : apparts) {
+			appartsOut += each.toStringShort() + ", ";
+		}
+		appartsOut += "]";
+
 		return "Niveau {\n"
+				+ pfx + "nom: '" + nom + "',\n"
+				+ pfx + "description: '" + description + "',\n"
 				+ pfx + "hauteur: " + hauteur + ",\n"
 				+ pfx + "pieces: " + piecesOut + ",\n"
+				+ pfx + "apparts: " + appartsOut + ",\n"
 				+ "}";
 	}
 

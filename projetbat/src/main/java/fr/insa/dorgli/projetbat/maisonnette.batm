@@ -1,5 +1,5 @@
 FILE
-version:2
+version:3
 projectName:Maisonnette
 projectDescription:Exemple de sauvegarde simple mais complète qui contient tout ce que notre programme sait gérer;&nIl permet aussi de faire tests en tous genres sur le bon fonctionnement de notre logiciel
 EOS:FILE
@@ -391,3 +391,18 @@ PROP:pieces
 EOS:Entry
 
 EOS:Niveau
+
+OBJECTS:Batiment
+
+501,Mon batiment,Contient quelques pièces de vie ainsi qu'un garage basique,MAISON
+PROP:apparts
+701
+PROP:niveaux
+751,752
+EOS:Entry
+
+EOS:Batiment
+
+FILE
+default Niveau:751
+EOS:FILE

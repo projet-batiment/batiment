@@ -56,4 +56,9 @@ public class Appart {
 		piecesOut += "]";
 		return "Appart {\n  nom: '" + nom + "',\n  description: '" + description + "',\n  pieces: " + piecesOut + ",\n  typeAppart: " + typeAppart.toStringShort() + "\n}";
 	}
+
+	public String toStringShort() {
+		// TODO -> toStringShort -> afficher l'ID
+		return "( #" + nom + " )";
+	}
 }
