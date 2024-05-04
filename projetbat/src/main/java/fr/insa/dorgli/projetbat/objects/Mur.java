@@ -1,5 +1,6 @@
 package fr.insa.dorgli.projetbat.objects;
 
+import fr.insa.dorgli.projetbat.TUI;
 import fr.insa.dorgli.projetbat.ToString;
 import fr.insa.dorgli.projetbat.ToStringShort;
 import fr.insa.dorgli.projetbat.gui.CanvasContainer;
@@ -144,7 +145,9 @@ public class Mur implements ToString, ToStringShort {
 		return prixMur;
 	}
 
-	public void draw(CanvasContainer canvasContainer) {
+	public void draw(TUI tui, CanvasContainer canvasContainer) {
+		// TODO: amnesic debug dive
+		tui.debug("Mur: drawing Mur " + this.toStringShort());
 		canvasContainer.drawLine(pointDebut.getX(), pointDebut.getY(), pointFin.getX(), pointFin.getY(), 10, Color.DIMGRAY);
 	}
 

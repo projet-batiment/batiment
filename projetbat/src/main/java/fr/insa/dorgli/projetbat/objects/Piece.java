@@ -1,7 +1,9 @@
 package fr.insa.dorgli.projetbat.objects;
 
+import fr.insa.dorgli.projetbat.TUI;
 import fr.insa.dorgli.projetbat.ToString;
 import fr.insa.dorgli.projetbat.ToStringShort;
+import fr.insa.dorgli.projetbat.gui.CanvasContainer;
 import java.util.ArrayList;
 
 public class Piece implements ToString, ToStringShort {
@@ -130,5 +132,17 @@ public class Piece implements ToString, ToStringShort {
 		prixPiece += sol.calculerPrix(airePiece);
 
 		return prixPiece;
+	}
+
+	public void draw(TUI tui, CanvasContainer canvasContainer) {
+		tui.diveWhere("piece.draw");
+
+		tui.debug("in Piece " + this.toStringShort());
+		tui.debug("drawing " + murs.size() + " murs objects");
+		for (Mur m: murs) {
+			m.draw(tui, canvasContainer);
+		}
+
+		tui.popWhere();
 	}
 }

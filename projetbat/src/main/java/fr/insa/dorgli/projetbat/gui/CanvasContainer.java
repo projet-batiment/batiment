@@ -368,7 +368,8 @@ public class CanvasContainer extends Pane {
 			ctxt.fillRect(0, 0, getWidth(), getHeight());
 		}
 
-		config.project.objects.drawAll(this);
+		if (currentNiveau != null)
+			currentNiveau.draw(config.tui, this);
 	}
 
 	public Niveau getCurrentNiveau() {
