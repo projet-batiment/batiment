@@ -27,114 +27,127 @@ public class Objects {
 
 	private int idCounter = 0;
 
-	private String entrySetCustomString(Map.Entry entry) {
-		return TUI.green("" + entry.getKey()) + ": " + entry.getValue();
+    ///// idCounter generator + setter
+
+	public int generateId() {
+		idCounter++;
+		return idCounter;
 	}
 
-	@Override
-	public String toString() {
-		String out = "Objects {\n";
+    public void setIdCounter(int newIdCounter) {
+        idCounter = newIdCounter;
+    }
 
-		// éléments principaux
-		out += "    " + TUI.blue("niveaux") + " " + niveaux.size() + " {\n";
-		for (Map.Entry each: niveaux.entrySet()) {
-			out += "        " + entrySetCustomString(each) + ",\n";
-		}
-		out += "    },\n";
+    ///// create objects (with ID & into matching HashMap)
 
-		out += "    " + TUI.blue("apparts") + " " + apparts.size() + " {\n";
-		for (Map.Entry each: apparts.entrySet()) {
-			out += "        " + entrySetCustomString(each) + ",\n";
-		}
-		out += "    },\n";
-		
-		out += "    " + TUI.blue("pieces") + " " + pieces.size() + " {\n";
-		for (Map.Entry each: pieces.entrySet()) {
-			out += "        " + entrySetCustomString(each) + ",\n";
-		}
-		out += "    },\n";
-		
-		out += "    " + TUI.blue("murs") + " " + murs.size() + " {\n";
-		for (Map.Entry each: murs.entrySet()) {
-			out += "        " + entrySetCustomString(each) + ",\n";
-		}
-		out += "    },\n";
-		
-		out += "    " + TUI.blue("plafondsSols") + " " + plafondsSols.size() + " {\n";
-		for (Map.Entry each: plafondsSols.entrySet()) {
-			out += "        " + entrySetCustomString(each) + ",\n";
-		}
-		out += "    },\n";
-		
-		out += "    " + TUI.blue("points") + " " + points.size() + " {\n";
-		for (Map.Entry each: points.entrySet()) {
-			out += "        " + entrySetCustomString(each) + ",\n";
-		}
-		out += "    },\n";
-		out += "\n";
-
-		// ouvertures
-		out += "    " + TUI.blue("ouverturesMur") + " " + ouverturesMur.size() + " {\n";
-		for (Map.Entry each: ouverturesMur.entrySet()) {
-			out += "        " + entrySetCustomString(each) + ",\n";
-		}
-		out += "    },\n";
-		
-		out += "    " + TUI.blue("ouverturesNiveaux") + " " + ouverturesNiveaux.size() + " {\n";
-		for (Map.Entry each: ouverturesNiveaux.entrySet()) {
-			out += "        " + entrySetCustomString(each) + ",\n";
-		}
-		out += "    },\n";
-		out += "\n";
-
-		// revetements
-		out += "    " + TUI.blue("revetementsMur") + " " + revetementsMur.size() + " {\n";
-		for (Map.Entry each: revetementsMur.entrySet()) {
-			out += "        " + entrySetCustomString(each) + ",\n";
-		}
-		out += "    },\n";
-
-		out += "    " + TUI.blue("revetementsPlafondSol") + " " + revetementsPlafondSol.size() + " {\n";
-		for (Map.Entry each: revetementsPlafondSol.entrySet()) {
-			out += "        " + entrySetCustomString(each) + ",\n";
-		}
-		out += "    },\n";
-		out += "\n";
-		
-		// types
-		out += "    " + TUI.blue("typesMur") + " " + typesMur.size() + " {\n";
-		for (Map.Entry each: typesMur.entrySet()) {
-			out += "        " + entrySetCustomString(each) + ",\n";
-		}
-		out += "    },\n";
-
-		out += "    " + TUI.blue("typesOuverturesMur") + " " + typesOuverturesMur.size() + " {\n";
-		for (Map.Entry each: typesOuverturesMur.entrySet()) {
-			out += "        " + entrySetCustomString(each) + ",\n";
-		}
-		out += "    },\n";
-		
-		out += "    " + TUI.blue("typesOuverturesNiveau") + " " + typesOuverturesNiveau.size() + " {\n";
-		for (Map.Entry each: typesOuverturesNiveau.entrySet()) {
-			out += "        " + entrySetCustomString(each) + ",\n";
-		}
-		out += "    },\n";
-		out += "\n";
-
-		out += "    " + TUI.blue("typesRevetement") + " " + typesRevetement.size() + " {\n";
-		for (Map.Entry each: typesRevetement.entrySet()) {
-			out += "        " + entrySetCustomString(each) + ",\n";
-		}
-		out += "    },\n";
-
-		out += "    " + TUI.blue("typesAppart") + " " + typesAppart.size() + " {\n";
-		for (Map.Entry each: typesAppart.entrySet()) {
-			out += "        " + entrySetCustomString(each) + ",\n";
-		}
-		out += "    },\n";
-
-		return out + "}";
+	public Point createPoint(double x, double y, int niveauId) {
+		Point point = new Point(x, y, niveauId);
+		int id = generateId();
+		points.put(id, point);
+		return point;
 	}
+
+	public Appart createAppart(String nom, String description, ArrayList<Piece> pieces, TypeAppart typeAppart) {
+		Appart appart = new Appart(nom, description, pieces, typeAppart);
+		int id = generateId();
+		apparts.put(id, appart);
+		return appart;
+	}
+
+	public Mur createMur(Point pointDebut, Point pointFin, double hauteur, TypeMur typeMur,
+			ArrayList<RevetementMur> revetements1, ArrayList<RevetementMur> revetements2,
+			ArrayList<OuvertureMur> ouvertures) {
+		Mur mur = new Mur(pointDebut, pointFin, hauteur, typeMur, revetements1, revetements2, ouvertures);
+		int id = generateId();
+		murs.put(id, mur);
+		return mur;
+	}
+
+	public Niveau createNiveau(String nom, String description, double hauteur, ArrayList<Piece> pieces, ArrayList<Appart> apparts) {
+		Niveau niveau = new Niveau(nom, description, hauteur, pieces, apparts);
+		int id = generateId();
+		niveaux.put(id, niveau);
+		return niveau;
+	}
+
+	public OuvertureMur createOuvertureMur(TypeOuvertureMur typeOuverture, double posL, double posH) {
+		OuvertureMur ouvertureMur = new OuvertureMur(typeOuverture, posL, posH);
+		int id = generateId();
+		ouverturesMur.put(id, ouvertureMur);
+		return ouvertureMur;
+	}
+
+	public OuvertureNiveaux createOuvertureNiveaux(TypeOuvertureNiveau typeOuvertureNiveau, double posL, double posH) {
+		OuvertureNiveaux ouvertureNiveaux = new OuvertureNiveaux(typeOuvertureNiveau, posL, posH);
+		int id = generateId();
+		ouverturesNiveaux.put(id, ouvertureNiveaux);
+		return ouvertureNiveaux;
+	}
+
+	public Piece createPiece(String nom, String description, ArrayList<Point> points, ArrayList<Mur> murs, PlafondSol plafond, PlafondSol sol) {
+		Piece piece = new Piece(nom, description, points, murs, plafond, sol);
+		int id = generateId();
+		pieces.put(id, piece);
+		return piece;
+	}
+
+	public PlafondSol createPlafondSol(ArrayList<RevetementPlafondSol> revetements, ArrayList<OuvertureNiveaux> ouvertures) {
+		PlafondSol plafondSol = new PlafondSol(revetements, ouvertures);
+		int id = generateId();
+		plafondsSols.put(id, plafondSol);
+		return plafondSol;
+	}
+
+	public RevetementMur createRevetementMur(TypeRevetement typeRevetement, double pos1L, double pos1H, double pos2L, double pos2H) {
+		RevetementMur revetementMur = new RevetementMur(typeRevetement, pos1L, pos1H, pos2L, pos2H);
+		int id = generateId();
+		revetementsMur.put(id, revetementMur);
+		return revetementMur;
+	}
+
+	public RevetementPlafondSol createRevetementPlafondSol(TypeRevetement typeRevetement, double pos1L, double pos1H, double pos2L, double pos2H) {
+		RevetementPlafondSol revetementPlafondSol = new RevetementPlafondSol(typeRevetement, pos1L, pos1H, pos2L, pos2H);
+		int id = generateId();
+		revetementsPlafondSol.put(id, revetementPlafondSol);
+		return revetementPlafondSol;
+	}
+
+	public TypeAppart createTypeAppart(String name, String description) {
+		TypeAppart typeAppart = new TypeAppart(name, description);
+		int id = generateId();
+		typesAppart.put(id, typeAppart);
+		return typeAppart;
+	}
+
+	public TypeMur createTypeMur(String nom, String description, double epaisseur, double prixUnitaire) {
+		TypeMur typeMur = new TypeMur(nom, description, epaisseur, prixUnitaire);
+		int id = generateId();
+		typesMur.put(id, typeMur);
+		return typeMur;
+	}
+
+	public TypeOuvertureMur createTypeOuvertureMur(String nom, String description, double hauteur, double largeur, double prixOuverture) {
+		TypeOuvertureMur typeOuvertureMur = new TypeOuvertureMur(nom, description, hauteur, largeur, prixOuverture);
+		int id = generateId();
+		typesOuverturesMur.put(id, typeOuvertureMur);
+		return typeOuvertureMur;
+	}
+
+	public TypeOuvertureNiveau createTypeOuvertureNiveau(String nom, String description, double hauteur, double largeur, double prixOuverture) {
+		TypeOuvertureNiveau typeOuvertureNiveau = new TypeOuvertureNiveau(nom, description, hauteur, largeur, prixOuverture);
+		int id = generateId();
+		typesOuverturesNiveau.put(id, typeOuvertureNiveau);
+		return typeOuvertureNiveau;
+	}
+
+	public TypeRevetement createTypeRevetement(String nom, String description, double prixUnitaire) {
+		TypeRevetement typeRevetement = new TypeRevetement(nom, description, prixUnitaire);
+		int id = generateId();
+		typesRevetement.put(id, typeRevetement);
+		return typeRevetement;
+	}
+
+    ///// get object according to ID, return null (HashMap.get) if not found
 
 	public Mur getMurById(int id) {
 		return murs.get(id);
@@ -191,6 +204,8 @@ public class Objects {
 	public RevetementPlafondSol getRevetementPlafondSolById(int id) {
 		return revetementsPlafondSol.get(id);
 	}
+
+    ///// get ID of object, return -1 if not found
 
 	public int getIdOfMur(Mur murRecherche){
 		for (int i: murs.keySet()) {
@@ -319,119 +334,114 @@ public class Objects {
 		return -1;
 	}
 
-	public Point createPoint(double x, double y, int niveauId) {
-		Point point = new Point(x, y, niveauId);
-		int id = generateId();
-		points.put(id, point);
-		return point;
+    ///// toString custom implementation
+
+	private String entrySetCustomString(Map.Entry entry) {
+		return TUI.green("" + entry.getKey()) + ": " + entry.getValue();
 	}
 
-	public Appart createAppart(String nom, String description, ArrayList<Piece> pieces, TypeAppart typeAppart) {
-		Appart appart = new Appart(nom, description, pieces, typeAppart);
-		int id = generateId();
-		apparts.put(id, appart);
-		return appart;
-	}
+	@Override
+	public String toString() {
+		String out = "Objects {\n";
 
-	public Mur createMur(Point pointDebut, Point pointFin, double hauteur, TypeMur typeMur,
-			ArrayList<RevetementMur> revetements1, ArrayList<RevetementMur> revetements2,
-			ArrayList<OuvertureMur> ouvertures) {
-		Mur mur = new Mur(pointDebut, pointFin, hauteur, typeMur, revetements1, revetements2, ouvertures);
-		int id = generateId();
-		murs.put(id, mur);
-		return mur;
-	}
+		// éléments principaux
+		out += "    " + TUI.blue("niveaux") + " " + niveaux.size() + " {\n";
+		for (Map.Entry each: niveaux.entrySet()) {
+			out += "        " + entrySetCustomString(each) + ",\n";
+		}
+		out += "    },\n";
 
-	public Niveau createNiveau(String nom, String description, double hauteur, ArrayList<Piece> pieces, ArrayList<Appart> apparts) {
-		Niveau niveau = new Niveau(nom, description, hauteur, pieces, apparts);
-		int id = generateId();
-		niveaux.put(id, niveau);
-		return niveau;
-	}
+		out += "    " + TUI.blue("apparts") + " " + apparts.size() + " {\n";
+		for (Map.Entry each: apparts.entrySet()) {
+			out += "        " + entrySetCustomString(each) + ",\n";
+		}
+		out += "    },\n";
 
-	public OuvertureMur createOuvertureMur(TypeOuvertureMur typeOuverture, double posL, double posH) {
-		OuvertureMur ouvertureMur = new OuvertureMur(typeOuverture, posL, posH);
-		int id = generateId();
-		ouverturesMur.put(id, ouvertureMur);
-		return ouvertureMur;
-	}
+		out += "    " + TUI.blue("pieces") + " " + pieces.size() + " {\n";
+		for (Map.Entry each: pieces.entrySet()) {
+			out += "        " + entrySetCustomString(each) + ",\n";
+		}
+		out += "    },\n";
 
-	public OuvertureNiveaux createOuvertureNiveaux(TypeOuvertureNiveau typeOuvertureNiveau, double posL, double posH) {
-		OuvertureNiveaux ouvertureNiveaux = new OuvertureNiveaux(typeOuvertureNiveau, posL, posH);
-		int id = generateId();
-		ouverturesNiveaux.put(id, ouvertureNiveaux);
-		return ouvertureNiveaux;
-	}
+		out += "    " + TUI.blue("murs") + " " + murs.size() + " {\n";
+		for (Map.Entry each: murs.entrySet()) {
+			out += "        " + entrySetCustomString(each) + ",\n";
+		}
+		out += "    },\n";
 
-	public Piece createPiece(String nom, String description, ArrayList<Point> points, ArrayList<Mur> murs, PlafondSol plafond, PlafondSol sol) {
-		Piece piece = new Piece(nom, description, points, murs, plafond, sol);
-		int id = generateId();
-		pieces.put(id, piece);
-		return piece;
-	}
+		out += "    " + TUI.blue("plafondsSols") + " " + plafondsSols.size() + " {\n";
+		for (Map.Entry each: plafondsSols.entrySet()) {
+			out += "        " + entrySetCustomString(each) + ",\n";
+		}
+		out += "    },\n";
 
-	public PlafondSol createPlafondSol(ArrayList<RevetementPlafondSol> revetements, ArrayList<OuvertureNiveaux> ouvertures) {
-		PlafondSol plafondSol = new PlafondSol(revetements, ouvertures);
-		int id = generateId();
-		plafondsSols.put(id, plafondSol);
-		return plafondSol;
-	}
+		out += "    " + TUI.blue("points") + " " + points.size() + " {\n";
+		for (Map.Entry each: points.entrySet()) {
+			out += "        " + entrySetCustomString(each) + ",\n";
+		}
+		out += "    },\n";
+		out += "\n";
 
-	public RevetementMur createRevetementMur(TypeRevetement typeRevetement, double pos1L, double pos1H, double pos2L, double pos2H) {
-		RevetementMur revetementMur = new RevetementMur(typeRevetement, pos1L, pos1H, pos2L, pos2H);
-		int id = generateId();
-		revetementsMur.put(id, revetementMur);
-		return revetementMur;
-	}
+		// ouvertures
+		out += "    " + TUI.blue("ouverturesMur") + " " + ouverturesMur.size() + " {\n";
+		for (Map.Entry each: ouverturesMur.entrySet()) {
+			out += "        " + entrySetCustomString(each) + ",\n";
+		}
+		out += "    },\n";
 
-	public RevetementPlafondSol createRevetementPlafondSol(TypeRevetement typeRevetement, double pos1L, double pos1H, double pos2L, double pos2H) {
-		RevetementPlafondSol revetementPlafondSol = new RevetementPlafondSol(typeRevetement, pos1L, pos1H, pos2L, pos2H);
-		int id = generateId();
-		revetementsPlafondSol.put(id, revetementPlafondSol);
-		return revetementPlafondSol;
-	}
+		out += "    " + TUI.blue("ouverturesNiveaux") + " " + ouverturesNiveaux.size() + " {\n";
+		for (Map.Entry each: ouverturesNiveaux.entrySet()) {
+			out += "        " + entrySetCustomString(each) + ",\n";
+		}
+		out += "    },\n";
+		out += "\n";
 
-	public TypeAppart createTypeAppart(String name, String description) {
-		TypeAppart typeAppart = new TypeAppart(name, description);
-		int id = generateId();
-		typesAppart.put(id, typeAppart);
-		return typeAppart;
-	}
+		// revetements
+		out += "    " + TUI.blue("revetementsMur") + " " + revetementsMur.size() + " {\n";
+		for (Map.Entry each: revetementsMur.entrySet()) {
+			out += "        " + entrySetCustomString(each) + ",\n";
+		}
+		out += "    },\n";
 
-	public TypeMur createTypeMur(String nom, String description, double epaisseur, double prixUnitaire) {
-		TypeMur typeMur = new TypeMur(nom, description, epaisseur, prixUnitaire);
-		int id = generateId();
-		typesMur.put(id, typeMur);
-		return typeMur;
-	}
+		out += "    " + TUI.blue("revetementsPlafondSol") + " " + revetementsPlafondSol.size() + " {\n";
+		for (Map.Entry each: revetementsPlafondSol.entrySet()) {
+			out += "        " + entrySetCustomString(each) + ",\n";
+		}
+		out += "    },\n";
+		out += "\n";
 
-	public TypeOuvertureMur createTypeOuvertureMur(String nom, String description, double hauteur, double largeur, double prixOuverture) {
-		TypeOuvertureMur typeOuvertureMur = new TypeOuvertureMur(nom, description, hauteur, largeur, prixOuverture);
-		int id = generateId();
-		typesOuverturesMur.put(id, typeOuvertureMur);
-		return typeOuvertureMur;
-	}
+		// types
+		out += "    " + TUI.blue("typesMur") + " " + typesMur.size() + " {\n";
+		for (Map.Entry each: typesMur.entrySet()) {
+			out += "        " + entrySetCustomString(each) + ",\n";
+		}
+		out += "    },\n";
 
-	public TypeOuvertureNiveau createTypeOuvertureNiveau(String nom, String description, double hauteur, double largeur, double prixOuverture) {
-		TypeOuvertureNiveau typeOuvertureNiveau = new TypeOuvertureNiveau(nom, description, hauteur, largeur, prixOuverture);
-		int id = generateId();
-		typesOuverturesNiveau.put(id, typeOuvertureNiveau);
-		return typeOuvertureNiveau;
-	}
+		out += "    " + TUI.blue("typesOuverturesMur") + " " + typesOuverturesMur.size() + " {\n";
+		for (Map.Entry each: typesOuverturesMur.entrySet()) {
+			out += "        " + entrySetCustomString(each) + ",\n";
+		}
+		out += "    },\n";
 
-	public TypeRevetement createTypeRevetement(String nom, String description, double prixUnitaire) {
-		TypeRevetement typeRevetement = new TypeRevetement(nom, description, prixUnitaire);
-		int id = generateId();
-		typesRevetement.put(id, typeRevetement);
-		return typeRevetement;
-	}
+		out += "    " + TUI.blue("typesOuverturesNiveau") + " " + typesOuverturesNiveau.size() + " {\n";
+		for (Map.Entry each: typesOuverturesNiveau.entrySet()) {
+			out += "        " + entrySetCustomString(each) + ",\n";
+		}
+		out += "    },\n";
+		out += "\n";
 
-	public int generateId() {
-		idCounter++;
-		return idCounter;
-	}
+		out += "    " + TUI.blue("typesRevetement") + " " + typesRevetement.size() + " {\n";
+		for (Map.Entry each: typesRevetement.entrySet()) {
+			out += "        " + entrySetCustomString(each) + ",\n";
+		}
+		out += "    },\n";
 
-    public void setIdCounter(int newIdCounter) {
-        idCounter = newIdCounter;
-    }
+		out += "    " + TUI.blue("typesAppart") + " " + typesAppart.size() + " {\n";
+		for (Map.Entry each: typesAppart.entrySet()) {
+			out += "        " + entrySetCustomString(each) + ",\n";
+		}
+		out += "    },\n";
+
+		return out + "}";
+	}
 }
