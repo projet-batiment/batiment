@@ -1,12 +1,12 @@
 package fr.insa.dorgli.projetbat.objects;
 
-import fr.insa.dorgli.projetbat.TUI;
 import fr.insa.dorgli.projetbat.ToString;
 import fr.insa.dorgli.projetbat.ToStringShort;
-import fr.insa.dorgli.projetbat.gui.CanvasContainer;
+import fr.insa.dorgli.projetbat.gui.Drawable;
+import fr.insa.dorgli.projetbat.gui.DrawingContext;
 import java.util.ArrayList;
 
-public class Piece implements ToString, ToStringShort {
+public class Piece implements ToString, ToStringShort, Drawable {
 	private String nom;
 	private String description;
 	private ArrayList<Point> points;
@@ -134,15 +134,15 @@ public class Piece implements ToString, ToStringShort {
 		return prixPiece;
 	}
 
-	public void draw(TUI tui, CanvasContainer canvasContainer) {
-		tui.diveWhere("piece.draw");
+	public void draw(DrawingContext dcx) {
+		dcx.tui().diveWhere("piece.draw");
 
-		tui.debug("in Piece " + this.toStringShort());
-		tui.debug("drawing " + murs.size() + " murs objects");
-		for (Mur m: murs) {
-			m.draw(tui, canvasContainer);
+		dcx.tui().debug("in Piece " + this.toStringShort());
+		dcx.tui().debug("drawing " + murs.size() + " murs objects");
+		for (Mur mur: murs) {
+			dcx.draw(mur);
 		}
 
-		tui.popWhere();
+		dcx.tui().popWhere();
 	}
 }

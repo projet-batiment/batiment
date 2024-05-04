@@ -1,12 +1,12 @@
 package fr.insa.dorgli.projetbat.objects;
 
-import fr.insa.dorgli.projetbat.TUI;
 import fr.insa.dorgli.projetbat.ToString;
 import fr.insa.dorgli.projetbat.ToStringShort;
-import fr.insa.dorgli.projetbat.gui.CanvasContainer;
+import fr.insa.dorgli.projetbat.gui.Drawable;
+import fr.insa.dorgli.projetbat.gui.DrawingContext;
 import java.util.ArrayList;
 
-public class Niveau implements ToString, ToStringShort {
+public class Niveau implements ToString, ToStringShort, Drawable {
 	private String nom;
 	private String description;
 	private double hauteur;
@@ -84,16 +84,16 @@ public class Niveau implements ToString, ToStringShort {
 				+ "}";
 	}
 
-	public void draw(TUI tui, CanvasContainer canvasContainer) {
-		tui.diveWhere("niveau.draw");
+	public void draw(DrawingContext dcx) {
+		dcx.tui().diveWhere("niveau.draw");
 
-		tui.debug("in Niveau " + this.toStringShort());
-		tui.debug("drawing " + pieces.size() + " piece objects");
-		for (Piece p: pieces) {
-			p.draw(tui, canvasContainer);
+		dcx.tui().debug("in Niveau " + this.toStringShort());
+		dcx.tui().debug("drawing " + pieces.size() + " piece objects");
+		for (Piece piece: pieces) {
+			dcx.draw(piece);
 		}
 
-		tui.popWhere();
+		dcx.tui().popWhere();
 	}
 
 	public double calculerPrix() {

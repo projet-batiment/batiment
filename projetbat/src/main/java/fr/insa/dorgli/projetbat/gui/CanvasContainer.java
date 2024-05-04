@@ -15,6 +15,7 @@ public class CanvasContainer extends Pane {
 
 	private Canvas canvas;
 	private GraphicsContext ctxt;
+	private DrawingContext drawingContext;
 
 	private Niveau currentNiveau;
 	private Rectangle totalDrawingRectangle;
@@ -50,6 +51,9 @@ public class CanvasContainer extends Pane {
 
  		ctxt = canvas.getGraphicsContext2D();
 		totalDrawingRectangle = new Rectangle( (int)Math.ceil(super.getWidth()), (int)Math.ceil(super.getHeight()) );
+
+		drawingContext = new DrawingContext(config, this);
+		drawingContext.setFocusedObject(currentNiveau); // TODO!! TMP !!
 
 		zoomFactor = Math.sqrt(2);
 		moveFactor = 20;
@@ -304,8 +308,9 @@ public class CanvasContainer extends Pane {
 		y2 = dataToCanvasUnit(y2);
 
 		// ajouter les extrémités de la nouvelle ligne au totalDrawingRectangle
-		fitPoint(x1, y1, (int)Math.ceil(width/2));
-		fitPoint(x2, y2, (int)Math.ceil(width/2));
+		// on prend ici width pour rayon, mais en soit tant que fit prend plus large, ç'est nickel
+		fitPoint(x1, y1, (int)Math.ceil(width));
+		fitPoint(x2, y2, (int)Math.ceil(width));
 
 		// dessiner + log
 		if (disableDrawing) {
@@ -368,8 +373,9 @@ public class CanvasContainer extends Pane {
 			ctxt.fillRect(0, 0, getWidth(), getHeight());
 		}
 
-		if (currentNiveau != null)
-			currentNiveau.draw(config.tui, this);
+//		if (currentNiveau != null)
+//			currentNiveau.draw(config.tui, this);
+		drawingContext.redraw();
 	}
 
 	public Niveau getCurrentNiveau() {
@@ -378,5 +384,6 @@ public class CanvasContainer extends Pane {
 
 	public void setCurrentNiveau(Niveau currentNiveau) {
 		this.currentNiveau = currentNiveau;
+		drawingContext.setFocusedObject(currentNiveau); // TODO!! TMP !!
 	}
 }
