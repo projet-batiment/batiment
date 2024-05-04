@@ -2,7 +2,9 @@ package fr.insa.dorgli.projetbat.objects;
 
 import fr.insa.dorgli.projetbat.ToString;
 import fr.insa.dorgli.projetbat.ToStringShort;
+import fr.insa.dorgli.projetbat.gui.CanvasContainer;
 import java.util.ArrayList;
+import javafx.scene.paint.Color;
 
 public class Mur implements ToString, ToStringShort {
 	private Point pointDebut;
@@ -140,6 +142,10 @@ public class Mur implements ToString, ToStringShort {
 			prixMur += o.getTypeOuverture().getPrixOuverture();
 		}
 		return prixMur;
+	}
+
+	public void draw(CanvasContainer canvasContainer) {
+		canvasContainer.drawLine(pointDebut.getX(), pointDebut.getY(), pointFin.getX(), pointFin.getY(), 10, Color.DIMGRAY);
 	}
 
 	public String toStringShort() {

@@ -28,7 +28,12 @@ public class Objects {
 	public HashMap<Integer, TypeAppart> typesAppart = new HashMap<>();
 
 	public void drawAll(CanvasContainer canvasContainer) {
-		System.out.println("INF: draw/objects: points " + points.size() + ": " + points.toString());
+		System.out.println("INF: draw/objects: murs (" + murs.size() + "): " + murs.toString());
+		for (Entry<Integer, Mur> p: murs.entrySet()) {
+			p.getValue().draw(canvasContainer);
+		}
+
+		System.out.println("INF: draw/objects: points (" + points.size() + "): " + points.toString());
 		for (Entry<Integer, Point> p: points.entrySet()) {
 			p.getValue().draw(canvasContainer);
 		}

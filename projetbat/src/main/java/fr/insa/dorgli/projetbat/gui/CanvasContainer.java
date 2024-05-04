@@ -233,14 +233,17 @@ public class CanvasContainer extends Pane {
 	}
 
 	private void fitPoint(double x, double y) {
+		fitPoint(x, y, pointRadius);
+	}
+	private void fitPoint(double x, double y, int radius) {
 		config.tui.diveWhere("canvasContainer/fitPoint");
 
-		int topLeftX = (int)Math.round(x - pointRadius - 1);
-		int topLeftY = (int)Math.round(y - pointRadius - 1);
-		int diameter = 2 * pointRadius + 2; // +2 catched a double.floor but not anymore. though is it really disturbing?
+		int topLeftX = (int)Math.floor(x - radius);
+		int topLeftY = (int)Math.floor(y - radius);
+		int diameter = 2 * radius + 2; // +2 kind of catches the double.floor-s
 
 		Rectangle pointArea = new Rectangle(topLeftX, topLeftY, diameter, diameter);
-		config.tui.debug("IntPoint (" + x + ":" + y + ") lives in pointArea: " + pointArea);
+		config.tui.debug("Point (" + x + ":" + y + "), radius " + radius + ", lives in pointArea: " + pointArea);
 
 		fitArea(pointArea);
 		config.tui.popWhere();
@@ -279,6 +282,43 @@ public class CanvasContainer extends Pane {
 			ctxt.setFill(pointColor);
 			ctxt.fillOval(x - pointRadius, y - pointRadius, pointRadius*2, pointRadius*2);
 			config.tui.debug("Drew point with center (" + x + ":" + y + "), radius " + pointRadius);
+		}
+
+		config.tui.popWhere();
+	}
+
+	/**
+	 * @param x1 first x coordinate in DATA standards
+	 * @param y1 first y coordinate in DATA standards
+	 * @param x2 second x coordinate in DATA standards
+	 * @param y2 second y coordinate in DATA standards
+	 * @param width width of the line in DATA standards
+	 * @param color
+	 */
+	public void drawLine(double x1, double y1, double x2, double y2, double width, Color color) {
+		config.tui.diveWhere("canvasContainer/drawPoint");
+
+		x1 = dataToCanvasUnit(x1);
+		y1 = dataToCanvasUnit(y1);
+		x2 = dataToCanvasUnit(x2);
+		y2 = dataToCanvasUnit(y2);
+
+		// ajouter les extrémités de la nouvelle ligne au totalDrawingRectangle
+		fitPoint(x1, y1, (int)Math.ceil(width/2));
+		fitPoint(x2, y2, (int)Math.ceil(width/2));
+
+		// dessiner + log
+		if (disableDrawing) {
+			config.tui.debug("NODRAW - processed line with (" + x1 + ":" + y1 + ") -- (" + x2 + ":" + y2 + "), width " + width);
+		} else {
+			double savedWidth = ctxt.getLineWidth();
+
+			ctxt.setStroke(color);
+			ctxt.setLineWidth(width);
+			ctxt.strokeLine(x1, y1, x2, y2);
+			config.tui.debug("Drew line with (" + x1 + ":" + y1 + ") -- (" + x2 + ":" + y2 + "), width " + width);
+
+			ctxt.setLineWidth(savedWidth);
 		}
 
 		config.tui.popWhere();
