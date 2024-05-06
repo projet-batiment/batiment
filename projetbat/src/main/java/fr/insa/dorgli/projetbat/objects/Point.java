@@ -50,4 +50,9 @@ public class Point implements ToStringShort {
 		// TODO -> toStringShort -> afficher l'ID au lieu du nom
 		return "( #" + "TODO" + " )";
 	}
+
+	public String serialize(Objects objects) {
+		int id = objects.getIdOfPoint(this);
+		return String.join(",", id, x, y, niveauId);
+	}
 }
