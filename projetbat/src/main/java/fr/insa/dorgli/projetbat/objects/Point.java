@@ -1,4 +1,7 @@
-package fr.insa.dorgli.projetbat;
+package fr.insa.dorgli.projetbat.objects;
+
+import fr.insa.dorgli.projetbat.ToStringShort;
+import fr.insa.dorgli.projetbat.gui.CanvasContainer;
 
 public class Point implements ToStringShort {
 	private double x;
@@ -33,6 +36,10 @@ public class Point implements ToStringShort {
 
 	public void setNiveauId(int niveauId) {
 		this.niveauId = niveauId;
+	}
+
+	public void draw(CanvasContainer canvasContainer) {
+		canvasContainer.drawPoint(x, y);
 	}
 
 	public String toString() {

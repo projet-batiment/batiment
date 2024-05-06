@@ -1,8 +1,12 @@
-package fr.insa.dorgli.projetbat;
+package fr.insa.dorgli.projetbat.objects;
 
+import fr.insa.dorgli.projetbat.ToString;
+import fr.insa.dorgli.projetbat.ToStringShort;
+import fr.insa.dorgli.projetbat.gui.Drawable;
+import fr.insa.dorgli.projetbat.gui.DrawingContext;
 import java.util.ArrayList;
 
-public class Piece implements ToString, ToStringShort {
+public class Piece implements ToString, ToStringShort, Drawable {
 	private String nom;
 	private String description;
 	private ArrayList<Point> points;
@@ -128,5 +132,17 @@ public class Piece implements ToString, ToStringShort {
 		prixPiece += sol.calculerPrix(airePiece);
 
 		return prixPiece;
+	}
+
+	public void draw(DrawingContext dcx) {
+		dcx.tui().diveWhere("piece.draw");
+
+		dcx.tui().debug("in Piece " + this.toStringShort());
+		dcx.tui().debug("drawing " + murs.size() + " murs objects");
+		for (Mur mur: murs) {
+			dcx.draw(mur);
+		}
+
+		dcx.tui().popWhere();
 	}
 }

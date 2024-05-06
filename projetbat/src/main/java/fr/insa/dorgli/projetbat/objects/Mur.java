@@ -1,8 +1,13 @@
-package fr.insa.dorgli.projetbat;
+package fr.insa.dorgli.projetbat.objects;
 
+import fr.insa.dorgli.projetbat.ToString;
+import fr.insa.dorgli.projetbat.ToStringShort;
+import fr.insa.dorgli.projetbat.gui.Drawable;
+import fr.insa.dorgli.projetbat.gui.DrawingContext;
 import java.util.ArrayList;
+import javafx.scene.paint.Color;
 
-public class Mur implements ToString, ToStringShort {
+public class Mur implements ToString, ToStringShort, Drawable {
 	private Point pointDebut;
 	private Point pointFin;
 	private double hauteur;
@@ -113,9 +118,9 @@ public class Mur implements ToString, ToStringShort {
 	// fonction temporaire si l'on passe un jour aux outils géométriques de java.awt...
 	// utile pour calculer les aires du mur et de ses revetments
 	private double longueur() {
-		double dx = pointDebut.getX() - pointFin.getX();
+		double dcx = pointDebut.getX() - pointFin.getX();
 		double dy = pointFin.getY() - pointDebut.getY();
-		return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+		return Math.sqrt(Math.pow(dcx, 2) + Math.pow(dy, 2));
 	}
 
 	public double aire() {
@@ -138,6 +143,12 @@ public class Mur implements ToString, ToStringShort {
 			prixMur += o.getTypeOuverture().getPrixOuverture();
 		}
 		return prixMur;
+	}
+
+	public void draw(DrawingContext dcx) {
+		// TODO: amnesic debug dive
+		dcx.tui().debug("Mur: drawing Mur " + this.toStringShort());
+		dcx.drawLine(pointDebut.getX(), pointDebut.getY(), pointFin.getX(), pointFin.getY(), 10, Color.DIMGRAY);
 	}
 
 	public String toStringShort() {

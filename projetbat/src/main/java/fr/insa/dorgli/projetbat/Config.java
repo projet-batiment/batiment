@@ -4,16 +4,17 @@ package fr.insa.dorgli.projetbat;
 // Cette classe contient donc tous les paramètres de l'application (verbeux, etc)
 // Ainsi qu'un annuaire de tous les objets créés lors de l'exécution (dans des hashmap)
 public class Config {
-	TUI tui = new TUI();
+	public class GuiConfig {
+		public static double MIN_WIDTH = 500;
+		public static double MIN_HEIGHT = 400;
+	}
 
-	final int version = 3;
+	final int version = 4;
 	final int minimumSavefileVersion = 2;
 	final int maximumSavefileVersion = 3;
 
-	String projectName;
-	String projectDescription;
+	// TODO: classe UI (abstraite??) pour gérer les logs tui/gui
+	public TUI tui = new TUI(TUI.LogLevel.DEBUG);
 
-	String savefilePath;
-
-	Objects objects = new Objects();
+	public Project project = new Project();
 }

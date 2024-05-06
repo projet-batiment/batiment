@@ -1,5 +1,6 @@
 package fr.insa.dorgli.projetbat;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.LineNumberReader;
@@ -9,9 +10,9 @@ public class SmartReader {
 	private final LineNumberReader reader;
 	private final TUI tui;
 
-	public SmartReader(TUI tui, String path) throws FileNotFoundException {
+	public SmartReader(TUI tui, File file) throws FileNotFoundException {
 		this.tui = tui;
-		this.reader = new LineNumberReader(new FileReader(path));
+		this.reader = new LineNumberReader(new FileReader(file));
 	}
 
 	public int getLineNumber() {

@@ -1,4 +1,4 @@
-package fr.insa.dorgli.projetbat;
+package fr.insa.dorgli.projetbat.objects;
 
 // Notes pour plus tard :
 //   - Est ce que l'utilisateur peut créer différents types de bâtiments lors de l'exécution ?

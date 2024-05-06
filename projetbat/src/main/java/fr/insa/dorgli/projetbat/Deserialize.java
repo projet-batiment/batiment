@@ -1,5 +1,24 @@
 package fr.insa.dorgli.projetbat;
 
+import fr.insa.dorgli.projetbat.objects.TypeMur;
+import fr.insa.dorgli.projetbat.objects.Objects;
+import fr.insa.dorgli.projetbat.objects.Piece;
+import fr.insa.dorgli.projetbat.objects.TypeRevetement;
+import fr.insa.dorgli.projetbat.objects.Niveau;
+import fr.insa.dorgli.projetbat.objects.Appart;
+import fr.insa.dorgli.projetbat.objects.Batiment;
+import fr.insa.dorgli.projetbat.objects.TypeOuvertureMur;
+import fr.insa.dorgli.projetbat.objects.TypeOuvertureNiveau;
+import fr.insa.dorgli.projetbat.objects.OuvertureNiveaux;
+import fr.insa.dorgli.projetbat.objects.Point;
+import fr.insa.dorgli.projetbat.objects.OuvertureMur;
+import fr.insa.dorgli.projetbat.objects.PlafondSol;
+import fr.insa.dorgli.projetbat.objects.RevetementMur;
+import fr.insa.dorgli.projetbat.objects.RevetementPlafondSol;
+import fr.insa.dorgli.projetbat.objects.TypeAppart;
+import fr.insa.dorgli.projetbat.objects.Mur;
+import fr.insa.dorgli.projetbat.objects.TypeBatiment;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -106,14 +125,17 @@ public class Deserialize {
 		return out;
 	}
 
-	public void deserializeFile(String path) throws FileNotFoundException {
+	public Project deserializeFile(String path) throws FileNotFoundException {
+		return deserializeFile(new File(path));
+	}
+
+	public Project deserializeFile(File file) throws FileNotFoundException {
 		config.tui.diveWhere("deserializeFile");
 		config.tui.begin();
 
-		Config newConfig = new Config();
-		newConfig.tui = config.tui;
+		Project newProject = new Project();
 
-		sreader = new SmartReader(config.tui, path);
+		sreader = new SmartReader(config.tui, file);
 
 		try {
 			for (
@@ -134,18 +156,18 @@ public class Deserialize {
 						debug("reading objects section " + TUI.blue("'" + objectsKind + "'") + "...");
 
 						switch (objectsKind) {
-							case "Batiment" ->		newConfig.objects.batiments = batimentsFromString(newConfig.objects);
-							case "Point" -> 		newConfig.objects.points = pointsFromString();
-							case "TypeRevetement" -> 	newConfig.objects.typesRevetement = typeRevetementsFromString();
-							case "TypeOuvertureMur" -> 	newConfig.objects.typesOuverturesMur = typeOuvertureMursFromString();
-							case "TypeOuvertureNiveau" -> 	newConfig.objects.typesOuverturesNiveau = typeOuvertureNiveauxFromString();
-							case "TypeMur" -> 		newConfig.objects.typesMur = typeMursFromString();
-							case "TypeAppart" -> 		newConfig.objects.typesAppart = typeAppartsFromString();
-							case "Mur" -> 			newConfig.objects.murs = mursFromString(newConfig.objects);
-							case "Piece" ->			newConfig.objects.pieces = piecesFromString(newConfig.objects);
-							case "Appart" ->		newConfig.objects.apparts = appartsFromString(newConfig.objects);
-							case "Niveau" ->		newConfig.objects.niveaux = niveauxFromString(newConfig.objects);
-							//case "PlafondSol" -> 		newConfig.objects.plafondsSols = plafondSolsFromString(newConfig.objects);
+							case "Batiment" ->		newProject.objects.batiments = batimentsFromString(newProject.objects);
+							case "Point" -> 		newProject.objects.points = pointsFromString();
+							case "TypeRevetement" -> 	newProject.objects.typesRevetement = typeRevetementsFromString();
+							case "TypeOuvertureMur" -> 	newProject.objects.typesOuverturesMur = typeOuvertureMursFromString();
+							case "TypeOuvertureNiveau" -> 	newProject.objects.typesOuverturesNiveau = typeOuvertureNiveauxFromString();
+							case "TypeMur" -> 		newProject.objects.typesMur = typeMursFromString();
+							case "TypeAppart" -> 		newProject.objects.typesAppart = typeAppartsFromString();
+							case "Mur" -> 			newProject.objects.murs = mursFromString(newProject.objects);
+							case "Piece" ->			newProject.objects.pieces = piecesFromString(newProject.objects);
+							case "Appart" ->		newProject.objects.apparts = appartsFromString(newProject.objects);
+							case "Niveau" ->		newProject.objects.niveaux = niveauxFromString(newProject.objects);
+							//case "PlafondSol" -> 		newProject.objects.plafondsSols = plafondSolsFromString(newProject.objects);
 							default -> error("section d'objects inconnue: '" + objectsKind + "'");
 						}
 
@@ -156,7 +178,7 @@ public class Deserialize {
 						}
 					} else if (line.startsWith("FILE")) {
 						debug("reading " + TUI.blue("FILE") + " statements");
-						fileStatements(newConfig);
+						fileStatements(newProject);
 					} else {
 						error("section inconnue: '" + line + "'");
 					}
@@ -173,7 +195,7 @@ public class Deserialize {
 			}
 
 		} catch (IOException e) {
-			error("erreur d'entrée/sortie lors de la lecture du fichier '" + path + "': " + e.getMessage());
+			error("erreur d'entrée/sortie lors de la lecture du fichier '" + file.getPath() + "': " + e.getMessage());
 		}
 
 		if (config.tui.getErrCounter() > 0) {
@@ -181,13 +203,14 @@ public class Deserialize {
 		} else {
 			config.tui.ended(TUI.green("success"));
 		}
-		debug("Les objets suivants ont été lus:\n" + newConfig.objects.toString());
+		debug("Les objets suivants ont été lus:\n" + newProject.objects.toString());
 
 		config.tui.popWhere();
+		return newProject;
 	}
 
 	/// FileStatements
-	private void fileStatements(Config newConfig) throws IOException {
+	private void fileStatements(Project newProject) throws IOException {
 		config.tui.diveWhere("fileStatements");
 		config.tui.begin();
 		String[] command;
@@ -206,7 +229,7 @@ public class Deserialize {
 						int savefileVersion = Integer.parseInt(command[1]);
 						if (savefileVersion < config.minimumSavefileVersion) {
 							error("savefile is too old (v" + savefileVersion + " < min " + config.minimumSavefileVersion + ")");
-						} else if (savefileVersion > config.minimumSavefileVersion) {
+						} else if (savefileVersion > config.maximumSavefileVersion) {
 							error("savefile is too recent (v" + savefileVersion + " > max " + config.maximumSavefileVersion + ")");
 						} else {
 							debug("savefile is of correct version " + savefileVersion);
@@ -218,19 +241,19 @@ public class Deserialize {
 
 				case "projectName" -> {
 					String unescaped = unescapeString(command[1]);
-					newConfig.projectName = unescaped;
+					newProject.projectName = unescaped;
 					debug("set projectName = '" + unescaped + "'");
 				}
 				case "projectDescription" -> {
 					String unescaped = unescapeString(command[1]);
-					newConfig.projectDescription = unescaped;
+					newProject.projectDescription = unescaped;
 					debug("set projectDescription = '" + unescaped + "'");
 				}
 
 				case "default Batiment" -> {
 					try {
 						int batimentId = Integer.parseInt(command[1]);
-						Batiment batiment = newConfig.objects.batiments.get(batimentId);
+						Batiment batiment = newProject.objects.batiments.get(batimentId);
 						if (batiment == null) {
 							errorIdNone("Batiment", batimentId);
 						} else {
@@ -243,7 +266,7 @@ public class Deserialize {
 				case "default Niveau" -> {
 					try {
 						int niveauId = Integer.parseInt(command[1]);
-						Niveau niveau = newConfig.objects.niveaux.get(niveauId);
+						Niveau niveau = newProject.objects.niveaux.get(niveauId);
 						if (niveau == null) {
 							errorIdNone("Niveau", niveauId);
 						} else {
