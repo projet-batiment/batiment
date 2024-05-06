@@ -33,6 +33,11 @@ public class MainPane extends BorderPane {
 	private Button buttonFancy2;
 	private Button buttonFancy3;
 
+ private Button refreshButton;
+ private Button totrevButton;
+ private Button totouvButton;
+ private Button totalButton;
+ private Button detailButton;
 	private Label labelCanvasScale;
 
 	private CanvasContainer canvasContainer;
@@ -161,7 +166,7 @@ public class MainPane extends BorderPane {
 		    detailButton,
 		    totalButton,
 		    totrevButton,
-	            totouvButton,
+	     totouvButton,
 
 		    
 
