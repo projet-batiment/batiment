@@ -1,6 +1,7 @@
 package fr.insa.dorgli.projetbat;
 
 import fr.insa.dorgli.projetbat.gui.Direction;
+import fr.insa.dorgli.projetbat.gui.Drawable;
 import fr.insa.dorgli.projetbat.gui.MainPane;
 import fr.insa.dorgli.projetbat.objects.Niveau;
 import java.io.File;
@@ -8,15 +9,28 @@ import java.io.FileNotFoundException;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 
 public class Controller {
+	private enum ActionState {
+		DEFAULT, // none
+
+		SELECT,
+		EDIT_OBJECT,
+
+		CREATE_VISUALLY, // with the mouse & on the canvas
+	}
+
 	private MainPane mainPane;
 	private Config config;
+
+	private ActionState actionState;
 
 	public Controller(Config config, MainPane mainPane) {
 		this.config = config;
 		this.mainPane = mainPane;
+		this.actionState = ActionState.DEFAULT;
 	}
 
 	public void openFile(ActionEvent event) {
@@ -39,7 +53,7 @@ public class Controller {
 					if (! config.project.objects.niveaux.isEmpty()) {
 						// toute l'efficacité de java en une ligne pour avoir le premier niveau :
 						Niveau currentNiveau = config.project.objects.niveaux.values().iterator().next();
-						mainPane.getCanvasContainer().setCurrentNiveau(currentNiveau);
+						mainPane.getCanvasContainer().getDrawingContext().setRootObject(currentNiveau);
 						config.tui.debug("set the currentNiveau to " + currentNiveau.toString());
 					}
 					mainPane.getCanvasContainer().moveView(Direction.FIT); // implies a redraw
@@ -68,5 +82,21 @@ public class Controller {
 
 	public void moveCanvasView(Direction direction) {
 		mainPane.getCanvasContainer().moveView(direction);
+	}
+
+	public void canvasClicked(MouseEvent event) {
+		config.tui.log("controller: a click occurred in the canvasContainer at (" + event.getX() + ":" + event.getY() + ")");
+		if (actionState == ActionState.CREATE_VISUALLY) {
+			config.tui.log("controller: TODO: clicked canvas in CREATE_VISUALLY mode");
+		} else {
+			Drawable closestObject = config.getMainPane().getCanvasContainer().getClosestLinked(event.getX(), event.getY());
+			if (closestObject == null) {
+				config.tui.log("controller: no object to be focused");
+			} else {
+				config.tui.log("controller: focusing object " + closestObject.getId() + " now: " + closestObject.toString());
+				config.getMainPane().getCanvasContainer().getDrawingContext().setSelectedObject(closestObject);
+				config.getMainPane().getCanvasContainer().redraw();
+			}
+		}
 	}
 }

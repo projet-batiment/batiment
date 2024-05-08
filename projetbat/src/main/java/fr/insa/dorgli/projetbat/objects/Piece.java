@@ -14,7 +14,10 @@ public class Piece implements ToString, ToStringShort, Drawable {
 	private PlafondSol plafond;
 	private PlafondSol sol;
 
-	public Piece(String nom, String description, ArrayList<Point> points, ArrayList<Mur> murs, PlafondSol plafond, PlafondSol sol) {
+	private int id;
+
+	public Piece(int id, String nom, String description, ArrayList<Point> points, ArrayList<Mur> murs, PlafondSol plafond, PlafondSol sol) {
+		this.id = id;
 		this.nom = nom;
 		this.description = description;
 		this.points = points;
@@ -71,6 +74,10 @@ public class Piece implements ToString, ToStringShort, Drawable {
 		this.sol = sol;
 	}
 
+	public int getId() {
+		return id;
+	}
+
 	public String toString() {
 		return toString(0);
 	}
@@ -105,8 +112,7 @@ public class Piece implements ToString, ToStringShort, Drawable {
 	}
 
 	public String toStringShort() {
-		// TODO -> toStringShort -> afficher l'ID
-		return "( #" + nom + " )";
+		return "( #" + id + " )";
 	}
 
 	public double aire() {
@@ -134,10 +140,10 @@ public class Piece implements ToString, ToStringShort, Drawable {
 		return prixPiece;
 	}
 
-	public void draw(DrawingContext dcx) {
+	public void draw(DrawingContext dcx, boolean isFocused) {
 		dcx.tui().diveWhere("piece.draw");
 
-		dcx.tui().debug("in Piece " + this.toStringShort());
+		dcx.tui().debug("in" + (isFocused ? " focused" : "") + " Piece " + this.toStringShort());
 		dcx.tui().debug("drawing " + murs.size() + " murs objects");
 		for (Mur mur: murs) {
 			dcx.draw(mur);

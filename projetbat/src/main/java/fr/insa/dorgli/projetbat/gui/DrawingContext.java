@@ -2,6 +2,7 @@ package fr.insa.dorgli.projetbat.gui;
 
 import fr.insa.dorgli.projetbat.Config;
 import fr.insa.dorgli.projetbat.TUI;
+import java.awt.geom.Line2D;
 import java.util.HashSet;
 import javafx.scene.paint.Color;
 
@@ -10,7 +11,8 @@ public class DrawingContext {
 	private CanvasContainer cc;
 
 	private HashSet<Drawable> drawnObjects;
-	private Drawable focusedObject;
+	private Drawable rootObject; // l'objet principal lde la vue actuelle
+	private Drawable selectedObject; // l'objet sélectionné avec un clic / menu
 
 	public DrawingContext(Config config, CanvasContainer cc) {
 		this.config = config;
@@ -28,21 +30,23 @@ public class DrawingContext {
 		config.tui.diveWhere("DrawingContext/redraw");
 
 		reset();
-		if (focusedObject == null) {
+		if (rootObject == null) {
 			// TODO!!! amnesic debug
-			config.tui.debug("no focusedObjects");
+			config.tui.debug("no rootObjects");
 		} else {
 			config.tui.begin();
 
 			// TODO!! toStringShort
-			config.tui.debug("drawing from focused " + focusedObject.toString());
-			draw(focusedObject);
+			config.tui.debug("drawing from root object " + rootObject.toString());
+			draw(rootObject);
 
 			config.tui.ended();
 		}
 
 		config.tui.popWhere();
 	}
+
+	///// launch an object drawer
 
 	public void draw(Drawable object) {
 		if (drawnObjects.contains(object)) {
@@ -53,27 +57,36 @@ public class DrawingContext {
 			// TODO!! toStringShort
 			config.tui.debug("DrawingContext/draw: drawing object " + object.toString());
 			drawnObjects.add(object);
-			object.draw(this);
+			object.draw(this, object == selectedObject);
 		}
 	}
 
-	///// drawing stuff
-	public void drawPoint(double x, double y) {
+	///// actual drawing stuff
+
+	public void drawPoint(Drawable linkedObject, double x, double y) {
 		cc.drawPoint(x, y);
 	}
 
-	public void drawLine(double x1, double y1, double x2, double y2, double width, Color color) {
-		cc.drawLine(x1, y1, x2, y2, width, color);
+	public void drawLine(Drawable linkedObject, double x1, double y1, double x2, double y2, double width, Color color) {
+		cc.drawLine(linkedObject, x1, y1, x2, y2, width, color);
 	}
 
 	///// getters & setters
 
-	public Drawable getFocusedObject() {
-		return focusedObject;
+	public Drawable getRootObject() {
+		return rootObject;
 	}
 
-	public void setFocusedObject(Drawable focusedObject) {
-		this.focusedObject = focusedObject;
+	public void setRootObject(Drawable rootObject) {
+		this.rootObject = rootObject;
+	}
+
+	public Drawable getSelectedObject() {
+		return selectedObject;
+	}
+
+	public void setSelectedObject(Drawable selectedObject) {
+		this.selectedObject = selectedObject;
 	}
 
 	public Config getConfig() {

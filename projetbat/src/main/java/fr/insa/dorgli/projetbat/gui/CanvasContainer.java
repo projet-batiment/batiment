@@ -8,6 +8,8 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
+import java.awt.geom.Line2D;
+import java.util.HashMap;
 
 public class CanvasContainer extends Pane {
 	private Config config;
@@ -16,6 +18,7 @@ public class CanvasContainer extends Pane {
 	private Canvas canvas;
 	private GraphicsContext ctxt;
 	private DrawingContext drawingContext;
+	private HashMap<Line2D.Double, Drawable> drawnLines;
 
 	private Niveau currentNiveau;
 	private Rectangle totalDrawingRectangle;
@@ -49,11 +52,16 @@ public class CanvasContainer extends Pane {
 			redraw();
 		});
 
+		canvas.setOnMouseClicked(eh -> {
+			mainPane.getController().canvasClicked(eh);
+		});
+
  		ctxt = canvas.getGraphicsContext2D();
 		totalDrawingRectangle = new Rectangle( (int)Math.ceil(super.getWidth()), (int)Math.ceil(super.getHeight()) );
+		drawnLines = new HashMap<>();
 
 		drawingContext = new DrawingContext(config, this);
-		drawingContext.setFocusedObject(currentNiveau); // TODO!! TMP !!
+		drawingContext.setSelectedObject(currentNiveau); // TODO!! TMP !!
 
 		zoomFactor = Math.sqrt(2);
 		moveFactor = 20;
@@ -253,6 +261,44 @@ public class CanvasContainer extends Pane {
 		config.tui.popWhere();
 	}
 
+	//////////////// linking stuff
+
+	public Drawable getClosestLinked(double clickX, double clickY) {
+//		if (drawnLines.isEmpty()) {
+//			config.tui.log("canvasContainer/getClosestLinked: drawnLines is empty!");
+//			return null;
+//		}
+
+		config.tui.log("canvasContainer/getClosestLinked: x: " + scaleToView(clickX) + ", " + scaleToView(ctxt.getTransform().getTx()));
+		config.tui.log("canvasContainer/getClosestLinked: y: " + scaleToView(clickY) + ", " + scaleToView(ctxt.getTransform().getTy()));
+		clickX = scaleToView(clickX - ctxt.getTransform().getTx());
+		clickY = scaleToView(clickY - ctxt.getTransform().getTy());
+		config.tui.log("canvasContainer/getClosestLinked: scaled and translated coordinates: (" + clickX + ":" + clickY + ")");
+
+		if (drawnLines.isEmpty()) {
+			config.tui.log("canvasContainer/getClosestLinked: drawnLines is empty!");
+			return null;
+		}
+
+		double closestDistance = Double.POSITIVE_INFINITY;
+		Drawable closestObject = null;
+		double currentDistance;
+
+		for (Line2D.Double currentLine: drawnLines.keySet()) {
+			currentDistance = currentLine.ptSegDist(clickX, clickY);
+			Drawable currentObject = drawnLines.get(currentLine);
+			config.tui.debug("canvasContainer/getClosestLinked: closest " + (closestObject == null ? null : closestObject.getId()) + "(" + closestDistance + ")");
+			config.tui.debug("canvasContainer/getClosestLinked: current " + currentObject.getId() + "(" + currentDistance + ")" + " at (" + currentLine.getX1() + ":" + currentLine.getY1() + ") -- (" + currentLine.getX1() + ":" + currentLine.getY1() + ")");
+			if (currentDistance < closestDistance) {
+				config.tui.debug("canvasContainer/getClosestLinked: this is closer !!!!");
+				closestDistance = currentDistance;
+				closestObject = currentObject;
+			}
+		}
+
+		return closestObject;
+	}
+
 	//////////////// draw stuff
 
 	/**
@@ -299,13 +345,15 @@ public class CanvasContainer extends Pane {
 	 * @param width width of the line in DATA standards
 	 * @param color
 	 */
-	public void drawLine(double x1, double y1, double x2, double y2, double width, Color color) {
-		config.tui.diveWhere("canvasContainer/drawPoint");
+	public void drawLine(Drawable linkedObject, double x1, double y1, double x2, double y2, double width, Color color) {
+		config.tui.diveWhere("canvasContainer/drawLine");
 
 		x1 = dataToCanvasUnit(x1);
 		y1 = dataToCanvasUnit(y1);
 		x2 = dataToCanvasUnit(x2);
 		y2 = dataToCanvasUnit(y2);
+
+		drawnLines.put(new Line2D.Double(x1, y1, x2, y2), linkedObject);
 
 		// ajouter les extrémités de la nouvelle ligne au totalDrawingRectangle
 		// on prend ici width pour rayon, mais en soit tant que fit prend plus large, ç'est nickel
@@ -321,6 +369,7 @@ public class CanvasContainer extends Pane {
 			ctxt.setStroke(color);
 			ctxt.setLineWidth(width);
 			ctxt.strokeLine(x1, y1, x2, y2);
+
 			config.tui.debug("Drew line with (" + x1 + ":" + y1 + ") -- (" + x2 + ":" + y2 + "), width " + width);
 
 			ctxt.setLineWidth(savedWidth);
@@ -338,6 +387,9 @@ public class CanvasContainer extends Pane {
 	}
 
 	public void recalculateTotalDrawingRectangle() {
+		config.tui.diveWhere("canvasContainer/recalculateTotalDrawingRectangle");
+		config.tui.begin();
+
 		totalDrawingRectangle = new Rectangle();
 		boolean localDisableDrawing = disableDrawing;
 		disableDrawing = true; // do not draw anything !!
@@ -349,6 +401,9 @@ public class CanvasContainer extends Pane {
 		redraw();
 
 		disableDrawing = localDisableDrawing; // restore the original disableDrawing flag
+
+		config.tui.ended();
+		config.tui.popWhere();
 	}
 
 	public void clearFancy() {
@@ -359,16 +414,19 @@ public class CanvasContainer extends Pane {
 
 	public void clear() {
 		ctxt.clearRect(totalDrawingRectangle.getMinX(), totalDrawingRectangle.getMinY(), totalDrawingRectangle.getWidth(), totalDrawingRectangle.getHeight());
+		drawnLines.clear();
 		config.tui.debug("canvasContainer/clear: totalDrawingRectangle coordinates: (" + totalDrawingRectangle.getMinX() + ":" + totalDrawingRectangle.getMinY() + ") -> (" + totalDrawingRectangle.getWidth() + ":" + totalDrawingRectangle.getHeight() + ")");
 	}
 
 	public void redraw() {
 		clear();
-		config.tui.debug("canvasContainer/redraw: graphicsContext.transform (affine): " + canvas.getGraphicsContext2D().getTransform().toString());
+		config.tui.diveWhere("canvasContainer/redraw");
+		config.tui.begin();
+		config.tui.debug("graphicsContext.transform (affine): " + canvas.getGraphicsContext2D().getTransform().toString());
 
 		if (! disableDrawing) {
 			Color c = Color.TEAL;
-			config.tui.debug("canvasContainer/redraw: drawing canvas with a " + c + " background");
+			config.tui.debug("drawing canvas with a " + c + " background");
 			ctxt.setFill(Color.TEAL);
 			ctxt.fillRect(0, 0, getWidth(), getHeight());
 		}
@@ -376,14 +434,21 @@ public class CanvasContainer extends Pane {
 //		if (currentNiveau != null)
 //			currentNiveau.draw(config.tui, this);
 		drawingContext.redraw();
+
+		config.tui.ended();
+		config.tui.popWhere();
 	}
 
 	public Niveau getCurrentNiveau() {
 		return currentNiveau;
 	}
 
-	public void setCurrentNiveau(Niveau currentNiveau) {
-		this.currentNiveau = currentNiveau;
-		drawingContext.setFocusedObject(currentNiveau); // TODO!! TMP !!
+//	public void setCurrentNiveau(Niveau currentNiveau) {
+//		this.currentNiveau = currentNiveau;
+//		drawingContext.setFocusedObject(currentNiveau); // TODO!! TMP !!
+//	}
+
+	public DrawingContext getDrawingContext() {
+		return drawingContext;
 	}
 }

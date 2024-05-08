@@ -2,13 +2,18 @@ package fr.insa.dorgli.projetbat.objects;
 
 import fr.insa.dorgli.projetbat.ToStringShort;
 import fr.insa.dorgli.projetbat.gui.CanvasContainer;
+import fr.insa.dorgli.projetbat.gui.Drawable;
+import fr.insa.dorgli.projetbat.gui.DrawingContext;
 
-public class Point implements ToStringShort {
+public class Point implements ToStringShort, Drawable {
 	private double x;
 	private double y;
 	private int niveauId;
 
-	public Point(double x, double y, int niveauId) {
+	private final int id;
+
+	public Point(int id, double x, double y, int niveauId) {
+		this.id = id;
 		this.x = x;
 		this.y = y;
 		this.niveauId = niveauId;
@@ -34,12 +39,18 @@ public class Point implements ToStringShort {
 		return niveauId;
 	}
 
+	public int getId() {
+		return id;
+	}
+
 	public void setNiveauId(int niveauId) {
 		this.niveauId = niveauId;
 	}
 
-	public void draw(CanvasContainer canvasContainer) {
-		canvasContainer.drawPoint(x, y);
+	public void draw(DrawingContext dcx, boolean isFocused) {
+		// TODO: amnesic debug dive
+		dcx.tui().debug("Point: drawing " + (isFocused ? "focused " : "") + "point " + this.toStringShort());
+		dcx.drawPoint(this, x, y);
 	}
 
 	public String toString() {
@@ -47,7 +58,6 @@ public class Point implements ToStringShort {
 	}
 
 	public String toStringShort() {
-		// TODO -> toStringShort -> afficher l'ID au lieu du nom
-		return "( #" + "TODO" + " )";
+		return "#" + id + "";
 	}
 }

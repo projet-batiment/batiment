@@ -16,7 +16,9 @@ public class Mur implements ToString, ToStringShort, Drawable {
 	private ArrayList<RevetementMur> revetements2;
 	private ArrayList<OuvertureMur> ouvertures;
 
-	public Mur(Point pointDebut, Point pointFin, double hauteur, TypeMur typeMur, ArrayList<RevetementMur> revetements1,
+	private final int id;
+
+	public Mur(int id, Point pointDebut, Point pointFin, double hauteur, TypeMur typeMur, ArrayList<RevetementMur> revetements1,
 			ArrayList<RevetementMur> revetements2, ArrayList<OuvertureMur> ouvertures) throws IllegalArgumentException {
 
 		if (pointDebut.getNiveauId() != pointFin.getNiveauId())
@@ -30,6 +32,8 @@ public class Mur implements ToString, ToStringShort, Drawable {
 		this.revetements1 = revetements1;
 		this.revetements2 = revetements2;
 		this.ouvertures = ouvertures;
+
+		this.id = id;
 	}
 
 	public Point getPointDebut() {
@@ -76,6 +80,10 @@ public class Mur implements ToString, ToStringShort, Drawable {
 		return this.ouvertures;
 	}
 
+	public int getId() {
+		return id;
+	}
+
 	public String toString() {
 		return toString(0);
 	}
@@ -105,7 +113,7 @@ public class Mur implements ToString, ToStringShort, Drawable {
 		}
 		ouverturesOut += "]";
 
-		return "Mur {\n"
+		return toStringShort() + " {\n"
 				+ pfx + "pointDebut: " + pointDebut + ",\n"
 				+ pfx + "pointFin: " + pointFin + ",\n"
 				+ pfx + "hauteur: " + hauteur + ",\n"
@@ -145,14 +153,17 @@ public class Mur implements ToString, ToStringShort, Drawable {
 		return prixMur;
 	}
 
-	public void draw(DrawingContext dcx) {
+	public void draw(DrawingContext dcx, boolean isFocused) {
 		// TODO: amnesic debug dive
-		dcx.tui().debug("Mur: drawing Mur " + this.toStringShort());
-		dcx.drawLine(pointDebut.getX(), pointDebut.getY(), pointFin.getX(), pointFin.getY(), 10, Color.DIMGRAY);
+		dcx.tui().debug("Mur: drawing " + (isFocused ? "focused " : "") + "Mur " + this.toStringShort());
+		if (isFocused) {
+			dcx.drawLine(this, pointDebut.getX(), pointDebut.getY(), pointFin.getX(), pointFin.getY(), 15, Color.INDIANRED);
+		} else {
+			dcx.drawLine(this, pointDebut.getX(), pointDebut.getY(), pointFin.getX(), pointFin.getY(), 10, Color.DIMGRAY);
+		}
 	}
 
 	public String toStringShort() {
-		// TODO -> toStringShort -> afficher l'ID
-		return "( #" + "TODO" + " )";
+		return "Mur#" + id;
 	}
 }

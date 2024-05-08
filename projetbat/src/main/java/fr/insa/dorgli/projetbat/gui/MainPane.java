@@ -37,6 +37,7 @@ public class MainPane extends BorderPane {
 
 	public MainPane(Config config, Stage mainStage) {
 		this.config = config;
+		config.setMainPane(this);
 		controller = new Controller(config, this);
 
 		buttonOpenFile = new Button("Ouvrir...");

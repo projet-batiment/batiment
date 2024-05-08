@@ -29,17 +29,17 @@ public class Objects {
 	public HashMap<Integer, TypeRevetement> typesRevetement = new HashMap<>();
 	public HashMap<Integer, TypeAppart> typesAppart = new HashMap<>();
 
-	public void drawAll(CanvasContainer canvasContainer) {
-//		System.out.println("INF: draw/objects: murs (" + murs.size() + "): " + murs.toString());
-//		for (Entry<Integer, Mur> p: points.entrySet()) {
+//	public void drawAll(CanvasContainer canvasContainer) {
+////		System.out.println("INF: draw/objects: murs (" + murs.size() + "): " + murs.toString());
+////		for (Entry<Integer, Mur> p: points.entrySet()) {
+////			p.getValue().draw(canvasContainer);
+////		}
+//
+//		System.out.println("INF: draw/objects: points (" + points.size() + "): " + points.toString());
+//		for (Entry<Integer, Point> p: points.entrySet()) {
 //			p.getValue().draw(canvasContainer);
 //		}
-
-		System.out.println("INF: draw/objects: points (" + points.size() + "): " + points.toString());
-		for (Entry<Integer, Point> p: points.entrySet()) {
-			p.getValue().draw(canvasContainer);
-		}
-	}
+//	}
 
 	private int idCounter = 0;
 
@@ -57,8 +57,8 @@ public class Objects {
 	///// create objects (with ID & into matching HashMap)
 
 	public Point createPoint(double x, double y, int niveauId) {
-		Point point = new Point(x, y, niveauId);
 		int id = generateId();
+		Point point = new Point(id, x, y, niveauId);
 		points.put(id, point);
 		return point;
 	}
@@ -73,8 +73,8 @@ public class Objects {
 	public Mur createMur(Point pointDebut, Point pointFin, double hauteur, TypeMur typeMur,
 			ArrayList<RevetementMur> revetements1, ArrayList<RevetementMur> revetements2,
 			ArrayList<OuvertureMur> ouvertures) {
-		Mur mur = new Mur(pointDebut, pointFin, hauteur, typeMur, revetements1, revetements2, ouvertures);
 		int id = generateId();
+		Mur mur = new Mur(id, pointDebut, pointFin, hauteur, typeMur, revetements1, revetements2, ouvertures);
 		murs.put(id, mur);
 		return mur;
 	}
@@ -87,8 +87,8 @@ public class Objects {
 	}
 
 	public Niveau createNiveau(String nom, String description, double hauteur, ArrayList<Piece> pieces, ArrayList<Appart> apparts) {
-		Niveau niveau = new Niveau(nom, description, hauteur, pieces, apparts);
 		int id = generateId();
+		Niveau niveau = new Niveau(id, nom, description, hauteur, pieces, apparts);
 		niveaux.put(id, niveau);
 		return niveau;
 	}
@@ -108,8 +108,8 @@ public class Objects {
 	}
 
 	public Piece createPiece(String nom, String description, ArrayList<Point> points, ArrayList<Mur> murs, PlafondSol plafond, PlafondSol sol) {
-		Piece piece = new Piece(nom, description, points, murs, plafond, sol);
 		int id = generateId();
+		Piece piece = new Piece(id, nom, description, points, murs, plafond, sol);
 		pieces.put(id, piece);
 		return piece;
 	}

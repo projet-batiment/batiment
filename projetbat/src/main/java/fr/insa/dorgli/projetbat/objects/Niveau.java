@@ -13,7 +13,10 @@ public class Niveau implements ToString, ToStringShort, Drawable {
 	private ArrayList<Piece> pieces;
 	private ArrayList<Appart> apparts;
 
-	public Niveau(String nom, String description, double hauteur, ArrayList<Piece> pieces, ArrayList<Appart> apparts) {
+	private int id;
+
+	public Niveau(int id, String nom, String description, double hauteur, ArrayList<Piece> pieces, ArrayList<Appart> apparts) {
+		this.id = id;
 		this.nom = nom;
 		this.description = description;
 		this.hauteur = hauteur;
@@ -61,6 +64,10 @@ public class Niveau implements ToString, ToStringShort, Drawable {
 		this.apparts = apparts;
 	}
 
+	public int getId() {
+		return id;
+	}
+
 	public String toString() {
 		return toString(0);
 	}
@@ -93,10 +100,10 @@ public class Niveau implements ToString, ToStringShort, Drawable {
 				+ "}";
 	}
 
-	public void draw(DrawingContext dcx) {
+	public void draw(DrawingContext dcx, boolean isFocused) {
 		dcx.tui().diveWhere("niveau.draw");
 
-		dcx.tui().debug("in Niveau " + this.toStringShort());
+		dcx.tui().debug("in" + (isFocused ? " focused" : "") + " Niveau " + this.toStringShort());
 		dcx.tui().debug("drawing " + pieces.size() + " piece objects");
 		for (Piece piece: pieces) {
 			dcx.draw(piece);
@@ -115,7 +122,6 @@ public class Niveau implements ToString, ToStringShort, Drawable {
 	}
 
 	public String toStringShort() {
-		// TODO -> toStringShort -> afficher l'ID
-		return "( #" + "TODO" + " )";
+		return "( #" + id + " )";
 	}
 }

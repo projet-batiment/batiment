@@ -312,7 +312,7 @@ public class Deserialize {
 					double y = Double.parseDouble(splitted[2]);
 					int niveauId = Integer.parseInt(splitted[3]);
 
-					Point object = new Point(x, y, niveauId);
+					Point object = new Point(id, x, y, niveauId);
 					points.put(id, object);
 					debug("read " + object);
 				} catch (NumberFormatException e) {
@@ -610,7 +610,7 @@ public class Deserialize {
 					}
 					config.tui.popWhere();
 
-					Mur object = new Mur(p1, p2, hauteur, typeMur, r1_list, r2_list, o_list);
+					Mur object = new Mur(id, p1, p2, hauteur, typeMur, r1_list, r2_list, o_list);
 					murs.put(id, object);
 					debug("read " + object);
 				} catch (NumberFormatException e) {
@@ -954,7 +954,7 @@ public class Deserialize {
 				}
 				config.tui.popWhere();
 
-				Piece object = new Piece(unescapeString(splitted[1]), unescapeString(splitted[2]), points, murs, plafond, sol);
+				Piece object = new Piece(id, unescapeString(splitted[1]), unescapeString(splitted[2]), points, murs, plafond, sol);
 				pieces.put(id, object);
 				debug("read " + object);
 			} else {
@@ -1188,7 +1188,7 @@ public class Deserialize {
 					}
 					config.tui.popWhere();
 
-					Niveau object = new Niveau(unescapeString(splitted[1]), unescapeString(splitted[2]), hauteur, pieces, apparts);
+					Niveau object = new Niveau(id, unescapeString(splitted[1]), unescapeString(splitted[2]), hauteur, pieces, apparts);
 					niveaux.put(id, object);
 					debug("read " + object);
 				} catch (NumberFormatException e) {
