@@ -125,6 +125,9 @@ public class MainPane extends BorderPane {
     		detailButton.setonAction(evt -> {message.setText("DETAIL PIECES");
                                      		System.out.println(get.appart.TypeAppart + " n°: " + get.appart.nom);
                                      		System.out.println("piece : " + get.pieces.nom + "| prix : " + get.pieces.prix );
+						System.out.println("prix mur : " + get.pieces.murs.prixMur );
+						System.out.println("prix plafond : " + get.pieces.plafond.prixPlafondSol );
+						System.out.println("prix sol : " + get.pieces.sol.prixPlafondSol );
                                     		});
     		Button totouvButton = new Button ("TotalOuverture");
     		totouvButton.setonAction(evt -> {message.setText("TOTAL OUVERTURE");
