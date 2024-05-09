@@ -1,22 +1,18 @@
 package fr.insa.dorgli.projetbat.objects;
 
-import fr.insa.dorgli.projetbat.ToString;
-import fr.insa.dorgli.projetbat.ToStringShort;
-import fr.insa.dorgli.projetbat.gui.Drawable;
 import fr.insa.dorgli.projetbat.gui.DrawingContext;
 import java.util.ArrayList;
+import fr.insa.dorgli.projetbat.StructuredToString;
 
-public class Niveau implements ToString, ToStringShort, Drawable {
+public class Niveau extends Drawable {
 	private String nom;
 	private String description;
 	private double hauteur;
 	private ArrayList<Piece> pieces;
 	private ArrayList<Appart> apparts;
 
-	private int id;
-
 	public Niveau(int id, String nom, String description, double hauteur, ArrayList<Piece> pieces, ArrayList<Appart> apparts) {
-		this.id = id;
+		super(id);
 		this.nom = nom;
 		this.description = description;
 		this.hauteur = hauteur;
@@ -64,42 +60,6 @@ public class Niveau implements ToString, ToStringShort, Drawable {
 		this.apparts = apparts;
 	}
 
-	public int getId() {
-		return id;
-	}
-
-	public String toString() {
-		return toString(0);
-	}
-
-	public String toString(int depth) {
-		String pfx = "";
-		for (int i = 0; i <= depth; i++) {
-			pfx += "  ";
-		}
-		int nextDepth = depth + 1;
-
-		String piecesOut = "[ ";
-		for (Piece each : pieces) {
-			piecesOut += each.toStringShort() + ", ";
-		}
-		piecesOut += "]";
-
-		String appartsOut = "[ ";
-		for (Appart each : apparts) {
-			appartsOut += each.toStringShort() + ", ";
-		}
-		appartsOut += "]";
-
-		return "Niveau {\n"
-				+ pfx + "nom: '" + nom + "',\n"
-				+ pfx + "description: '" + description + "',\n"
-				+ pfx + "hauteur: " + hauteur + ",\n"
-				+ pfx + "pieces: " + piecesOut + ",\n"
-				+ pfx + "apparts: " + appartsOut + ",\n"
-				+ "}";
-	}
-
 	public void draw(DrawingContext dcx, boolean isFocused) {
 		dcx.tui().diveWhere("niveau.draw");
 
@@ -121,7 +81,14 @@ public class Niveau implements ToString, ToStringShort, Drawable {
 		return prixNiveau;
 	}
 
-	public String toStringShort() {
-		return "( #" + id + " )";
+	@Override
+	public String toString(int depth, boolean indentFirst) {
+		return new StructuredToString.OfBObject(depth, getClass().getSimpleName(), indentFirst)
+		    .field("nom", nom)
+		    .field("description", description)
+		    .field("hauteur", ""+hauteur)
+		    .field("pieces", super.toStringArrayList( (ArrayList<BObject>) ((ArrayList<?>) pieces)))
+		    .field("apparts", super.toStringArrayList( (ArrayList<BObject>) ((ArrayList<?>) apparts)))
+            .getValue();
 	}
 }

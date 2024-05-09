@@ -1,14 +1,15 @@
 package fr.insa.dorgli.projetbat.objects;
 
-import fr.insa.dorgli.projetbat.ToString;
-import fr.insa.dorgli.projetbat.ToStringShort;
+import fr.insa.dorgli.projetbat.gui.DrawingContext;
 import java.util.ArrayList;
+import fr.insa.dorgli.projetbat.StructuredToString;
 
-public class PlafondSol implements ToString, ToStringShort {
+public class PlafondSol extends HasPrice {
 	private ArrayList<RevetementPlafondSol> revetements;
 	private ArrayList<OuvertureNiveaux> ouvertures;
 
-	public PlafondSol(ArrayList<RevetementPlafondSol> revetements, ArrayList<OuvertureNiveaux> ouvertures) {
+	public PlafondSol(int id, ArrayList<RevetementPlafondSol> revetements, ArrayList<OuvertureNiveaux> ouvertures) {
+		super(id);
 		this.revetements = revetements;
 		this.ouvertures = ouvertures;
 	}
@@ -46,37 +47,22 @@ public class PlafondSol implements ToString, ToStringShort {
 		return prixPlafondSol;
 	}
 
-	public String toString() {
-		return toString(0);
+	@Override
+	public double calculerPrix() {
+		// TODO: besoin de la surface !
+		return 0;
 	}
 
-	public String toString(int depth) {
-		String pfx = "";
-		for (int i = 0; i <= depth; i++) {
-			pfx += "  ";
-		}
-		int nextDepth = depth + 1;
-
-		String revetementsOut = "[ ";
-		for (RevetementPlafondSol each : revetements) {
-			revetementsOut += each.toStringShort() + ", ";
-		}
-		revetementsOut += "]";
-
-		String ouverturesOut = "[ ";
-		for (OuvertureNiveaux each : ouvertures) {
-			ouverturesOut += each.toStringShort() + ", ";
-		}
-		ouverturesOut += "]";
-
-		return "PlafondSol {\n"
-				+ pfx + "revetements: " + revetementsOut + ",\n"
-				+ pfx + "ouvertures: " + ouverturesOut + ",\n"
-				+ "}";
+	@Override
+	public void draw(DrawingContext ctxt, boolean isFocused) {
+		ctxt.tui().error("plafondSol.draw: cannot draw plafondSol");
 	}
 
-	public String toStringShort() {
-		// TODO -> toStringShort -> afficher l'ID
-		return "( #" + "TODO" + ")";
+	@Override
+	public String toString(int depth, boolean indentFirst) {
+		return new StructuredToString.OfBObject(depth, getClass().getSimpleName(), indentFirst)
+		    .field("revetements", super.toStringArrayList( (ArrayList<BObject>) ((ArrayList<?>) revetements)) )
+		    .field("ouvertures", super.toStringArrayList( (ArrayList<BObject>) ((ArrayList<?>) ouvertures)))
+            .getValue();
 	}
 }

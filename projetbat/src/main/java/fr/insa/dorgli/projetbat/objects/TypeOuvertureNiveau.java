@@ -1,8 +1,8 @@
 package fr.insa.dorgli.projetbat.objects;
 
-import fr.insa.dorgli.projetbat.ToStringShort;
+import fr.insa.dorgli.projetbat.StructuredToString;
 
-public class TypeOuvertureNiveau implements ToStringShort {
+public class TypeOuvertureNiveau extends BObject {
 	// j'ai pris le parti d'utiliser "largeur" et "hauteur" pour mieux distinguer
 	//   les deux directions (largeur et longueurs peuvent prêter à confusion)
 	// Si on ne change plus les TypeOuvertureNiveau ni les TypeOuvertureMur,
@@ -14,7 +14,8 @@ public class TypeOuvertureNiveau implements ToStringShort {
 	private double largeur;
 	public double prixOuverture;
 
-	public TypeOuvertureNiveau(String nom, String description, double hauteur, double largeur, double prixOuverture) {
+	public TypeOuvertureNiveau(int id, String nom, String description, double hauteur, double largeur, double prixOuverture) {
+		super(id);
 		this.nom = nom;
 		this.description = description;
 		this.hauteur = hauteur;
@@ -62,16 +63,14 @@ public class TypeOuvertureNiveau implements ToStringShort {
 		this.description = description;
 	}
 
-	public String toString() {
-		return "TypeOuvertureNiveau { nom: '" + nom + "'"
-		    + ", description: '" + description + "'"
-		    + ", hauteur: " + hauteur
-		    + ", largeur: " + largeur
-		    + ", prixOuverture: " + prixOuverture + " }";
-	}
-
-	public String toStringShort() {
-		// TODO -> toStringShort -> afficher l'ID
-		return "( #" + "TODO" + " )";
+	@Override
+	public String toString(int depth, boolean indentFirst) {
+		return new StructuredToString.OfBObject(depth, getClass().getSimpleName(), indentFirst)
+		    .field("nom", nom)
+		    .field("description", description)
+		    .field("largeur", ""+largeur)
+		    .field("hauteur", ""+hauteur)
+		    .field("prixOuverture", ""+prixOuverture)
+            .getValue();
 	}
 }

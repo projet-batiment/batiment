@@ -1,13 +1,11 @@
 package fr.insa.dorgli.projetbat.objects;
 
-import fr.insa.dorgli.projetbat.ToString;
-import fr.insa.dorgli.projetbat.ToStringShort;
-import fr.insa.dorgli.projetbat.gui.Drawable;
+import fr.insa.dorgli.projetbat.StructuredToString;
 import fr.insa.dorgli.projetbat.gui.DrawingContext;
 import java.util.ArrayList;
 import javafx.scene.paint.Color;
 
-public class Mur implements ToString, ToStringShort, Drawable {
+public class Mur extends HasPrice {
 	private Point pointDebut;
 	private Point pointFin;
 	private double hauteur;
@@ -16,10 +14,9 @@ public class Mur implements ToString, ToStringShort, Drawable {
 	private ArrayList<RevetementMur> revetements2;
 	private ArrayList<OuvertureMur> ouvertures;
 
-	private final int id;
-
 	public Mur(int id, Point pointDebut, Point pointFin, double hauteur, TypeMur typeMur, ArrayList<RevetementMur> revetements1,
 			ArrayList<RevetementMur> revetements2, ArrayList<OuvertureMur> ouvertures) throws IllegalArgumentException {
+		super(id);
 
 		if (pointDebut.getNiveauId() != pointFin.getNiveauId())
 			throw new IllegalArgumentException("Un mur doit avoir des points sur le même niveau! '"
@@ -32,8 +29,6 @@ public class Mur implements ToString, ToStringShort, Drawable {
 		this.revetements1 = revetements1;
 		this.revetements2 = revetements2;
 		this.ouvertures = ouvertures;
-
-		this.id = id;
 	}
 
 	public Point getPointDebut() {
@@ -80,49 +75,6 @@ public class Mur implements ToString, ToStringShort, Drawable {
 		return this.ouvertures;
 	}
 
-	public int getId() {
-		return id;
-	}
-
-	public String toString() {
-		return toString(0);
-	}
-
-	public String toString(int depth) {
-		String pfx = "";
-		for (int i = 0; i <= depth; i++) {
-			pfx += "  ";
-		}
-		int nextDepth = depth + 1;
-
-		String revetements1Out = "[ ";
-		for (RevetementMur each : revetements1) {
-			revetements1Out += each.toStringShort() + ", ";
-		}
-		revetements1Out += "]";
-
-		String revetements2Out = "[ ";
-		for (RevetementMur each : revetements2) {
-			revetements2Out += each.toStringShort() + ", ";
-		}
-		revetements2Out += "]";
-
-		String ouverturesOut = "[ ";
-		for (OuvertureMur each : ouvertures) {
-			ouverturesOut += each.toStringShort() + ", ";
-		}
-		ouverturesOut += "]";
-
-		return toStringShort() + " {\n"
-				+ pfx + "pointDebut: " + pointDebut + ",\n"
-				+ pfx + "pointFin: " + pointFin + ",\n"
-				+ pfx + "hauteur: " + hauteur + ",\n"
-				+ pfx + "revetements1: " + revetements1Out + ",\n"
-				+ pfx + "revetements2: " + revetements2Out + ",\n"
-				+ pfx + "ouvertures: " + ouverturesOut + ",\n"
-				+ "}";
-	}
-
 	// fonction temporaire si l'on passe un jour aux outils géométriques de java.awt...
 	// utile pour calculer les aires du mur et de ses revetments
 	private double longueur() {
@@ -163,7 +115,14 @@ public class Mur implements ToString, ToStringShort, Drawable {
 		}
 	}
 
-	public String toStringShort() {
-		return "Mur#" + id;
+	public String toString(int depth, boolean indentFirst) {
+		return new StructuredToString.OfBObject(depth, getClass().getSimpleName(), indentFirst)
+		    .field("pointDebut", pointDebut.toString(depth + 1))
+		    .field("pointFin", pointFin.toString(depth + 1))
+		    .field("hauteur", ""+hauteur)
+		    .field("revetements1", super.toStringArrayList( (ArrayList<BObject>) ((ArrayList<?>) revetements1)) )
+		    .field("revetements2", super.toStringArrayList( (ArrayList<BObject>) ((ArrayList<?>) revetements2)))
+		    .field("ouvertures", super.toStringArrayList( (ArrayList<BObject>) ((ArrayList<?>) ouvertures)))
+		    .getValue();
 	}
 }

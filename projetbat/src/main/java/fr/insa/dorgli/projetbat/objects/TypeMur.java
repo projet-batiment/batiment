@@ -1,14 +1,15 @@
 package fr.insa.dorgli.projetbat.objects;
 
-import fr.insa.dorgli.projetbat.ToStringShort;
+import fr.insa.dorgli.projetbat.StructuredToString;
 
-public class TypeMur implements ToStringShort {
+public class TypeMur extends BObject  {
 	private String nom;
 	private String description;
 	private double epaisseur;
 	private double prixUnitaire;
 
-	public TypeMur(String nom, String description, double epaisseur, double prixUnitaire) {
+	public TypeMur(int id, String nom, String description, double epaisseur, double prixUnitaire) {
+		super(id);
 		this.nom = nom;
 		this.description = description;
 		this.epaisseur = epaisseur;
@@ -47,15 +48,13 @@ public class TypeMur implements ToStringShort {
 		this.prixUnitaire = prixUnitaire;
 	}
 
-	public String toString() {
-		return "TypeMur { nom: '" + nom + "'"
-		    + ", description: '" + description + "'"
-		    + ", epaisseur: " + epaisseur + " }"
-		    + ", prixUnitaire: " + prixUnitaire;
-	}
-
-	public String toStringShort() {
-		// TODO -> toStringShort -> afficher l'ID
-		return "( #" + "TODO" + " )";
+	@Override
+	public String toString(int depth, boolean indentFirst) {
+		return new StructuredToString.OfBObject(depth, getClass().getSimpleName(), indentFirst)
+		    .field("nom", nom)
+		    .field("description", description)
+		    .field("epaisseur", ""+epaisseur)
+		    .field("prixUnitaire", ""+prixUnitaire)
+            .getValue();
 	}
 }

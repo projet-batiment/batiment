@@ -1,12 +1,10 @@
 package fr.insa.dorgli.projetbat.objects;
 
-import fr.insa.dorgli.projetbat.ToString;
-import fr.insa.dorgli.projetbat.ToStringShort;
-import fr.insa.dorgli.projetbat.gui.Drawable;
 import fr.insa.dorgli.projetbat.gui.DrawingContext;
 import java.util.ArrayList;
+import fr.insa.dorgli.projetbat.StructuredToString;
 
-public class Piece implements ToString, ToStringShort, Drawable {
+public class Piece extends HasPrice {
 	private String nom;
 	private String description;
 	private ArrayList<Point> points;
@@ -14,10 +12,8 @@ public class Piece implements ToString, ToStringShort, Drawable {
 	private PlafondSol plafond;
 	private PlafondSol sol;
 
-	private int id;
-
 	public Piece(int id, String nom, String description, ArrayList<Point> points, ArrayList<Mur> murs, PlafondSol plafond, PlafondSol sol) {
-		this.id = id;
+		super(id);
 		this.nom = nom;
 		this.description = description;
 		this.points = points;
@@ -74,47 +70,6 @@ public class Piece implements ToString, ToStringShort, Drawable {
 		this.sol = sol;
 	}
 
-	public int getId() {
-		return id;
-	}
-
-	public String toString() {
-		return toString(0);
-	}
-
-	public String toString(int depth) {
-		String pfx = "";
-		for (int i = 0; i <= depth; i++) {
-			pfx += "  ";
-		}
-		int nextDepth = depth + 1;
-
-		String pointsOut = "[ ";
-		for (Point each : points) {
-			pointsOut += each.toStringShort() + ", ";
-		}
-		pointsOut += "]";
-
-		String mursOut = "[ ";
-		for (Mur each : murs) {
-			mursOut += each.toStringShort() + ", ";
-		}
-		mursOut += "]";
-
-		return "Piece {\n"
-				+ pfx + "nom: '" + nom + "',\n"
-				+ pfx + "description: '" + description + "',\n"
-				+ pfx + "points: " + pointsOut + ",\n"
-				+ pfx + "murs: " + mursOut + ",\n"
-				+ pfx + "plafond: " + plafond.toString(depth + 1) + ",\n"
-				+ pfx + "sol: " + sol.toString(depth + 1) + ",\n"
-				+ "}";
-	}
-
-	public String toStringShort() {
-		return "( #" + id + " )";
-	}
-
 	public double aire() {
 		double out = 0;
 		/// TODO!!! implement java.awt.Area -> interset the revetements' surfaces with the ouvertures' surfaces
@@ -150,5 +105,17 @@ public class Piece implements ToString, ToStringShort, Drawable {
 		}
 
 		dcx.tui().popWhere();
+	}
+
+	@Override
+	public String toString(int depth, boolean indentFirst) {
+		return new StructuredToString.OfBObject(depth, getClass().getSimpleName(), indentFirst)
+		    .field("nom", nom)
+		    .field("description", description)
+		    .field("points", super.toStringArrayList( (ArrayList<BObject>) ((ArrayList<?>) points)) )
+		    .field("murs", super.toStringArrayList( (ArrayList<BObject>) ((ArrayList<?>) murs)))
+		    .field("plafond", plafond.toString(depth + 1))
+		    .field("sol", sol.toString(depth + 1))
+            .getValue();
 	}
 }

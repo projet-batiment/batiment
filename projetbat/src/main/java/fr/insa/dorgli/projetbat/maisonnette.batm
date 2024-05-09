@@ -58,6 +58,10 @@ OBJECTS:TypeAppart
 299,Intérieur,Partie intérieure de la maison
 EOS:TypeAppart
 
+OBJECTS:TypeBatiment
+298,Dépendence,Une petite maison de jardin
+EOS:TypeBatiment
+
 OBJECTS:Mur
 
 160,101,102,2.4,200
@@ -394,7 +398,7 @@ EOS:Niveau
 
 OBJECTS:Batiment
 
-501,Mon batiment,Contient quelques pièces de vie ainsi qu'un garage basique,MAISON
+501,Mon batiment,Contient quelques pièces de vie ainsi qu'un garage basique,298
 PROP:apparts
 701
 PROP:niveaux

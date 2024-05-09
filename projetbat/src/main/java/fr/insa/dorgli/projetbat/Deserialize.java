@@ -163,6 +163,7 @@ public class Deserialize {
 							case "TypeOuvertureNiveau" -> 	newProject.objects.typesOuverturesNiveau = typeOuvertureNiveauxFromString();
 							case "TypeMur" -> 		newProject.objects.typesMur = typeMursFromString();
 							case "TypeAppart" -> 		newProject.objects.typesAppart = typeAppartsFromString();
+							case "TypeBatiment" -> 		newProject.objects.typesBatiment = typeBatimentsFromString();
 							case "Mur" -> 			newProject.objects.murs = mursFromString(newProject.objects);
 							case "Piece" ->			newProject.objects.pieces = piecesFromString(newProject.objects);
 							case "Appart" ->		newProject.objects.apparts = appartsFromString(newProject.objects);
@@ -354,7 +355,7 @@ public class Deserialize {
 				try {
 					double prixUnitaire = Double.parseDouble(splitted[3]);
 
-					TypeRevetement object = new TypeRevetement(unescapeString(splitted[1]), unescapeString(splitted[2]), prixUnitaire);
+					TypeRevetement object = new TypeRevetement(id, unescapeString(splitted[1]), unescapeString(splitted[2]), prixUnitaire);
 					typeRevetements.put(id, object);
 					debug("read " + object);
 				} catch (NumberFormatException e) {
@@ -398,7 +399,7 @@ public class Deserialize {
 					double largeur = Double.parseDouble(splitted[4]);
 					double prixUnitaire = Double.parseDouble(splitted[5]);
 
-					TypeOuvertureMur object = new TypeOuvertureMur(unescapeString(splitted[1]), unescapeString(splitted[2]), hauteur, largeur, prixUnitaire);
+					TypeOuvertureMur object = new TypeOuvertureMur(id, unescapeString(splitted[1]), unescapeString(splitted[2]), hauteur, largeur, prixUnitaire);
 					typeOuvertureMurs.put(id, object);
 					debug("read " + object);
 				} catch (NumberFormatException e) {
@@ -441,7 +442,7 @@ public class Deserialize {
 					double epaisseur = Double.parseDouble(splitted[3]);
 					double prixU = Double.parseDouble(splitted[4]);
 
-					TypeMur object = new TypeMur(unescapeString(splitted[1]), unescapeString(splitted[2]), epaisseur, prixU);
+					TypeMur object = new TypeMur(id, unescapeString(splitted[1]), unescapeString(splitted[2]), epaisseur, prixU);
 					typeMurs.put(id, object);
 					debug("read " + object);
 				} catch (NumberFormatException e) {
@@ -487,7 +488,7 @@ public class Deserialize {
 					double p2l = Double.parseDouble(splitted[4]);
 					double p2h = Double.parseDouble(splitted[5]);
 
-					RevetementMur object = new RevetementMur(tr, p1l, p1h, p2l, p2h);
+					RevetementMur object = new RevetementMur(id, tr, p1l, p1h, p2l, p2h);
 					revetementMurs.put(id, object);
 					debug("read " + object);
 				} catch (NumberFormatException e) {
@@ -531,7 +532,7 @@ public class Deserialize {
 					double p1l = Double.parseDouble(splitted[2]);
 					double p1h = Double.parseDouble(splitted[3]);
 
-					OuvertureMur object = new OuvertureMur(tr, p1l, p1h);
+					OuvertureMur object = new OuvertureMur(id, tr, p1l, p1h);
 					ouvertureMurs.put(id, object);
 					debug("read " + object);
 				} catch (NumberFormatException e) {
@@ -654,7 +655,7 @@ public class Deserialize {
 					double largeur = Double.parseDouble(splitted[4]);
 					double prixUnitaire = Double.parseDouble(splitted[5]);
 
-					TypeOuvertureNiveau object = new TypeOuvertureNiveau(unescapeString(splitted[1]), unescapeString(splitted[2]), hauteur, largeur, prixUnitaire);
+					TypeOuvertureNiveau object = new TypeOuvertureNiveau(id, unescapeString(splitted[1]), unescapeString(splitted[2]), hauteur, largeur, prixUnitaire);
 					typeOuvertureNiveaux.put(id, object);
 					debug("read " + object);
 				} catch (NumberFormatException e) {
@@ -700,7 +701,7 @@ public class Deserialize {
 					double p2l = Double.parseDouble(splitted[4]);
 					double p2h = Double.parseDouble(splitted[5]);
 
-					RevetementPlafondSol object = new RevetementPlafondSol(tr, p1l, p1h, p2l, p2h);
+					RevetementPlafondSol object = new RevetementPlafondSol(id, tr, p1l, p1h, p2l, p2h);
 					revetementPlafondSols.put(id, object);
 					debug("read " + object);
 				} catch (NumberFormatException e) {
@@ -744,7 +745,7 @@ public class Deserialize {
 					int p1l = Integer.parseInt(splitted[2]);
 					int p1h = Integer.parseInt(splitted[3]);
 
-					OuvertureNiveaux object = new OuvertureNiveaux(tr, p1l, p1h);
+					OuvertureNiveaux object = new OuvertureNiveaux(id, tr, p1l, p1h);
 					ouvertureNiveaux.put(id, object);
 					debug("read " + object);
 				} catch (NumberFormatException e) {
@@ -803,7 +804,7 @@ public class Deserialize {
 				}
 				config.tui.popWhere();
 
-				PlafondSol object = new PlafondSol(r_list, o_list);
+				PlafondSol object = new PlafondSol(id, r_list, o_list);
 				plafondSols.put(id, object);
 				debug("read " + object);
 			} catch (NumberFormatException e) {
@@ -991,7 +992,7 @@ public class Deserialize {
 				}
 
 				try {
-					TypeAppart object = new TypeAppart(unescapeString(splitted[1]), unescapeString(splitted[2]));
+					TypeAppart object = new TypeAppart(id, unescapeString(splitted[1]), unescapeString(splitted[2]));
 					typeApparts.put(id, object);
 					debug("read " + object);
 				} catch (NumberFormatException e) {
@@ -1076,7 +1077,7 @@ public class Deserialize {
 					}
 					config.tui.popWhere();
 
-					Appart object = new Appart(unescapeString(splitted[1]), unescapeString(splitted[2]), pieces, ta);
+					Appart object = new Appart(id, unescapeString(splitted[1]), unescapeString(splitted[2]), pieces, ta);
 					apparts.put(id, object);
 					debug("read " + object);
 				} catch (NumberFormatException e) {
@@ -1204,6 +1205,46 @@ public class Deserialize {
 		return niveaux;
 	}
 
+	/// TypeBatiment
+	private HashMap<Integer, TypeBatiment> typeBatimentsFromString() throws IOException {
+		config.tui.diveWhere("TypeBatiments");
+		config.tui.begin();
+		HashMap<Integer, TypeBatiment> typeBatiments = new HashMap<>();
+
+		final String regex = String.join(",", REGEX_INT, REGEX_STRING, REGEX_STRING);
+		debug("regex: '" + regex + "'");
+		for (
+			SmartReader.ReadResult result = sreader.readLine();
+			result.getState() == SmartReader.ReadState.LINE;
+			result = sreader.readLine()
+		) {
+			String line = result.getText();
+			if (line.matches(regex)) {
+				String[] splitted = line.split(",");
+
+				int id = Integer.parseInt(splitted[0]);
+
+				if (typeBatiments.keySet().contains(id)) {
+					errorIdAgain(id);
+				}
+
+				try {
+					TypeBatiment object = new TypeBatiment(id, unescapeString(splitted[1]), unescapeString(splitted[2]));
+					typeBatiments.put(id, object);
+					debug("read " + object);
+				} catch (NumberFormatException e) {
+					errorParse(line, e.getMessage());
+				}
+			} else {
+				errorSyntax(line);
+			}
+		}
+
+		config.tui.ended();
+		config.tui.popWhere();
+		return typeBatiments;
+	}
+
 	/// Batiment
 	private HashMap<Integer, Batiment> batimentsFromString (Objects objects) throws IOException {
 		config.tui.diveWhere("Batiments");
@@ -1229,8 +1270,7 @@ public class Deserialize {
 
 				try {
 					// lire les propriétés directes du batiment
-					// TODO!!! typeBatiment: changer enum->classe
-					TypeBatiment tb = TypeBatiment.valueOf(splitted[3]);
+					TypeBatiment tb = objects.typesBatiment.get(Integer.parseInt(splitted[3]));
 
 					ArrayList<Appart> apparts = new ArrayList<>();
 					ArrayList<Niveau> niveaux = new ArrayList<>();
@@ -1300,7 +1340,7 @@ public class Deserialize {
 					}
 					config.tui.popWhere();
 
-					Batiment object = new Batiment(unescapeString(splitted[1]), unescapeString(splitted[2]), tb, niveaux, apparts);
+					Batiment object = new Batiment(id, unescapeString(splitted[1]), unescapeString(splitted[2]), tb, niveaux, apparts);
 					batiments.put(id, object);
 					debug("read " + object);
 				} catch (NumberFormatException e) {
@@ -1315,5 +1355,4 @@ public class Deserialize {
 		config.tui.popWhere();
 		return batiments;
 	}
-
 }

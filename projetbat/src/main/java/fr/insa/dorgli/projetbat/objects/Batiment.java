@@ -1,17 +1,18 @@
 package fr.insa.dorgli.projetbat.objects;
 
-import fr.insa.dorgli.projetbat.ToString;
-import fr.insa.dorgli.projetbat.ToStringShort;
+import fr.insa.dorgli.projetbat.gui.DrawingContext;
 import java.util.ArrayList;
+import fr.insa.dorgli.projetbat.StructuredToString;
 
-public class Batiment implements ToString, ToStringShort {
+public class Batiment extends HasPrice {
 	private String nom;
 	private String description;
 	private TypeBatiment typeBatiment;
 	private ArrayList<Niveau> niveaux;
 	private ArrayList<Appart> apparts;
 
-	public Batiment(String nom, String description, TypeBatiment typeBatiment, ArrayList<Niveau> niveaux, ArrayList<Appart> apparts) {
+	public Batiment(int id, String nom, String description, TypeBatiment typeBatiment, ArrayList<Niveau> niveaux, ArrayList<Appart> apparts) {
+		super(id);
 		this.nom = nom;
 		this.description = description;
 		this.typeBatiment = typeBatiment;
@@ -65,44 +66,23 @@ public class Batiment implements ToString, ToStringShort {
 		for (Niveau eachNiveau: niveaux){
 			prixBatiment += eachNiveau.calculerPrix();
 		}
+
 		return prixBatiment;
 	}
 
-
-	public String toString() {
-		return toString(0);
+	@Override
+	public void draw(DrawingContext ctxt, boolean isFocused) {
+		ctxt.tui().error("batiment.draw: cannot draw batiment");
 	}
 
-	public String toString(int depth) {
-		String pfx = "";
-		for (int i = 0; i <= depth; i++) {
-			pfx += "  ";
-		}
-		int nextDepth = depth + 1;
-
-		String niveauxOut = "[ ";
-		for (Niveau each : niveaux) {
-			niveauxOut += each.toStringShort() + ", ";
-		}
-		niveauxOut += "]";
-
-
-		String appartsOut = "[ ";
-		for (Appart each : apparts) {
-			appartsOut += each.toStringShort() + ", ";
-		}
-		appartsOut += "]";
-
-		return "Niveau {\n"
-				+ pfx + "nom: '" + nom + "',\n"
-				+ pfx + "description: '" + description + "',\n"
-				+ pfx + "apparts: " + appartsOut + ",\n"
-				+ pfx + "niveaux: " + niveauxOut + ",\n"
-				+ "}";
-	}
-
-	public String toStringShort() {
-		// TODO -> toStringShort -> afficher l'ID
-		return "( #" + nom + " )";
+	@Override
+	public String toString(int depth, boolean indentFirst) {
+		return new StructuredToString.OfBObject(depth, getClass().getSimpleName(), indentFirst)
+		    .field("nom", nom)
+		    .field("description", description)
+		    .field("typeBatiment", typeBatiment.toString(depth + 1))
+		    .field("apparts", super.toStringArrayList((ArrayList<BObject>) ((ArrayList<?>) apparts)))
+		    .field("niveaux", super.toStringArrayList((ArrayList<BObject>) ((ArrayList<?>) niveaux)))
+            .getValue();
 	}
 }

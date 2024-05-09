@@ -1,11 +1,11 @@
 package fr.insa.dorgli.projetbat.objects;
 
+import fr.insa.dorgli.projetbat.StructuredToString;
 import fr.insa.dorgli.projetbat.TUI;
-import fr.insa.dorgli.projetbat.gui.CanvasContainer;
 import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
-import java.util.Map.Entry;
 
 public class Objects {
 	// liste des objets
@@ -28,6 +28,7 @@ public class Objects {
 	public HashMap<Integer, TypeOuvertureNiveau> typesOuverturesNiveau = new HashMap<>();
 	public HashMap<Integer, TypeRevetement> typesRevetement = new HashMap<>();
 	public HashMap<Integer, TypeAppart> typesAppart = new HashMap<>();
+	public HashMap<Integer, TypeBatiment> typesBatiment = new HashMap<>();
 
 //	public void drawAll(CanvasContainer canvasContainer) {
 ////		System.out.println("INF: draw/objects: murs (" + murs.size() + "): " + murs.toString());
@@ -64,8 +65,8 @@ public class Objects {
 	}
 
 	public Appart createAppart(String nom, String description, ArrayList<Piece> pieces, TypeAppart typeAppart) {
-		Appart appart = new Appart(nom, description, pieces, typeAppart);
 		int id = generateId();
+		Appart appart = new Appart(id, nom, description, pieces, typeAppart);
 		apparts.put(id, appart);
 		return appart;
 	}
@@ -80,8 +81,8 @@ public class Objects {
 	}
 
 	public Batiment createBatiment(String nom, String description, TypeBatiment typeBatiment, ArrayList<Niveau> niveaux, ArrayList<Appart> apparts) {
-		Batiment batiment = new Batiment(nom, description, typeBatiment, niveaux, apparts);
 		int id = generateId();
+		Batiment batiment = new Batiment(id, nom, description, typeBatiment, niveaux, apparts);
 		batiments.put(id, batiment);
 		return batiment;
 	}
@@ -94,15 +95,15 @@ public class Objects {
 	}
 
 	public OuvertureMur createOuvertureMur(TypeOuvertureMur typeOuverture, double posL, double posH) {
-		OuvertureMur ouvertureMur = new OuvertureMur(typeOuverture, posL, posH);
 		int id = generateId();
+		OuvertureMur ouvertureMur = new OuvertureMur(id, typeOuverture, posL, posH);
 		ouverturesMur.put(id, ouvertureMur);
 		return ouvertureMur;
 	}
 
 	public OuvertureNiveaux createOuvertureNiveaux(TypeOuvertureNiveau typeOuvertureNiveau, double posL, double posH) {
-		OuvertureNiveaux ouvertureNiveaux = new OuvertureNiveaux(typeOuvertureNiveau, posL, posH);
 		int id = generateId();
+		OuvertureNiveaux ouvertureNiveaux = new OuvertureNiveaux(id, typeOuvertureNiveau, posL, posH);
 		ouverturesNiveaux.put(id, ouvertureNiveaux);
 		return ouvertureNiveaux;
 	}
@@ -115,57 +116,64 @@ public class Objects {
 	}
 
 	public PlafondSol createPlafondSol(ArrayList<RevetementPlafondSol> revetements, ArrayList<OuvertureNiveaux> ouvertures) {
-		PlafondSol plafondSol = new PlafondSol(revetements, ouvertures);
 		int id = generateId();
+		PlafondSol plafondSol = new PlafondSol(id, revetements, ouvertures);
 		plafondsSols.put(id, plafondSol);
 		return plafondSol;
 	}
 
 	public RevetementMur createRevetementMur(TypeRevetement typeRevetement, double pos1L, double pos1H, double pos2L, double pos2H) {
-		RevetementMur revetementMur = new RevetementMur(typeRevetement, pos1L, pos1H, pos2L, pos2H);
 		int id = generateId();
+		RevetementMur revetementMur = new RevetementMur(id, typeRevetement, pos1L, pos1H, pos2L, pos2H);
 		revetementsMur.put(id, revetementMur);
 		return revetementMur;
 	}
 
 	public RevetementPlafondSol createRevetementPlafondSol(TypeRevetement typeRevetement, double pos1L, double pos1H, double pos2L, double pos2H) {
-		RevetementPlafondSol revetementPlafondSol = new RevetementPlafondSol(typeRevetement, pos1L, pos1H, pos2L, pos2H);
 		int id = generateId();
+		RevetementPlafondSol revetementPlafondSol = new RevetementPlafondSol(id, typeRevetement, pos1L, pos1H, pos2L, pos2H);
 		revetementsPlafondSol.put(id, revetementPlafondSol);
 		return revetementPlafondSol;
 	}
 
-	public TypeAppart createTypeAppart(String name, String description) {
-		TypeAppart typeAppart = new TypeAppart(name, description);
+	public TypeBatiment createTypeBatiment(String name, String description) {
 		int id = generateId();
+		TypeBatiment typeBatiment = new TypeBatiment(id, name, description);
+		typesBatiment.put(id, typeBatiment);
+		return typeBatiment;
+	}
+
+	public TypeAppart createTypeAppart(String name, String description) {
+		int id = generateId();
+		TypeAppart typeAppart = new TypeAppart(id, name, description);
 		typesAppart.put(id, typeAppart);
 		return typeAppart;
 	}
 
 	public TypeMur createTypeMur(String nom, String description, double epaisseur, double prixUnitaire) {
-		TypeMur typeMur = new TypeMur(nom, description, epaisseur, prixUnitaire);
 		int id = generateId();
+		TypeMur typeMur = new TypeMur(id, nom, description, epaisseur, prixUnitaire);
 		typesMur.put(id, typeMur);
 		return typeMur;
 	}
 
 	public TypeOuvertureMur createTypeOuvertureMur(String nom, String description, double hauteur, double largeur, double prixOuverture) {
-		TypeOuvertureMur typeOuvertureMur = new TypeOuvertureMur(nom, description, hauteur, largeur, prixOuverture);
 		int id = generateId();
+		TypeOuvertureMur typeOuvertureMur = new TypeOuvertureMur(id, nom, description, hauteur, largeur, prixOuverture);
 		typesOuverturesMur.put(id, typeOuvertureMur);
 		return typeOuvertureMur;
 	}
 
 	public TypeOuvertureNiveau createTypeOuvertureNiveau(String nom, String description, double hauteur, double largeur, double prixOuverture) {
-		TypeOuvertureNiveau typeOuvertureNiveau = new TypeOuvertureNiveau(nom, description, hauteur, largeur, prixOuverture);
 		int id = generateId();
+		TypeOuvertureNiveau typeOuvertureNiveau = new TypeOuvertureNiveau(id, nom, description, hauteur, largeur, prixOuverture);
 		typesOuverturesNiveau.put(id, typeOuvertureNiveau);
 		return typeOuvertureNiveau;
 	}
 
 	public TypeRevetement createTypeRevetement(String nom, String description, double prixUnitaire) {
-		TypeRevetement typeRevetement = new TypeRevetement(nom, description, prixUnitaire);
 		int id = generateId();
+		TypeRevetement typeRevetement = new TypeRevetement(id, nom, description, prixUnitaire);
 		typesRevetement.put(id, typeRevetement);
 		return typeRevetement;
 	}
@@ -372,118 +380,38 @@ public class Objects {
 
 	///// toString custom implementation
 
-	private String entrySetCustomString(Map.Entry entry) {
-		return TUI.green("" + entry.getKey()) + ": " + entry.getValue();
+	private String hashSetIntoString(String name, Collection<BObject> set) {
+		String out = TUI.blue(name) + " (" + set.size() + ") {\n";
+		for (BObject each: set) {
+			out += each.toString(2) + ",\n";
+		}
+		return out;
 	}
 
 	@Override
 	public String toString() {
-		String out = "Objects {\n";
+		return new StructuredToString.OfBObject(0, "Objects")
+		    .field("typesBatiment", (Collection<BObject>)((Collection<?>)typesBatiment.values()) )
+		    .field("typesAppart", (Collection<BObject>)((Collection<?>)typesAppart.values()) )
+		    .field("typesMur", (Collection<BObject>)((Collection<?>)typesMur.values()) )
+		    .field("typesOuverturesMur", (Collection<BObject>)((Collection<?>)typesOuverturesMur.values()) )
+		    .field("typesOuverturesNiveau", (Collection<BObject>)((Collection<?>)typesOuverturesNiveau.values()) )
+		    .field("typesRevetement", (Collection<BObject>)((Collection<?>)typesRevetement.values()) )
 
-		// éléments principaux
-		out += "    " + TUI.blue("batiments") + " " + batiments.size() + " {\n";
-		for (Map.Entry each: batiments.entrySet()) {
-			out += "        " + entrySetCustomString(each) + ",\n";
-		}
-		out += "    },\n";
+		    .field("OuverturesMur", (Collection<BObject>)((Collection<?>)ouverturesMur.values()) )
+		    .field("OuverturesNiveaux", (Collection<BObject>)((Collection<?>)ouverturesNiveaux.values()) )
+		    .field("RevetementMur", (Collection<BObject>)((Collection<?>)revetementsMur.values()) )
+		    .field("RevetementPlafondSol", (Collection<BObject>)((Collection<?>)revetementsPlafondSol.values()) )
 
-		out += "    " + TUI.blue("niveaux") + " " + niveaux.size() + " {\n";
-		for (Map.Entry each: niveaux.entrySet()) {
-			out += "        " + entrySetCustomString(each) + ",\n";
-		}
-		out += "    },\n";
+		    .field("batiments", (Collection<BObject>)((Collection<?>)batiments.values()) )
+		    .field("niveaux", (Collection<BObject>)((Collection<?>)niveaux.values()) )
+		    .field("apparts", (Collection<BObject>)((Collection<?>)apparts.values()) )
+		    .field("pieces", (Collection<BObject>)((Collection<?>)pieces.values()) )
+		    .field("plafondSols", (Collection<BObject>)((Collection<?>)murs.values()) )
+		    .field("murs", (Collection<BObject>)((Collection<?>)murs.values()) )
+		    .field("points", (Collection<BObject>)((Collection<?>)points.values()) )
 
-		out += "    " + TUI.blue("apparts") + " " + apparts.size() + " {\n";
-		for (Map.Entry each: apparts.entrySet()) {
-			out += "        " + entrySetCustomString(each) + ",\n";
-		}
-		out += "    },\n";
-
-		out += "    " + TUI.blue("pieces") + " " + pieces.size() + " {\n";
-		for (Map.Entry each: pieces.entrySet()) {
-			out += "        " + entrySetCustomString(each) + ",\n";
-		}
-		out += "    },\n";
-
-		out += "    " + TUI.blue("murs") + " " + murs.size() + " {\n";
-		for (Map.Entry each: murs.entrySet()) {
-			out += "        " + entrySetCustomString(each) + ",\n";
-		}
-		out += "    },\n";
-
-		out += "    " + TUI.blue("plafondsSols") + " " + plafondsSols.size() + " {\n";
-		for (Map.Entry each: plafondsSols.entrySet()) {
-			out += "        " + entrySetCustomString(each) + ",\n";
-		}
-		out += "    },\n";
-
-		out += "    " + TUI.blue("points") + " " + points.size() + " {\n";
-		for (Map.Entry each: points.entrySet()) {
-			out += "        " + entrySetCustomString(each) + ",\n";
-		}
-		out += "    },\n";
-		out += "\n";
-
-		// ouvertures
-		out += "    " + TUI.blue("ouverturesMur") + " " + ouverturesMur.size() + " {\n";
-		for (Map.Entry each: ouverturesMur.entrySet()) {
-			out += "        " + entrySetCustomString(each) + ",\n";
-		}
-		out += "    },\n";
-
-		out += "    " + TUI.blue("ouverturesNiveaux") + " " + ouverturesNiveaux.size() + " {\n";
-		for (Map.Entry each: ouverturesNiveaux.entrySet()) {
-			out += "        " + entrySetCustomString(each) + ",\n";
-		}
-		out += "    },\n";
-		out += "\n";
-
-		// revetements
-		out += "    " + TUI.blue("revetementsMur") + " " + revetementsMur.size() + " {\n";
-		for (Map.Entry each: revetementsMur.entrySet()) {
-			out += "        " + entrySetCustomString(each) + ",\n";
-		}
-		out += "    },\n";
-
-		out += "    " + TUI.blue("revetementsPlafondSol") + " " + revetementsPlafondSol.size() + " {\n";
-		for (Map.Entry each: revetementsPlafondSol.entrySet()) {
-			out += "        " + entrySetCustomString(each) + ",\n";
-		}
-		out += "    },\n";
-		out += "\n";
-
-		// types
-		out += "    " + TUI.blue("typesMur") + " " + typesMur.size() + " {\n";
-		for (Map.Entry each: typesMur.entrySet()) {
-			out += "        " + entrySetCustomString(each) + ",\n";
-		}
-		out += "    },\n";
-
-		out += "    " + TUI.blue("typesOuverturesMur") + " " + typesOuverturesMur.size() + " {\n";
-		for (Map.Entry each: typesOuverturesMur.entrySet()) {
-			out += "        " + entrySetCustomString(each) + ",\n";
-		}
-		out += "    },\n";
-
-		out += "    " + TUI.blue("typesOuverturesNiveau") + " " + typesOuverturesNiveau.size() + " {\n";
-		for (Map.Entry each: typesOuverturesNiveau.entrySet()) {
-			out += "        " + entrySetCustomString(each) + ",\n";
-		}
-		out += "    },\n";
-		out += "\n";
-
-		out += "    " + TUI.blue("typesRevetement") + " " + typesRevetement.size() + " {\n";
-		for (Map.Entry each: typesRevetement.entrySet()) {
-			out += "        " + entrySetCustomString(each) + ",\n";
-		}
-		out += "    },\n";
-
-		out += "    " + TUI.blue("typesAppart") + " " + typesAppart.size() + " {\n";
-		for (Map.Entry each: typesAppart.entrySet()) {
-			out += "        " + entrySetCustomString(each) + ",\n";
-		}
-		out += "    },\n";
-
-		return out + "}";
+		    .getValue()
+		;
 	}
 }

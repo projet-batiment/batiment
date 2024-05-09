@@ -1,6 +1,7 @@
 package fr.insa.dorgli.projetbat.gui;
 
 import fr.insa.dorgli.projetbat.Config;
+import fr.insa.dorgli.projetbat.objects.Drawable;
 import fr.insa.dorgli.projetbat.objects.Niveau;
 import java.awt.Rectangle;
 import javafx.scene.canvas.Canvas;

@@ -1,11 +1,15 @@
 package fr.insa.dorgli.projetbat.objects;
 
-public class OuvertureNiveaux {
+import fr.insa.dorgli.projetbat.gui.DrawingContext;
+import fr.insa.dorgli.projetbat.StructuredToString;
+
+public class OuvertureNiveaux extends Drawable {
 	TypeOuvertureNiveau typeOuverture;
 	double posL;
 	double posH;
 
-	public OuvertureNiveaux(TypeOuvertureNiveau typeOuverture, double posL, double posH) {
+	public OuvertureNiveaux(int id, TypeOuvertureNiveau typeOuverture, double posL, double posH) {
+		super(id);
 		this.typeOuverture = typeOuverture;
 		this.posL = posL;
 		this.posH = posH;
@@ -35,13 +39,17 @@ public class OuvertureNiveaux {
 		this.posH = posH;
 	}
 
-	public String toString() {
-		return "OuvertureNiveau { typeOuverture: " + typeOuverture.toStringShort() + ", position: (" + posL + ", "
-				+ posH + ") }";
+	@Override
+	public String toString(int depth, boolean indentFirst) {
+		return new StructuredToString.OfBObject(depth, getClass().getSimpleName(), indentFirst)
+		    .field("posL", ""+posL)
+		    .field("posH", ""+posH)
+		    .field("typeOuverture", typeOuverture.toString(depth + 1))
+            .getValue();
 	}
 
-	public String toStringShort() {
-		// TODO -> toStringShort -> afficher l'ID
-		return "( #" + "TODO" + " )";
+	@Override
+	public void draw(DrawingContext ctxt, boolean isFocused) {
+		ctxt.tui().error("ouvertureNiveaux.draw: cannot draw ouvertureNiveaux");
 	}
 }

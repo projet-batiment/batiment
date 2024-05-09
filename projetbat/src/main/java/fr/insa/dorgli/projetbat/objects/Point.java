@@ -1,19 +1,15 @@
 package fr.insa.dorgli.projetbat.objects;
 
-import fr.insa.dorgli.projetbat.ToStringShort;
-import fr.insa.dorgli.projetbat.gui.CanvasContainer;
-import fr.insa.dorgli.projetbat.gui.Drawable;
 import fr.insa.dorgli.projetbat.gui.DrawingContext;
+import fr.insa.dorgli.projetbat.StructuredToString;
 
-public class Point implements ToStringShort, Drawable {
+public class Point extends Drawable {
 	private double x;
 	private double y;
 	private int niveauId;
 
-	private final int id;
-
 	public Point(int id, double x, double y, int niveauId) {
-		this.id = id;
+		super(id);
 		this.x = x;
 		this.y = y;
 		this.niveauId = niveauId;
@@ -39,10 +35,6 @@ public class Point implements ToStringShort, Drawable {
 		return niveauId;
 	}
 
-	public int getId() {
-		return id;
-	}
-
 	public void setNiveauId(int niveauId) {
 		this.niveauId = niveauId;
 	}
@@ -53,11 +45,11 @@ public class Point implements ToStringShort, Drawable {
 		dcx.drawPoint(this, x, y);
 	}
 
-	public String toString() {
-		return "Point { x: " + x + ", y: " + y + ", niveauId: " + niveauId + " }";
-	}
-
-	public String toStringShort() {
-		return "#" + id + "";
+	public String toString(int depth, boolean indentFirst) {
+		return new StructuredToString.OfBObject(depth, getClass().getSimpleName(), indentFirst)
+		    .field("x", ""+x)
+		    .field("y", ""+y)
+		    .field("niveauId", ""+niveauId)
+            .getValue();
 	}
 }

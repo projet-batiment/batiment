@@ -1,13 +1,14 @@
 package fr.insa.dorgli.projetbat.objects;
 
-import fr.insa.dorgli.projetbat.ToStringShort;
+import fr.insa.dorgli.projetbat.StructuredToString;
 
-public class TypeRevetement implements ToStringShort {
+public class TypeRevetement extends BObject {
 	private String nom;
 	private String description;
 	private double prixUnitaire;
 
-	public TypeRevetement(String nom, String description, double prixUnitaire) {
+	public TypeRevetement(int id, String nom, String description, double prixUnitaire) {
+		super(id);
 		this.nom = nom;
 		this.description = description;
 		this.prixUnitaire = prixUnitaire;
@@ -37,14 +38,12 @@ public class TypeRevetement implements ToStringShort {
 		this.prixUnitaire = prixUnitaire;
 	}
 
-	public String toString() {
-		return "TypeRevetement { nom: '" + nom + "'"
-		    + ", description: '" + description + "'"
-		    + ", prixUnitaire: " + prixUnitaire + " }";
-	}
-
-	public String toStringShort() {
-		// TODO -> toStringShort -> afficher l'ID
-		return "( #" + "TODO" + " )";
+	@Override
+	public String toString(int depth, boolean indentFirst) {
+		return new StructuredToString.OfBObject(depth, getClass().getSimpleName(), indentFirst)
+		    .field("nom", nom)
+		    .field("description", description)
+		    .field("prixUnitaire", ""+prixUnitaire)
+            .getValue();
 	}
 }

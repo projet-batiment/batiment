@@ -1,8 +1,8 @@
 package fr.insa.dorgli.projetbat;
 
 import fr.insa.dorgli.projetbat.gui.Direction;
-import fr.insa.dorgli.projetbat.gui.Drawable;
 import fr.insa.dorgli.projetbat.gui.MainPane;
+import fr.insa.dorgli.projetbat.objects.Drawable;
 import fr.insa.dorgli.projetbat.objects.Niveau;
 import java.io.File;
 import java.io.FileNotFoundException;

@@ -1,15 +1,17 @@
 package fr.insa.dorgli.projetbat.objects;
 
-import fr.insa.dorgli.projetbat.ToStringShort;
+import fr.insa.dorgli.projetbat.gui.DrawingContext;
+import fr.insa.dorgli.projetbat.StructuredToString;
 
-public class RevetementMur implements ToStringShort {
+public class RevetementMur extends HasPrice {
 	TypeRevetement typeRevetement;
 	double pos1L;
 	double pos1H;
 	double pos2L;
 	double pos2H;
 
-	public RevetementMur(TypeRevetement typeRevetement, double pos1L, double pos1H, double pos2L, double pos2H) {
+	public RevetementMur(int id, TypeRevetement typeRevetement, double pos1L, double pos1H, double pos2L, double pos2H) {
+		super(id);
 		this.typeRevetement = typeRevetement;
 		this.pos1L = pos1L;
 		this.pos1H = pos1H;
@@ -81,13 +83,25 @@ public class RevetementMur implements ToStringShort {
 		return typeRevetement.getPrixUnitaire() * aire(largeurMur, hauteurMur);
 	}
 
-	public String toString() {
-		return "RevetementMur { type -> '" + typeRevetement.getNom() + "'"
-		    + ", positions: (" + pos1L + ", " + pos1H + ") -- (" + pos2L + ", " + pos2H + ") }";
+	@Override
+	public double calculerPrix() {
+		// TODO: besoin de la surface !
+		return 0;
 	}
 
-	public String toStringShort() {
-		// TODO -> toStringShort -> afficher l'ID au lieu du nom
-		return "( #" + typeRevetement.getNom() + ", (" + pos1L + ", " + pos1H + " | " + pos2L + ", " + pos2H + ") )";
+	@Override
+	public String toString(int depth, boolean indentFirst) {
+		return new StructuredToString.OfBObject(depth, getClass().getSimpleName(), indentFirst)
+		    .field("pos1L", ""+pos1L)
+		    .field("pos1H", ""+pos1H)
+		    .field("pos2L", ""+pos2L)
+		    .field("pos2H", ""+pos2H)
+		    .field("typeOuverture", typeRevetement.toString(depth + 1))
+        	    .getValue();
+	}
+
+	@Override
+	public void draw(DrawingContext ctxt, boolean isFocused) {
+		ctxt.tui().error("revetementMur.draw: cannot draw revetementMur");
 	}
 }

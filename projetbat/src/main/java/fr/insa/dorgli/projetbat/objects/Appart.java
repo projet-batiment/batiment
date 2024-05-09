@@ -1,14 +1,16 @@
 package fr.insa.dorgli.projetbat.objects;
 
+import fr.insa.dorgli.projetbat.StructuredToString;
 import java.util.ArrayList;
 
-public class Appart {
+public class Appart extends BObject {
 	private String nom;
 	private String description;
 	private ArrayList<Piece> pieces;
 	private TypeAppart typeAppart;
 
-	public Appart(String nom, String description, ArrayList<Piece> pieces, TypeAppart typeAppart) {
+	public Appart(int id, String nom, String description, ArrayList<Piece> pieces, TypeAppart typeAppart) {
+		super(id);
 		this.nom = nom;
 		this.description = description;
 		this.pieces = pieces;
@@ -47,18 +49,23 @@ public class Appart {
 		this.typeAppart = typeAppart;
 	}
 
-	@Override
-	public String toString() {
-		String piecesOut = "[ ";
-		for (Piece piece: pieces) {
-			piecesOut += piece.toStringShort() + ", ";
-		}
-		piecesOut += "]";
-		return "Appart {\n  nom: '" + nom + "',\n  description: '" + description + "',\n  pieces: " + piecesOut + ",\n  typeAppart: " + typeAppart.toStringShort() + "\n}";
+	public double calculerPrix() {
+		// TODO ??
+		return 0;
 	}
 
-	public String toStringShort() {
-		// TODO -> toStringShort -> afficher l'ID
-		return "( #" + nom + " )";
+	@Override
+	public String toString(int depth, boolean indentFirst) {
+		return new StructuredToString.OfBObject(depth, getClass().getSimpleName(), indentFirst)
+		    .field("nom", nom)
+		    .field("description", description)
+		    .field("pieces", super.toStringArrayList((ArrayList<BObject>) ((ArrayList<?>) pieces)))
+		    .field("typeAppart", typeAppart.toString(depth + 1))
+		    .getValue();
 	}
+
+//	@Override
+//	public String toStringShort() {
+//		return "Appart#" + super.getId();
+//	}
 }

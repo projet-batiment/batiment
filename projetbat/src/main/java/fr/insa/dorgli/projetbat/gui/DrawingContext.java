@@ -2,7 +2,7 @@ package fr.insa.dorgli.projetbat.gui;
 
 import fr.insa.dorgli.projetbat.Config;
 import fr.insa.dorgli.projetbat.TUI;
-import java.awt.geom.Line2D;
+import fr.insa.dorgli.projetbat.objects.Drawable;
 import java.util.HashSet;
 import javafx.scene.paint.Color;
 

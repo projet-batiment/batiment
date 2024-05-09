@@ -1,15 +1,16 @@
 package fr.insa.dorgli.projetbat.objects;
 
-import fr.insa.dorgli.projetbat.ToStringShort;
+import fr.insa.dorgli.projetbat.StructuredToString;
 
-public class TypeOuvertureMur implements ToStringShort {
+public class TypeOuvertureMur extends BObject {
 	private String nom;
 	private String description;
 	private double hauteur;
 	private double largeur;
 	private double prixOuverture;
 
-	public TypeOuvertureMur(String nom, String description, double hauteur, double largeur, double prixOuverture) {
+	public TypeOuvertureMur(int id, String nom, String description, double hauteur, double largeur, double prixOuverture) {
+		super(id);
 		this.nom = nom;
 		this.description = description;
 		this.hauteur = hauteur;
@@ -57,16 +58,14 @@ public class TypeOuvertureMur implements ToStringShort {
 		this.largeur = largeur;
 	}
 
-	public String toString() {
-		return "TypeOuvertureMur { nom: '" + nom + "'"
-		    + ", description: '" + description + "'"
-		    + ", hauteur: " + hauteur
-		    + ", largeur: " + largeur
-		    + ", prixOuverture: " + prixOuverture + " }";
-	}
-
-	public String toStringShort() {
-		// TODO -> toStringShort -> afficher l'ID
-		return "( #" + "TODO" + " )";
+	@Override
+	public String toString(int depth, boolean indentFirst) {
+		return new StructuredToString.OfBObject(depth, getClass().getSimpleName(), indentFirst)
+		    .field("nom", nom)
+		    .field("description", description)
+		    .field("largeur", ""+largeur)
+		    .field("hauteur", ""+hauteur)
+		    .field("prixOuverture", ""+prixOuverture)
+            .getValue();
 	}
 }
