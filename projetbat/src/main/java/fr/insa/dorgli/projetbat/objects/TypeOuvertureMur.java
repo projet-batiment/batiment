@@ -69,4 +69,9 @@ public class TypeOuvertureMur implements ToStringShort {
 		// TODO -> toStringShort -> afficher l'ID
 		return "( #" + "TODO" + " )";
 	}
+
+	public String serialize(Objects objects) {
+		int id = objects.getIdOfTypeOuvertureMur(this);
+		return String.join(",", id, nom, description, hauteur, largeur, prixOuverture);
+	}
 }
