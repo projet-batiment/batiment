@@ -58,4 +58,9 @@ public class TypeMur implements ToStringShort {
 		// TODO -> toStringShort -> afficher l'ID
 		return "( #" + "TODO" + " )";
 	}
+
+	public String serialize(Objects objects) {
+		int id = objects.getIdOfTypeMur(this);
+		return String.join(",", id, nom, description, epaisseur, prixUnitaire);
+	}
 }
