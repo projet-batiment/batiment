@@ -13,24 +13,12 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 
 public class Controller {
-	private enum ActionState {
-		DEFAULT, // none
-
-		SELECT,
-		EDIT_OBJECT,
-
-		CREATE_VISUALLY, // with the mouse & on the canvas
-	}
-
 	private MainPane mainPane;
 	private Config config;
-
-	private ActionState actionState;
 
 	public Controller(Config config, MainPane mainPane) {
 		this.config = config;
 		this.mainPane = mainPane;
-		this.actionState = ActionState.DEFAULT;
 	}
 
 	public void openFile(ActionEvent event) {
@@ -86,16 +74,19 @@ public class Controller {
 
 	public void canvasClicked(MouseEvent event) {
 		config.tui.log("controller: a click occurred in the canvasContainer at (" + event.getX() + ":" + event.getY() + ")");
-		if (actionState == ActionState.CREATE_VISUALLY) {
-			config.tui.log("controller: TODO: clicked canvas in CREATE_VISUALLY mode");
-		} else {
-			Drawable closestObject = config.getMainPane().getCanvasContainer().getClosestLinked(event.getX(), event.getY());
-			if (closestObject == null) {
-				config.tui.log("controller: no object to be focused");
-			} else {
-				config.tui.log("controller: focusing object " + closestObject.getId() + " now: " + closestObject.toString());
-				config.getMainPane().getCanvasContainer().getDrawingContext().setSelectedObject(closestObject);
-				config.getMainPane().getCanvasContainer().redraw();
+		switch (config.state.actionState) {
+			case State.ActionState.CREATE_MUR, State.ActionState.CREATE_PIECE
+			    -> config.tui.log("controller: TODO: clicked canvas in CREATE_VISUALLY mode");
+
+			default -> {
+				Drawable closestObject = config.getMainPane().getCanvasContainer().getClosestLinked(event.getX(), event.getY());
+				if (closestObject == null) {
+					config.tui.log("controller: no object to be focused");
+				} else {
+					config.tui.log("controller: focusing object " + closestObject.getId() + " now: " + closestObject.toString());
+					config.getMainPane().getCanvasContainer().getDrawingContext().setSelectedObject(closestObject);
+					config.getMainPane().getCanvasContainer().redraw();
+				}
 			}
 		}
 	}

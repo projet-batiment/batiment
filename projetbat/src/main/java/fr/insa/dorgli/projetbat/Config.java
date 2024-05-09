@@ -17,8 +17,8 @@ public class Config {
 	final int maximumSavefileVersion = 3;
 
 	// TODO: classe UI (abstraite??) pour gérer les logs tui/gui
-	public TUI tui = new TUI(TUI.LogLevel.DEBUG);
-
+	public final TUI tui = new TUI(TUI.LogLevel.DEBUG);
+	public final State state = new State();
 	public Project project = new Project();
 	private MainPane mainPane = null;
 
@@ -32,5 +32,4 @@ public class Config {
 		else
 			tui.error("config: tried to reassign the mainPane ! " + this.mainPane + " !-> " + mainPane);
 	}
-
 }
