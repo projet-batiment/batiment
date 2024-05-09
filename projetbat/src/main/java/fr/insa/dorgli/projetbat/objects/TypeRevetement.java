@@ -47,4 +47,9 @@ public class TypeRevetement implements ToStringShort {
 		// TODO -> toStringShort -> afficher l'ID
 		return "( #" + "TODO" + " )";
 	}
+
+	public String serialize(Objects objects) {
+		int id = objects.getIdOfTypeRevetement(this);
+		return String.join(",", id, nom, description, prixUnitaire);
+	}
 }
