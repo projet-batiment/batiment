@@ -31,6 +31,12 @@ public class MainPane extends BorderPane {
 	private Button buttonFancy2;
 	private Button buttonFancy3;
 
+	private Button refreshButton;
+	private Button totrevButton;
+	private Button totouvButton;
+	private Button totalButton;
+	private Button detailButton;
+
 	private Label labelCanvasScale;
 
 	private CanvasContainer canvasContainer;
@@ -108,6 +114,42 @@ public class MainPane extends BorderPane {
 			canvasContainer.TMPDrawOriginPoint();
 		});
 
+		refreshButton = new Button("actualiser");
+    		refreshButton.setOnAction(evt -> {
+			System.out.println(Piece.prix);
+		});
+
+		totalButton = new Button ("Devis total");
+    		totalButton.setOnAction(evt -> {
+			controller.devisTotal();
+		});
+
+    		detailButton = new Button ("DetailPieces");
+    		detailButton.setOnAction(evt -> {
+			message.setText("DETAIL PIECES");
+			System.out.println(get.appart.TypeAppart + " n°: " + get.appart.nom);
+			System.out.println("piece : " + get.pieces.nom + "| prix : " + get.pieces.prix );
+			System.out.println("prix mur : " + get.pieces.murs.prixMur );
+			System.out.println("prix plafond : " + get.pieces.plafond.prixPlafondSol );
+			System.out.println("prix sol : " + get.pieces.sol.prixPlafondSol );
+		});
+
+    		totouvButton = new Button ("TotalOuverture");
+    		totouvButton.setOnAction(evt -> {
+			message.setText("TOTAL OUVERTURE");
+			System.out.println("ouvertures du plafond : " + get.pieces.plafond.ouvertures.TypeOuvertureNiveau + "| prix ouverture : " + get.pieces.plafond.ouvertures.TypeOuvertureNiveau.prixOuverture);
+			System.out.println("ouvertures du plafond : " + get.pieces.sol.ouvertures.TypeOuvertureNiveau + "| prix ouverture : " + get.pieces.sol.ouvertures.TypeOuvertureNiveau.prixOuverture);
+			System.out.println("ouvertures des murs : " + get.pieces.murs.ouvertures.TypeOuvertureMur + "| prix ouverture : " + get.pieces.murs.ouvertures.TypeOuvertureMur.prixUnitaire);
+		});
+
+    		totrevButton = new Button ("TotalRevetement");
+   		totrevButton.setOnAction(evt -> {
+			message.setText(" TOTAL REVETEMENT");
+			System.out.println(" revetement mur: " + get.pieces.murs.revetements1.typeRevetement + "| prix revetement : " + get.pieces.murs.revetement1.typeRevetement.prixUnitaire);
+			System.out.println(" revetement plafond: " + get.pieces.plafond.revetements.typeRevetement + "|prix revetement : " + get.pieces.plafond.revetements.typeRevetement.prixUnitaire);
+			System.out.println(" revetement sol: " + get.pieces.sol.revetements.typeRevetement + "|prix revetement : " + get.pieces.sol.revetements.typeRevetement.prixUnitaire);
+		});
+
 		labelCanvasScale = new Label("x1");
 
 		super.setRight(new VBox(
@@ -127,6 +169,12 @@ public class MainPane extends BorderPane {
 		    buttonFancy,
 		    buttonFancy2,
 		    buttonFancy3,
+
+		    refreshButton,
+		    detailButton,
+		    totalButton,
+		    totrevButton,
+		    totouvButton,
 
 		    labelCanvasScale
 		));

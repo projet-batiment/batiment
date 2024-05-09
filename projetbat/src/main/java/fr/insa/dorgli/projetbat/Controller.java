@@ -99,4 +99,13 @@ public class Controller {
 			}
 		}
 	}
+
+	public void devisTotal() {
+		Alert alert = new Alert(AlertType.ERROR);
+		alert.setTitle("Devis total");
+		alert.setHeaderText("Devis total - " + config.project.projectName);
+		alert.setContentText("Prix calculé : " + "TODO!!!");
+
+		alert.showAndWait();
+	}
 }
