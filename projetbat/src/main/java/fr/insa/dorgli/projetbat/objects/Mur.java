@@ -155,4 +155,9 @@ public class Mur implements ToString, ToStringShort, Drawable {
 		// TODO -> toStringShort -> afficher l'ID
 		return "( #" + "TODO" + " )";
 	}
+
+	public String serialize(Objects objects) {
+		int id = objects.getIdOfMur(this);
+		return String.join(",", id, pointDebut, pointFin, hauteur, typeMur);
+	}
 }
