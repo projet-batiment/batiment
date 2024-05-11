@@ -44,4 +44,9 @@ public class OuvertureNiveaux {
 		// TODO -> toStringShort -> afficher l'ID
 		return "( #" + "TODO" + " )";
 	}
+
+	public String serialize(Objects objects) {
+		int id = objects.getIdOfOuvertureNiveaux(this);
+		return String.join(",", id, typeOuvertureNiveau, posL, posH);
+	}
 }
