@@ -61,4 +61,9 @@ public class Appart {
 		// TODO -> toStringShort -> afficher l'ID
 		return "( #" + nom + " )";
 	}
+
+	public String serialize(Objects objects) {
+		int id = objects.getIdOfAppart(this);
+		return String.join(",", id, nom, description, typeAppart);
+	}
 }
