@@ -145,4 +145,9 @@ public class Piece implements ToString, ToStringShort, Drawable {
 
 		dcx.tui().popWhere();
 	}
+
+	public String serialize(Objects objects) {
+		int id = objects.getIdOfPiece(this);
+		return String.join(",", id, nom, description);
+	}
 }
