@@ -105,4 +105,9 @@ public class Batiment implements ToString, ToStringShort {
 		// TODO -> toStringShort -> afficher l'ID
 		return "( #" + nom + " )";
 	}
+
+	public String serialize(Objects objects) {
+		int id = objects.getIdOfBatiment(this);
+		return String.join(",", id, nom, description, typeBatiment);
+	}
 }
