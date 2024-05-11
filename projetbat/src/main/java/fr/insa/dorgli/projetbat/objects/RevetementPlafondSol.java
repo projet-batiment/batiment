@@ -88,4 +88,9 @@ public class RevetementPlafondSol implements ToStringShort {
 		// TODO -> toStringShort -> afficher l'ID au lieu du nom
 		return "( #" + typeRevetement.getNom() + ", (" + pos1L + "," + pos1H + " | " + pos2L + "," + pos2H + ") )";
 	}
+
+	public String serialize(Objects objects) {
+		int id = objects.getIdOfRevetementPlafondSol(this);
+		return String.join(",", id, typeRevetement, pos1L, pos1H, pos2L, pos2H);
+	}
 }
