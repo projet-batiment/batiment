@@ -74,4 +74,9 @@ public class TypeOuvertureNiveau implements ToStringShort {
 		// TODO -> toStringShort -> afficher l'ID
 		return "( #" + "TODO" + " )";
 	}
+
+	public String serialize(Objects objects) {
+		int id = objects.getIdOfTypeOuvertureNiveau(this);
+		return String.join(",", id, nom, description, hauteur, largeur, prixOuverture);
+	}
 }
