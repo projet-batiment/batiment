@@ -15,6 +15,7 @@ public class MainPane extends BorderPane {
 	private Stage mainStage;
 
 	private Button buttonOpenFile;
+	private Button buttonSaveFile;
 	private Button buttonDebug;
 
 	private Button buttonZoomIn;
@@ -42,6 +43,11 @@ public class MainPane extends BorderPane {
 		buttonOpenFile = new Button("Ouvrir...");
 		buttonOpenFile.setOnAction(event -> {
 			controller.openFile(event);
+		});
+
+		buttonSaveFile = new Button("Enregistrer");
+		buttonSaveFile.setOnAction(event -> {
+			controller.saveFile(event);
 		});
 
 		buttonDebug = new Button("Debug");
@@ -111,6 +117,7 @@ public class MainPane extends BorderPane {
 
 		super.setRight(new VBox(
 		    buttonOpenFile,
+		    buttonSaveFile,
 		    buttonDebug,
 
 		    buttonZoomIn,

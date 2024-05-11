@@ -79,4 +79,25 @@ public class PlafondSol implements ToString, ToStringShort {
 		// TODO -> toStringShort -> afficher l'ID
 		return "( #" + "TODO" + ")";
 	}
+
+	public String serialize(Objects objects) {
+		int id = objects.getIdOfPlafondSol(this);
+
+		String out = String.valueOf(id) + "\n";
+
+		if (!revetements.isEmpty()) {
+			out += "PROP:revetements\n";
+			for (RevetementPlafondSol r: revetements)
+				out += r.serialize(objects) + "\n";
+			out += "EOS:revetements\n";
+		}
+		if (!ouvertures.isEmpty()) {
+			out += "PROP:ouvertures\n";
+			for (OuvertureNiveaux o: ouvertures)
+				out += o.serialize(objects) + "\n";
+			out += "EOS:ouvertures\n";
+		}
+
+		return out + "EOS:Entry";
+	}
 }

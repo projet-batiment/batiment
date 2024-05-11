@@ -148,6 +148,33 @@ public class Piece implements ToString, ToStringShort, Drawable {
 
 	public String serialize(Objects objects) {
 		int id = objects.getIdOfPiece(this);
-		return String.join(",", id, nom, description);
+		String out = String.join(",", String.valueOf(id), nom, description) + "\n";
+
+		if (!points.isEmpty()) {
+			out += "PROP:points\n";
+			String[] pointIds = new String[points.size()];
+			for (int i = 0; i < pointIds.length; i++) {
+				pointIds[i] = String.valueOf(objects.getIdOfPoint(points.get(i)));
+			}
+			out += String.join(",", pointIds) + "\n";
+		}
+		if (!murs.isEmpty()) {
+			out += "PROP:murs\n";
+			String[] murIds = new String[murs.size()];
+			for (int i = 0; i < murIds.length; i++) {
+				murIds[i] = String.valueOf(objects.getIdOfMur(murs.get(i)));
+			}
+			out += String.join(",", murIds) + "\n";
+		}
+		if (plafond != null) {
+			out += "PROP:plafond\n";
+			out += plafond.serialize(objects) + "\nEOS:plafond";
+		}
+		if (sol != null) {
+			out += "PROP:sol\n";
+			out += sol.serialize(objects) + "\nEOS:sol";
+		}
+
+		return out + "EOS:Entry";
 	}
 }

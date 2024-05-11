@@ -158,6 +158,31 @@ public class Mur implements ToString, ToStringShort, Drawable {
 
 	public String serialize(Objects objects) {
 		int id = objects.getIdOfMur(this);
-		return String.join(",", id, pointDebut, pointFin, hauteur, typeMur);
+		int debutId = objects.getIdOfPoint(pointDebut);
+		int finId = objects.getIdOfPoint(pointFin);
+		int typeId = objects.getIdOfTypeMur(typeMur);
+
+		String out = String.join(",", String.valueOf(id), String.valueOf(debutId), String.valueOf(finId), String.valueOf(hauteur), String.valueOf(typeId)) + "\n";
+
+		if (!revetements1.isEmpty()) {
+			out += "PROP:revetements1\n";
+			for (RevetementMur r: revetements1)
+				out += r.serialize(objects) + "\n";
+			out += "EOS:revetements1\n";
+		}
+		if (!revetements2.isEmpty()) {
+			out += "PROP:revetements2\n";
+			for (RevetementMur r: revetements2)
+				out += r.serialize(objects) + "\n";
+			out += "EOS:revetements2\n";
+		}
+		if (!ouvertures.isEmpty()) {
+			out += "PROP:ouvertures\n";
+			for (OuvertureMur o: ouvertures)
+				out += o.serialize(objects) + "\n";
+			out += "EOS:ouvertures\n";
+		}
+
+		return out + "EOS:Entry";
 	}
 }

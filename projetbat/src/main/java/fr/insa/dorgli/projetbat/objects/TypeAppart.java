@@ -42,6 +42,6 @@ public class TypeAppart {
 
 	public String serialize(Objects objects) {
 		int id = objects.getIdOfTypeAppart(this);
-		return String.join(",", id, name, description);
+		return String.join(",", String.valueOf(id), name, description);
 	}
 }

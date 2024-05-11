@@ -43,6 +43,69 @@ public class Objects {
 
 	private int idCounter = 0;
 
+	///// serialize
+
+	public String serialize() {
+		String out = new String();
+
+		out += "OBJECTS:Point\n\n";
+		for (Point each: points.values())
+			out += each.serialize(this) + "\n";
+		out += "EOS:Point\n\n";
+
+		out += "OBJECTS:TypeRevetemnt\n\n";
+		for (TypeRevetement each: typesRevetement.values())
+			out += each.serialize(this) + "\n";
+		out += "EOS:TypeRevetement\n\n";
+
+		out += "OBJECTS:TypeOuvertureMur\n\n";
+		for (TypeOuvertureMur each: typesOuverturesMur.values())
+			out += each.serialize(this) + "\n";
+		out += "EOS:TypeOuvertureMur\n\n";
+
+		out += "OBJECTS:TypeOuvertureNiveau\n\n";
+		for (TypeOuvertureNiveau each: typesOuverturesNiveau.values())
+			out += each.serialize(this) + "\n";
+		out += "EOS:TypeOuvertureNiveau\n\n";
+
+		out += "OBJECTS:TypeMur\n\n";
+		for (TypeMur each: typesMur.values())
+			out += each.serialize(this) + "\n";
+		out += "EOS:TypeMur\n\n";
+
+		out += "OBJECTS:TypeAppart\n\n";
+		for (TypeAppart each: typesAppart.values())
+			out += each.serialize(this) + "\n";
+		out += "EOS:TypeAppart\n\n";
+
+		out += "OBJECTS:Mur\n\n";
+		for (Mur each: murs.values())
+			out += each.serialize(this) + "\n";
+		out += "EOS:Mur\n\n";
+
+		out += "OBJECTS:Piece\n\n";
+		for (Piece each: pieces.values())
+			out += each.serialize(this) + "\n";
+		out += "EOS:Piece\n\n";
+
+		out += "OBJECTS:Appart\n\n";
+		for (Appart each: apparts.values())
+			out += each.serialize(this) + "\n";
+		out += "EOS:Appart\n\n";
+
+		out += "OBJECTS:Niveau\n\n";
+		for (Niveau each: niveaux.values())
+			out += each.serialize(this) + "\n";
+		out += "EOS:Niveau\n\n";
+
+		out += "OBJECTS:Batiment\n\n";
+		for (Batiment each: batiments.values())
+			out += each.serialize(this) + "\n";
+		out += "EOS:Batiment\n\n";
+
+		return out;
+	}
+
 	///// idCounter generator + setter
 
 	public int generateId() {
@@ -237,6 +300,15 @@ public class Objects {
 	public int getIdOfMur(Mur murRecherche){
 		for (int i: murs.keySet()) {
 			if (murs.get(i) == murRecherche) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	public int getIdOfTypeAppart(TypeAppart typeAppartRecherche){
+		for (int i: typesAppart.keySet()){
+			if (typesAppart.get(i) == typeAppartRecherche){
 				return i;
 			}
 		}

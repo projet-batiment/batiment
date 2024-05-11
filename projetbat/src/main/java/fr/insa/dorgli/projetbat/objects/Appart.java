@@ -64,6 +64,18 @@ public class Appart {
 
 	public String serialize(Objects objects) {
 		int id = objects.getIdOfAppart(this);
-		return String.join(",", id, nom, description, typeAppart);
+
+		String out = String.join(",", String.valueOf(id), nom, description, String.valueOf(objects.getIdOfTypeAppart(typeAppart))) + "\n";
+
+		if (!pieces.isEmpty()) {
+			out += "PROP:pieces\n";
+			String[] pieceIds = new String[pieces.size()];
+			for (int i = 0; i < pieceIds.length; i++) {
+				pieceIds[i] = String.valueOf(objects.getIdOfPiece(pieces.get(i)));
+			}
+			out += String.join(",", pieceIds) + "\n";
+		}
+
+		return out + "EOS:Entry";
 	}
 }

@@ -108,6 +108,25 @@ public class Batiment implements ToString, ToStringShort {
 
 	public String serialize(Objects objects) {
 		int id = objects.getIdOfBatiment(this);
-		return String.join(",", id, nom, description, typeBatiment);
+		String out = String.join(",", String.valueOf(id), nom, description, String.valueOf(typeBatiment)) + "\n";
+
+		if (!niveaux.isEmpty()) {
+			out += "PROP:niveaux\n";
+			String[] niveauIds = new String[niveaux.size()];
+			for (int i = 0; i < niveauIds.length; i++) {
+				niveauIds[i] = String.valueOf(objects.getIdOfNiveau(niveaux.get(i)));
+			}
+			out += String.join(",", niveauIds) + "\n";
+		}
+		if (!apparts.isEmpty()) {
+			out += "PROP:apparts\n";
+			String[] appartIds = new String[apparts.size()];
+			for (int i = 0; i < appartIds.length; i++) {
+				appartIds[i] = String.valueOf(objects.getIdOfAppart(apparts.get(i)));
+			}
+			out += String.join(",", appartIds) + "\n";
+		}
+
+		return out + "EOS:Entry";
 	}
 }

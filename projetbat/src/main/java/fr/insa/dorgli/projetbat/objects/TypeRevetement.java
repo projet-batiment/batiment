@@ -50,6 +50,6 @@ public class TypeRevetement implements ToStringShort {
 
 	public String serialize(Objects objects) {
 		int id = objects.getIdOfTypeRevetement(this);
-		return String.join(",", id, nom, description, prixUnitaire);
+		return String.join(",", String.valueOf(id), nom, description, String.valueOf(prixUnitaire));
 	}
 }

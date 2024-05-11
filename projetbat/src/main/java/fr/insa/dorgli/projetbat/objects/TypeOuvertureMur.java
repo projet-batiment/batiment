@@ -72,6 +72,6 @@ public class TypeOuvertureMur implements ToStringShort {
 
 	public String serialize(Objects objects) {
 		int id = objects.getIdOfTypeOuvertureMur(this);
-		return String.join(",", id, nom, description, hauteur, largeur, prixOuverture);
+		return String.join(",", String.valueOf(id), nom, description, String.valueOf(hauteur), String.valueOf(largeur), String.valueOf(prixOuverture));
 	}
 }

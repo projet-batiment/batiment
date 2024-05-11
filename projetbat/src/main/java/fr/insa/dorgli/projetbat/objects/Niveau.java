@@ -121,6 +121,25 @@ public class Niveau implements ToString, ToStringShort, Drawable {
 
 	public String serialize(Objects objects) {
 		int id = objects.getIdOfNiveau(this);
-		return String.join(",", id, nom, description, hauteur);
+		String out = String.join(",", String.valueOf(id), nom, description, String.valueOf(hauteur)) + "\n";
+
+		if (!pieces.isEmpty()) {
+			out += "PROP:pieces\n";
+			String[] pieceIds = new String[pieces.size()];
+			for (int i = 0; i < pieceIds.length; i++) {
+				pieceIds[i] = String.valueOf(objects.getIdOfPiece(pieces.get(i)));
+			}
+			out += String.join(",", pieceIds) + "\n";
+		}
+		if (!apparts.isEmpty()) {
+			out += "PROP:apparts\n";
+			String[] appartIds = new String[apparts.size()];
+			for (int i = 0; i < appartIds.length; i++) {
+				appartIds[i] = String.valueOf(objects.getIdOfAppart(apparts.get(i)));
+			}
+			out += String.join(",", appartIds) + "\n";
+		}
+
+		return out + "EOS:Entry";
 	}
 }
