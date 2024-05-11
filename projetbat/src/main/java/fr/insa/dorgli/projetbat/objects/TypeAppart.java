@@ -39,4 +39,9 @@ public class TypeAppart {
 	public String toStringShort() {
 		return "( #TODO )";
 	}
+
+	public String serialize(Objects objects) {
+		int id = objects.getIdOfTypeAppart(this);
+		return String.join(",", id, name, description);
+	}
 }
