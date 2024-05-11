@@ -118,4 +118,9 @@ public class Niveau implements ToString, ToStringShort, Drawable {
 		// TODO -> toStringShort -> afficher l'ID
 		return "( #" + "TODO" + " )";
 	}
+
+	public String serialize(Objects objects) {
+		int id = objects.getIdOfNiveau(this);
+		return String.join(",", id, nom, description, hauteur);
+	}
 }
