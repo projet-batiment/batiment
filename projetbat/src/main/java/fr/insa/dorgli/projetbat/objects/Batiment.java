@@ -1,9 +1,8 @@
 package fr.insa.dorgli.projetbat.objects;
 
-import fr.insa.dorgli.projetbat.gui.DrawingContext;
-import fr.insa.dorgli.projetbat.Deserialize;
+import fr.insa.dorgli.projetbat.ui.gui.DrawingContext;
 import java.util.ArrayList;
-import fr.insa.dorgli.projetbat.StructuredToString;
+import fr.insa.dorgli.projetbat.utils.StructuredToString;
 
 public class Batiment extends HasPrice {
 	private String nom;
@@ -61,6 +60,7 @@ public class Batiment extends HasPrice {
 		this.typeBatiment = typeBatiment;
 	}
 
+	@Override
 	public double calculerPrix() {
 		double prixBatiment = 0;
 
@@ -82,18 +82,19 @@ public class Batiment extends HasPrice {
 		    .field("nom", nom)
 		    .field("description", description)
 		    .field("typeBatiment", typeBatiment.toString(depth + 1))
-		    .field("apparts", super.toStringArrayList((ArrayList<BObject>) ((ArrayList<?>) apparts)))
-		    .field("niveaux", super.toStringArrayList((ArrayList<BObject>) ((ArrayList<?>) niveaux)))
-            .getValue();
+		    .fieldShortCollection("apparts", (ArrayList<BObject>) ((ArrayList<?>) apparts))
+		    .field("niveaux", (ArrayList<BObject>) ((ArrayList<?>) niveaux))
+        	    .getValue();
 	}
 
 	public String serialize(Objects objects) {
 		int id = objects.getIdOfBatiment(this);
+
 		String out = String.join(",",
 		    String.valueOf(id),
 		    Deserialize.escapeString(nom),
 		    Deserialize.escapeString(description),
-		    String.valueOf(typeBatiment)
+		    String.valueOf(typeBatiment.getId())
 		) + "\n";
 
 		if (!niveaux.isEmpty()) {

@@ -1,8 +1,9 @@
-package fr.insa.dorgli.projetbat;
+package fr.insa.dorgli.projetbat.core;
 
 // Config contient une description exhaustive et détaillée de l'état actuel du programme
 
-import fr.insa.dorgli.projetbat.gui.MainPane;
+import fr.insa.dorgli.projetbat.ui.TUI;
+import fr.insa.dorgli.projetbat.ui.gui.MainPane;
 
 // Cette classe contient donc tous les paramètres de l'application (verbeux, etc)
 // Ainsi qu'un annuaire de tous les objets créés lors de l'exécution (dans des hashmap)
@@ -12,9 +13,9 @@ public class Config {
 		public static double MIN_HEIGHT = 400;
 	}
 
-	final int version = 4;
-	final int minimumSavefileVersion = 4;
-	final int maximumSavefileVersion = 4;
+	public final int version = 4;
+	public final int minimumSavefileVersion = 4;
+	public final int maximumSavefileVersion = 4;
 
 	// TODO: classe UI (abstraite??) pour gérer les logs tui/gui
 	public final TUI tui = new TUI(TUI.LogLevel.DEBUG);

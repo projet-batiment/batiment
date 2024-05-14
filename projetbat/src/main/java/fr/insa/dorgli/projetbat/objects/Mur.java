@@ -1,7 +1,7 @@
 package fr.insa.dorgli.projetbat.objects;
 
-import fr.insa.dorgli.projetbat.StructuredToString;
-import fr.insa.dorgli.projetbat.gui.DrawingContext;
+import fr.insa.dorgli.projetbat.utils.StructuredToString;
+import fr.insa.dorgli.projetbat.ui.gui.DrawingContext;
 import java.util.ArrayList;
 import javafx.scene.paint.Color;
 
@@ -87,9 +87,9 @@ public class Mur extends HasPrice {
 		return longueur() * this.hauteur;
 	}
 
+	@Override
 	public double calculerPrix() {
-		double prixMur = 0;
-		prixMur = typeMur.getPrixUnitaire() * aire();
+		double prixMur = typeMur.getPrixUnitaire() * aire();
 
 		double longueur = longueur();
 		/// TODO!!! implement java.awt.Area -> interset the revetements' surfaces with the ouvertures' surfaces
@@ -105,6 +105,7 @@ public class Mur extends HasPrice {
 		return prixMur;
 	}
 
+	@Override
 	public void draw(DrawingContext dcx, boolean isFocused) {
 		// TODO: amnesic debug dive
 		dcx.tui().debug("Mur: drawing " + (isFocused ? "focused " : "") + "Mur " + this.toStringShort());
@@ -115,14 +116,15 @@ public class Mur extends HasPrice {
 		}
 	}
 
+	@Override
 	public String toString(int depth, boolean indentFirst) {
 		return new StructuredToString.OfBObject(depth, getClass().getSimpleName(), indentFirst)
 		    .field("pointDebut", pointDebut.toString(depth + 1))
 		    .field("pointFin", pointFin.toString(depth + 1))
 		    .field("hauteur", ""+hauteur)
-		    .field("revetements1", super.toStringArrayList( (ArrayList<BObject>) ((ArrayList<?>) revetements1)) )
-		    .field("revetements2", super.toStringArrayList( (ArrayList<BObject>) ((ArrayList<?>) revetements2)))
-		    .field("ouvertures", super.toStringArrayList( (ArrayList<BObject>) ((ArrayList<?>) ouvertures)))
+		    .fieldShortCollection("revetements1", (ArrayList<BObject>) ((ArrayList<?>) revetements1))
+		    .fieldShortCollection("revetements2", (ArrayList<BObject>) ((ArrayList<?>) revetements2))
+		    .fieldShortCollection("ouvertures", (ArrayList<BObject>) ((ArrayList<?>) ouvertures))
 		    .getValue();
 	}
 

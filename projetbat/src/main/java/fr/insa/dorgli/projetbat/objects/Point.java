@@ -1,7 +1,7 @@
 package fr.insa.dorgli.projetbat.objects;
 
-import fr.insa.dorgli.projetbat.gui.DrawingContext;
-import fr.insa.dorgli.projetbat.StructuredToString;
+import fr.insa.dorgli.projetbat.ui.gui.DrawingContext;
+import fr.insa.dorgli.projetbat.utils.StructuredToString;
 
 public class Point extends Drawable {
 	private double x;
@@ -39,12 +39,14 @@ public class Point extends Drawable {
 		this.niveauId = niveauId;
 	}
 
+	@Override
 	public void draw(DrawingContext dcx, boolean isFocused) {
 		// TODO: amnesic debug dive
 		dcx.tui().debug("Point: drawing " + (isFocused ? "focused " : "") + "point " + this.toStringShort());
 		dcx.drawPoint(this, x, y);
 	}
 
+	@Override
 	public String toString(int depth, boolean indentFirst) {
 		return new StructuredToString.OfBObject(depth, getClass().getSimpleName(), indentFirst)
 		    .field("x", ""+x)

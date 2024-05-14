@@ -1,4 +1,4 @@
-package fr.insa.dorgli.projetbat.gui;
+package fr.insa.dorgli.projetbat.ui.gui;
 
 public enum Direction {
 	LEFT,

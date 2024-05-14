@@ -1,4 +1,4 @@
-package fr.insa.dorgli.projetbat;
+package fr.insa.dorgli.projetbat.ui;
 
 // Terminal User Interface
 

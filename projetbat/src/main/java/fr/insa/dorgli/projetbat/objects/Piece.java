@@ -1,9 +1,8 @@
 package fr.insa.dorgli.projetbat.objects;
 
-import fr.insa.dorgli.projetbat.Deserialize;
-import fr.insa.dorgli.projetbat.gui.DrawingContext;
+import fr.insa.dorgli.projetbat.ui.gui.DrawingContext;
 import java.util.ArrayList;
-import fr.insa.dorgli.projetbat.StructuredToString;
+import fr.insa.dorgli.projetbat.utils.StructuredToString;
 
 public class Piece extends HasPrice {
 	private String nom;
@@ -82,6 +81,7 @@ public class Piece extends HasPrice {
 		return 0.5 * Math.abs(out);
 	}
 
+	@Override
 	public double calculerPrix() {
 		double prixPiece = 0;
 		double airePiece = aire();
@@ -96,6 +96,7 @@ public class Piece extends HasPrice {
 		return prixPiece;
 	}
 
+	@Override
 	public void draw(DrawingContext dcx, boolean isFocused) {
 		dcx.tui().diveWhere("piece.draw");
 
@@ -113,8 +114,8 @@ public class Piece extends HasPrice {
 		return new StructuredToString.OfBObject(depth, getClass().getSimpleName(), indentFirst)
 		    .field("nom", nom)
 		    .field("description", description)
-		    .field("points", super.toStringArrayList( (ArrayList<BObject>) ((ArrayList<?>) points)) )
-		    .field("murs", super.toStringArrayList( (ArrayList<BObject>) ((ArrayList<?>) murs)))
+		    .fieldShortCollection("points", (ArrayList<BObject>) ((ArrayList<?>) points))
+		    .fieldShortCollection("murs", (ArrayList<BObject>) ((ArrayList<?>) murs))
 		    .field("plafond", plafond.toString(depth + 1))
 		    .field("sol", sol.toString(depth + 1))
             .getValue();

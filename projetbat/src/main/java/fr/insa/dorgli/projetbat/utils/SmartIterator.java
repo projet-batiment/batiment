@@ -1,4 +1,4 @@
-package fr.insa.dorgli.projetbat;
+package fr.insa.dorgli.projetbat.utils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -88,6 +88,7 @@ public class SmartIterator<T> extends ArrayList<T> implements Iterator {
 		idx %= super.size();
 		return getCurrent();
 	}
+	@Override
 	public T next() {
 		return relative(1);
 	}

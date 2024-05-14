@@ -1,7 +1,8 @@
-package fr.insa.dorgli.projetbat;
+package fr.insa.dorgli.projetbat.core;
 
-import fr.insa.dorgli.projetbat.gui.Direction;
-import fr.insa.dorgli.projetbat.gui.MainPane;
+import fr.insa.dorgli.projetbat.objects.Deserialize;
+import fr.insa.dorgli.projetbat.ui.gui.Direction;
+import fr.insa.dorgli.projetbat.ui.gui.MainPane;
 import fr.insa.dorgli.projetbat.objects.Drawable;
 import fr.insa.dorgli.projetbat.objects.Niveau;
 import java.io.File;
@@ -13,8 +14,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 
 public class Controller {
-	private MainPane mainPane;
-	private Config config;
+	private final MainPane mainPane;
+	private final Config config;
 
 	public Controller(Config config, MainPane mainPane) {
 		this.config = config;

@@ -1,8 +1,8 @@
-package fr.insa.dorgli.projetbat.gui;
+package fr.insa.dorgli.projetbat.ui.gui;
 
-import fr.insa.dorgli.projetbat.Config;
-import fr.insa.dorgli.projetbat.Controller;
-import fr.insa.dorgli.projetbat.TUI;
+import fr.insa.dorgli.projetbat.core.Config;
+import fr.insa.dorgli.projetbat.core.Controller;
+import fr.insa.dorgli.projetbat.ui.TUI;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;

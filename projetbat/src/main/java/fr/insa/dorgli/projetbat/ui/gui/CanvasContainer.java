@@ -1,6 +1,6 @@
-package fr.insa.dorgli.projetbat.gui;
+package fr.insa.dorgli.projetbat.ui.gui;
 
-import fr.insa.dorgli.projetbat.Config;
+import fr.insa.dorgli.projetbat.core.Config;
 import fr.insa.dorgli.projetbat.objects.Drawable;
 import fr.insa.dorgli.projetbat.objects.Niveau;
 import java.awt.Rectangle;
@@ -13,13 +13,13 @@ import java.awt.geom.Line2D;
 import java.util.HashMap;
 
 public class CanvasContainer extends Pane {
-	private Config config;
-	private MainPane mainPane;
+	private final Config config;
+	private final MainPane mainPane;
 
-	private Canvas canvas;
-	private GraphicsContext ctxt;
-	private DrawingContext drawingContext;
-	private HashMap<Line2D.Double, Drawable> drawnLines;
+	private final Canvas canvas;
+	private final GraphicsContext ctxt;
+	private final DrawingContext drawingContext;
+	private final HashMap<Line2D.Double, Drawable> drawnLines;
 
 	private Niveau currentNiveau;
 	private Rectangle totalDrawingRectangle;
@@ -30,8 +30,8 @@ public class CanvasContainer extends Pane {
 
 	private boolean disableDrawing = true;
 
-	private int pointRadius = 5;
-	private Color pointColor = Color.RED;
+	private final int pointRadius = 5;
+	private final Color pointColor = Color.RED;
 
 //	private double scaleLabelValue = 1;
 
@@ -339,6 +339,7 @@ public class CanvasContainer extends Pane {
 	}
 
 	/**
+	 * @param linkedObject Drawable object to be attached to this line
 	 * @param x1 first x coordinate in DATA standards
 	 * @param y1 first y coordinate in DATA standards
 	 * @param x2 second x coordinate in DATA standards

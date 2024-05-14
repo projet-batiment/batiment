@@ -1,8 +1,8 @@
 package fr.insa.dorgli.projetbat.objects;
 
-import fr.insa.dorgli.projetbat.gui.DrawingContext;
+import fr.insa.dorgli.projetbat.ui.gui.DrawingContext;
 import java.util.ArrayList;
-import fr.insa.dorgli.projetbat.StructuredToString;
+import fr.insa.dorgli.projetbat.utils.StructuredToString;
 
 public class PlafondSol extends HasPrice {
 	private ArrayList<RevetementPlafondSol> revetements;
@@ -61,9 +61,9 @@ public class PlafondSol extends HasPrice {
 	@Override
 	public String toString(int depth, boolean indentFirst) {
 		return new StructuredToString.OfBObject(depth, getClass().getSimpleName(), indentFirst)
-		    .field("revetements", super.toStringArrayList( (ArrayList<BObject>) ((ArrayList<?>) revetements)) )
-		    .field("ouvertures", super.toStringArrayList( (ArrayList<BObject>) ((ArrayList<?>) ouvertures)))
-            .getValue();
+		    .fieldShortCollection("revetements", (ArrayList<BObject>) ((ArrayList<?>) revetements))
+		    .fieldShortCollection("ouvertures", (ArrayList<BObject>) ((ArrayList<?>) ouvertures))
+        	    .getValue();
 	}
 
 	public String serialize(Objects objects) {

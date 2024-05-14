@@ -1,8 +1,8 @@
 package fr.insa.dorgli.projetbat.objects;
 
-import fr.insa.dorgli.projetbat.StructuredToString;
-import fr.insa.dorgli.projetbat.Deserialize;
+import fr.insa.dorgli.projetbat.utils.StructuredToString;
 import java.util.ArrayList;
+import java.util.Collection;
 
 public class Appart extends BObject {
 	private String nom;
@@ -60,7 +60,7 @@ public class Appart extends BObject {
 		return new StructuredToString.OfBObject(depth, getClass().getSimpleName(), indentFirst)
 		    .field("nom", nom)
 		    .field("description", description)
-		    .field("pieces", super.toStringArrayList((ArrayList<BObject>) ((ArrayList<?>) pieces)))
+		    .fieldShortCollection("pieces", (Collection<BObject>) ((ArrayList<?>) pieces))
 		    .field("typeAppart", typeAppart.toString(depth + 1))
 		    .getValue();
 	}

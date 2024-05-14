@@ -1,11 +1,10 @@
 package fr.insa.dorgli.projetbat.objects;
 
-import fr.insa.dorgli.projetbat.StructuredToString;
-import fr.insa.dorgli.projetbat.TUI;
+import fr.insa.dorgli.projetbat.utils.StructuredToString;
+import fr.insa.dorgli.projetbat.ui.TUI;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
 
 public class Objects {
 	// liste des objets

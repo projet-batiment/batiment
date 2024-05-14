@@ -1,5 +1,6 @@
-package fr.insa.dorgli.projetbat;
+package fr.insa.dorgli.projetbat.utils;
 
+import fr.insa.dorgli.projetbat.ui.TUI;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;

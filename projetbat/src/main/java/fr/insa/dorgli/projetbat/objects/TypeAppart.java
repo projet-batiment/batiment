@@ -1,10 +1,9 @@
 package fr.insa.dorgli.projetbat.objects;
 
-import fr.insa.dorgli.projetbat.StructuredToString;
+import fr.insa.dorgli.projetbat.utils.StructuredToString;
 
 // Note pour plus tard :
 
-import fr.insa.dorgli.projetbat.Deserialize;
 
 //   - Est ce que l'utilisateur peut créer différents types d'apparts lors de l'exécution ?
 //	 Dans ce cas, il faudrait stocker le type sous une autre forme qu'un enum

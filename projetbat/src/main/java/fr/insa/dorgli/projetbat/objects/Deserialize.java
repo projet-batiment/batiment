@@ -1,23 +1,9 @@
-package fr.insa.dorgli.projetbat;
+package fr.insa.dorgli.projetbat.objects;
 
-import fr.insa.dorgli.projetbat.objects.TypeMur;
-import fr.insa.dorgli.projetbat.objects.Objects;
-import fr.insa.dorgli.projetbat.objects.Piece;
-import fr.insa.dorgli.projetbat.objects.TypeRevetement;
-import fr.insa.dorgli.projetbat.objects.Niveau;
-import fr.insa.dorgli.projetbat.objects.Appart;
-import fr.insa.dorgli.projetbat.objects.Batiment;
-import fr.insa.dorgli.projetbat.objects.TypeOuvertureMur;
-import fr.insa.dorgli.projetbat.objects.TypeOuvertureNiveau;
-import fr.insa.dorgli.projetbat.objects.OuvertureNiveaux;
-import fr.insa.dorgli.projetbat.objects.Point;
-import fr.insa.dorgli.projetbat.objects.OuvertureMur;
-import fr.insa.dorgli.projetbat.objects.PlafondSol;
-import fr.insa.dorgli.projetbat.objects.RevetementMur;
-import fr.insa.dorgli.projetbat.objects.RevetementPlafondSol;
-import fr.insa.dorgli.projetbat.objects.TypeAppart;
-import fr.insa.dorgli.projetbat.objects.Mur;
-import fr.insa.dorgli.projetbat.objects.TypeBatiment;
+import fr.insa.dorgli.projetbat.ui.TUI;
+import fr.insa.dorgli.projetbat.core.Config;
+import fr.insa.dorgli.projetbat.core.Project;
+import fr.insa.dorgli.projetbat.utils.SmartReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -488,7 +474,7 @@ public class Deserialize {
 				}
 
 				try {
-					TypeRevetement tr = typeRevetements.get(Integer.parseInt(splitted[1]));
+					TypeRevetement tr = typeRevetements.get(Integer.valueOf(splitted[1]));
 					double p1l = Double.parseDouble(splitted[2]);
 					double p1h = Double.parseDouble(splitted[3]);
 					double p2l = Double.parseDouble(splitted[4]);
@@ -534,7 +520,7 @@ public class Deserialize {
 				}
 
 				try {
-					TypeOuvertureMur tr = typeOuvertureMurs.get(Integer.parseInt(splitted[1]));
+					TypeOuvertureMur tr = typeOuvertureMurs.get(Integer.valueOf(splitted[1]));
 					double p1l = Double.parseDouble(splitted[2]);
 					double p1h = Double.parseDouble(splitted[3]);
 
@@ -579,10 +565,10 @@ public class Deserialize {
 
 				try {
 					// lire les propriétés directes du mur
-					Point p1 = objects.points.get(Integer.parseInt(splitted[1]));
-					Point p2 = objects.points.get(Integer.parseInt(splitted[2]));
+					Point p1 = objects.points.get(Integer.valueOf(splitted[1]));
+					Point p2 = objects.points.get(Integer.valueOf(splitted[2]));
 					double hauteur = Double.parseDouble(splitted[3]);
-					TypeMur typeMur = objects.typesMur.get(Integer.parseInt(splitted[4]));
+					TypeMur typeMur = objects.typesMur.get(Integer.valueOf(splitted[4]));
 
 					// lire les RevetementMur des 2 côtés et les OuvertureMur
 					HashMap<Integer, RevetementMur> r1;
@@ -701,7 +687,7 @@ public class Deserialize {
 				}
 
 				try {
-					TypeRevetement tr = typeRevetements.get(Integer.parseInt(splitted[1]));
+					TypeRevetement tr = typeRevetements.get(Integer.valueOf(splitted[1]));
 					double p1l = Double.parseDouble(splitted[2]);
 					double p1h = Double.parseDouble(splitted[3]);
 					double p2l = Double.parseDouble(splitted[4]);
@@ -747,7 +733,7 @@ public class Deserialize {
 				}
 
 				try {
-					TypeOuvertureNiveau tr = typeOuvertureNiveaux.get(Integer.parseInt(splitted[1]));
+					TypeOuvertureNiveau tr = typeOuvertureNiveaux.get(Integer.valueOf(splitted[1]));
 					int p1l = Integer.parseInt(splitted[2]);
 					int p1h = Integer.parseInt(splitted[3]);
 
@@ -958,6 +944,7 @@ public class Deserialize {
 						default -> error("propriété de la piece inconnue: '" + propResult.getText() + "'");
 					}
 				}
+				config.tui.popWhere();
 
 				Piece object = new Piece(id, unescapeString(splitted[1]), unescapeString(splitted[2]), points, murs, plafond, sol);
 				pieces.put(id, object);
@@ -1037,7 +1024,7 @@ public class Deserialize {
 
 				try {
 					// lire les propriétés directes du appart
-					TypeAppart ta = objects.typesAppart.get(Integer.parseInt(splitted[3]));
+					TypeAppart ta = objects.typesAppart.get(Integer.valueOf(splitted[3]));
 
 					// lire les Pieces
 					ArrayList<Piece> pieces = new ArrayList<>();
@@ -1274,7 +1261,7 @@ public class Deserialize {
 
 				try {
 					// lire les propriétés directes du batiment
-					TypeBatiment tb = objects.typesBatiment.get(Integer.parseInt(splitted[3]));
+					TypeBatiment tb = objects.typesBatiment.get(Integer.valueOf(splitted[3]));
 
 					ArrayList<Appart> apparts = new ArrayList<>();
 					ArrayList<Niveau> niveaux = new ArrayList<>();

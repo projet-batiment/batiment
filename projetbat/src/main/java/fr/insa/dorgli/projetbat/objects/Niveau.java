@@ -1,9 +1,8 @@
 package fr.insa.dorgli.projetbat.objects;
 
-import fr.insa.dorgli.projetbat.Deserialize;
-import fr.insa.dorgli.projetbat.gui.DrawingContext;
+import fr.insa.dorgli.projetbat.ui.gui.DrawingContext;
 import java.util.ArrayList;
-import fr.insa.dorgli.projetbat.StructuredToString;
+import fr.insa.dorgli.projetbat.utils.StructuredToString;
 
 public class Niveau extends Drawable {
 	private String nom;
@@ -61,6 +60,7 @@ public class Niveau extends Drawable {
 		this.apparts = apparts;
 	}
 
+	@Override
 	public void draw(DrawingContext dcx, boolean isFocused) {
 		dcx.tui().diveWhere("niveau.draw");
 
@@ -88,9 +88,9 @@ public class Niveau extends Drawable {
 		    .field("nom", nom)
 		    .field("description", description)
 		    .field("hauteur", ""+hauteur)
-		    .field("pieces", super.toStringArrayList( (ArrayList<BObject>) ((ArrayList<?>) pieces)))
-		    .field("apparts", super.toStringArrayList( (ArrayList<BObject>) ((ArrayList<?>) apparts)))
-            .getValue();
+		    .fieldShortCollection("pieces", (ArrayList<BObject>) ((ArrayList<?>) pieces))
+		    .fieldShortCollection("apparts", (ArrayList<BObject>) ((ArrayList<?>) apparts))
+        	    .getValue();
 	}
 
 	public String serialize(Objects objects) {

@@ -1,4 +1,4 @@
-package fr.insa.dorgli.projetbat;
+package fr.insa.dorgli.projetbat.utils;
 
 import fr.insa.dorgli.projetbat.objects.BObject;
 import java.util.Collection;
@@ -56,6 +56,16 @@ public class StructuredToString {
 
 		public OfBObject(int depth, String title, boolean indentFirst) {
 			super(depth, title, indentFirst);
+		}
+
+		@Override
+		public OfBObject field(String name, String value) {
+			return (OfBObject) super.field(name, value);
+		}
+
+		@Override
+		public OfBObject textField(String name, String value) {
+			return (OfBObject) super.textField(name, value);
 		}
 
 		public OfBObject fieldShortCollection(String name, Collection<BObject> arr) {

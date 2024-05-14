@@ -1,7 +1,6 @@
 package fr.insa.dorgli.projetbat.objects;
 
-import fr.insa.dorgli.projetbat.StructuredToString;
-import fr.insa.dorgli.projetbat.Deserialize;
+import fr.insa.dorgli.projetbat.utils.StructuredToString;
 
 public class TypeOuvertureNiveau extends BObject {
 	// j'ai pris le parti d'utiliser "largeur" et "hauteur" pour mieux distinguer

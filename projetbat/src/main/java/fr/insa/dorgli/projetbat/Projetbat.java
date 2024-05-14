@@ -1,8 +1,7 @@
 package fr.insa.dorgli.projetbat;
 
-import fr.insa.dorgli.projetbat.gui.MainPane;
-import java.io.FileNotFoundException;
-import javafx.application.Application;
+import fr.insa.dorgli.projetbat.core.Config;
+import fr.insa.dorgli.projetbat.ui.gui.MainPane;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
@@ -16,6 +15,7 @@ public class Projetbat extends Application {
 //		config.tui.debug("set savefilePath to '" + config.savefilePath + "'");
 //	}
 
+	@Override
 	public void start(Stage stage) {
 		config.tui.diveWhere("Run");
 

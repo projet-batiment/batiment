@@ -1,4 +1,4 @@
-package fr.insa.dorgli.projetbat;
+package fr.insa.dorgli.projetbat.core;
 
 import fr.insa.dorgli.projetbat.objects.Objects;
 

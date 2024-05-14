@@ -1,7 +1,7 @@
-package fr.insa.dorgli.projetbat.gui;
+package fr.insa.dorgli.projetbat.ui.gui;
 
-import fr.insa.dorgli.projetbat.Config;
-import fr.insa.dorgli.projetbat.TUI;
+import fr.insa.dorgli.projetbat.core.Config;
+import fr.insa.dorgli.projetbat.ui.TUI;
 import fr.insa.dorgli.projetbat.objects.Drawable;
 import java.util.HashSet;
 import javafx.scene.paint.Color;

@@ -1,7 +1,7 @@
 package fr.insa.dorgli.projetbat.objects;
 
-import fr.insa.dorgli.projetbat.gui.DrawingContext;
-import fr.insa.dorgli.projetbat.StructuredToString;
+import fr.insa.dorgli.projetbat.ui.gui.DrawingContext;
+import fr.insa.dorgli.projetbat.utils.StructuredToString;
 
 public class RevetementPlafondSol extends HasPrice {
 	TypeRevetement typeRevetement;
