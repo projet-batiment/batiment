@@ -1,6 +1,7 @@
 package fr.insa.dorgli.projetbat.objects;
 
 import fr.insa.dorgli.projetbat.StructuredToString;
+import fr.insa.dorgli.projetbat.Deserialize;
 
 public class TypeOuvertureMur extends BObject {
 	private String nom;
@@ -67,5 +68,17 @@ public class TypeOuvertureMur extends BObject {
 		    .field("hauteur", ""+hauteur)
 		    .field("prixOuverture", ""+prixOuverture)
             .getValue();
+	}
+
+	public String serialize(Objects objects) {
+		int id = objects.getIdOfTypeOuvertureMur(this);
+		return String.join(",",
+		    String.valueOf(id),
+		    Deserialize.escapeString(nom),
+		    Deserialize.escapeString(description),
+		    String.valueOf(hauteur),
+		    String.valueOf(largeur),
+		    String.valueOf(prixOuverture)
+		);
 	}
 }

@@ -13,8 +13,8 @@ public class Config {
 	}
 
 	final int version = 4;
-	final int minimumSavefileVersion = 2;
-	final int maximumSavefileVersion = 3;
+	final int minimumSavefileVersion = 4;
+	final int maximumSavefileVersion = 4;
 
 	// TODO: classe UI (abstraite??) pour gérer les logs tui/gui
 	public final TUI tui = new TUI(TUI.LogLevel.DEBUG);

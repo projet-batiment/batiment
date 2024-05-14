@@ -1,5 +1,6 @@
 package fr.insa.dorgli.projetbat.objects;
 
+import fr.insa.dorgli.projetbat.Deserialize;
 import fr.insa.dorgli.projetbat.gui.DrawingContext;
 import java.util.ArrayList;
 import fr.insa.dorgli.projetbat.StructuredToString;
@@ -117,5 +118,41 @@ public class Piece extends HasPrice {
 		    .field("plafond", plafond.toString(depth + 1))
 		    .field("sol", sol.toString(depth + 1))
             .getValue();
+	}
+
+	public String serialize(Objects objects) {
+		int id = objects.getIdOfPiece(this);
+		String out = String.join(",",
+		    String.valueOf(id),
+		    Deserialize.escapeString(nom),
+		    Deserialize.escapeString(description)
+		) + "\n";
+
+		if (!points.isEmpty()) {
+			out += "PROP:points\n";
+			String[] pointIds = new String[points.size()];
+			for (int i = 0; i < pointIds.length; i++) {
+				pointIds[i] = String.valueOf(objects.getIdOfPoint(points.get(i)));
+			}
+			out += String.join(",", pointIds) + "\n";
+		}
+		if (!murs.isEmpty()) {
+			out += "PROP:murs\n";
+			String[] murIds = new String[murs.size()];
+			for (int i = 0; i < murIds.length; i++) {
+				murIds[i] = String.valueOf(objects.getIdOfMur(murs.get(i)));
+			}
+			out += String.join(",", murIds) + "\n";
+		}
+		if (plafond != null) {
+			out += "PROP:plafond\n";
+			out += plafond.serialize(objects) + "\nEOS:plafond\n";
+		}
+		if (sol != null) {
+			out += "PROP:sol\n";
+			out += sol.serialize(objects) + "\nEOS:sol\n";
+		}
+
+		return out + "EOS:Entry";
 	}
 }

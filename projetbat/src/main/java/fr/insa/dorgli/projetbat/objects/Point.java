@@ -52,4 +52,14 @@ public class Point extends Drawable {
 		    .field("niveauId", ""+niveauId)
             .getValue();
 	}
+
+	public String serialize(Objects objects) {
+		int id = objects.getIdOfPoint(this);
+		return String.join(",",
+		    String.valueOf(id),
+		    String.valueOf(x),
+		    String.valueOf(y),
+		    String.valueOf(niveauId)
+		);
+	}
 }

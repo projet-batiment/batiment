@@ -52,4 +52,14 @@ public class OuvertureNiveaux extends Drawable {
 	public void draw(DrawingContext ctxt, boolean isFocused) {
 		ctxt.tui().error("ouvertureNiveaux.draw: cannot draw ouvertureNiveaux");
 	}
+
+	public String serialize(Objects objects) {
+		int id = objects.getIdOfOuvertureNiveaux(this);
+		return String.join(",",
+		    String.valueOf(id),
+		    String.valueOf(objects.getIdOfTypeOuvertureNiveau(typeOuverture)),
+		    String.valueOf(posL),
+		    String.valueOf(posH)
+		);
+	}
 }

@@ -1,6 +1,7 @@
 package fr.insa.dorgli.projetbat.objects;
 
 import fr.insa.dorgli.projetbat.gui.DrawingContext;
+import fr.insa.dorgli.projetbat.Deserialize;
 import java.util.ArrayList;
 import fr.insa.dorgli.projetbat.StructuredToString;
 
@@ -84,5 +85,34 @@ public class Batiment extends HasPrice {
 		    .field("apparts", super.toStringArrayList((ArrayList<BObject>) ((ArrayList<?>) apparts)))
 		    .field("niveaux", super.toStringArrayList((ArrayList<BObject>) ((ArrayList<?>) niveaux)))
             .getValue();
+	}
+
+	public String serialize(Objects objects) {
+		int id = objects.getIdOfBatiment(this);
+		String out = String.join(",",
+		    String.valueOf(id),
+		    Deserialize.escapeString(nom),
+		    Deserialize.escapeString(description),
+		    String.valueOf(typeBatiment)
+		) + "\n";
+
+		if (!niveaux.isEmpty()) {
+			out += "PROP:niveaux\n";
+			String[] niveauIds = new String[niveaux.size()];
+			for (int i = 0; i < niveauIds.length; i++) {
+				niveauIds[i] = String.valueOf(objects.getIdOfNiveau(niveaux.get(i)));
+			}
+			out += String.join(",", niveauIds) + "\n";
+		}
+		if (!apparts.isEmpty()) {
+			out += "PROP:apparts\n";
+			String[] appartIds = new String[apparts.size()];
+			for (int i = 0; i < appartIds.length; i++) {
+				appartIds[i] = String.valueOf(objects.getIdOfAppart(apparts.get(i)));
+			}
+			out += String.join(",", appartIds) + "\n";
+		}
+
+		return out + "EOS:Entry";
 	}
 }

@@ -3,6 +3,9 @@ package fr.insa.dorgli.projetbat.objects;
 import fr.insa.dorgli.projetbat.StructuredToString;
 
 // Note pour plus tard :
+
+import fr.insa.dorgli.projetbat.Deserialize;
+
 //   - Est ce que l'utilisateur peut créer différents types d'apparts lors de l'exécution ?
 //	 Dans ce cas, il faudrait stocker le type sous une autre forme qu'un enum
 //public enum  TypeAppart{
@@ -41,5 +44,14 @@ public class TypeAppart extends BObject {
 		    .field("nom", nom)
 		    .field("description", description)
             .getValue();
+	}
+
+	public String serialize(Objects objects) {
+		int id = objects.getIdOfTypeAppart(this);
+		return String.join(",",
+		    String.valueOf(id),
+		    Deserialize.escapeString(nom),
+		    Deserialize.escapeString(description)
+		);
 	}
 }

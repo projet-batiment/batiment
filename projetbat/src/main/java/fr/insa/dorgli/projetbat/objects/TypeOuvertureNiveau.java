@@ -1,6 +1,7 @@
 package fr.insa.dorgli.projetbat.objects;
 
 import fr.insa.dorgli.projetbat.StructuredToString;
+import fr.insa.dorgli.projetbat.Deserialize;
 
 public class TypeOuvertureNiveau extends BObject {
 	// j'ai pris le parti d'utiliser "largeur" et "hauteur" pour mieux distinguer
@@ -72,5 +73,17 @@ public class TypeOuvertureNiveau extends BObject {
 		    .field("hauteur", ""+hauteur)
 		    .field("prixOuverture", ""+prixOuverture)
             .getValue();
+	}
+
+	public String serialize(Objects objects) {
+		int id = objects.getIdOfTypeOuvertureNiveau(this);
+		return String.join(",",
+		    String.valueOf(id),
+		    Deserialize.escapeString(nom),
+		    Deserialize.escapeString(description),
+		    String.valueOf(hauteur),
+		    String.valueOf(largeur),
+		    String.valueOf(prixOuverture)
+		);
 	}
 }

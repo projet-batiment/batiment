@@ -52,4 +52,14 @@ public class OuvertureMur extends Drawable {
 	public void draw(DrawingContext ctxt, boolean isFocused) {
 		ctxt.tui().error("ouvertureMur.draw: cannot draw ouvertureMur");
 	}
+
+	public String serialize(Objects objects) {
+		int id = objects.getIdOfOuvertureMur(this);
+		return String.join(",",
+		    String.valueOf(id),
+		    String.valueOf(objects.getIdOfTypeOuvertureMur(typeOuverture)),
+		    String.valueOf(posL),
+		    String.valueOf(posH)
+		);
+	}
 }

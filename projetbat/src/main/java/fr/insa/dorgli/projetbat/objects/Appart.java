@@ -1,6 +1,7 @@
 package fr.insa.dorgli.projetbat.objects;
 
 import fr.insa.dorgli.projetbat.StructuredToString;
+import fr.insa.dorgli.projetbat.Deserialize;
 import java.util.ArrayList;
 
 public class Appart extends BObject {
@@ -64,8 +65,25 @@ public class Appart extends BObject {
 		    .getValue();
 	}
 
-//	@Override
-//	public String toStringShort() {
-//		return "Appart#" + super.getId();
-//	}
+	public String serialize(Objects objects) {
+		int id = objects.getIdOfAppart(this);
+
+		String out = String.join(",",
+		    String.valueOf(id),
+		    Deserialize.escapeString(nom),
+		    Deserialize.escapeString(description),
+		    String.valueOf(objects.getIdOfTypeAppart(typeAppart))
+		) + "\n";
+
+		if (!pieces.isEmpty()) {
+			out += "PROP:pieces\n";
+			String[] pieceIds = new String[pieces.size()];
+			for (int i = 0; i < pieceIds.length; i++) {
+				pieceIds[i] = String.valueOf(objects.getIdOfPiece(pieces.get(i)));
+			}
+			out += String.join(",", pieceIds) + "\n";
+		}
+
+		return out + "EOS:Entry";
+	}
 }

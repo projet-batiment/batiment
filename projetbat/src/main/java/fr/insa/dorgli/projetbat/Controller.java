@@ -68,6 +68,20 @@ public class Controller {
 		config.tui.popWhere();
 	}
 
+	public void saveFile(ActionEvent event) {
+		config.tui.log("saveFile: echoing the savefile:");
+
+		String out = "FILE\n"
+		    + "version:" + config.maximumSavefileVersion + "\n"
+		    + "projectName:" + config.project.projectName + "\n"
+		    + "projectDescription:" + config.project.projectDescription + "\n"
+		    + "EOS:FILE\n\n"
+		;
+
+		out += config.project.objects.serialize();
+		config.tui.println(out);
+	}
+
 	public void moveCanvasView(Direction direction) {
 		mainPane.getCanvasContainer().moveView(direction);
 	}

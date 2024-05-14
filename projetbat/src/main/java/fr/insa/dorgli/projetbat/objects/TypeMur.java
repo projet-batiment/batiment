@@ -1,6 +1,7 @@
 package fr.insa.dorgli.projetbat.objects;
 
 import fr.insa.dorgli.projetbat.StructuredToString;
+import fr.insa.dorgli.projetbat.Deserialize;
 
 public class TypeMur extends BObject  {
 	private String nom;
@@ -56,5 +57,16 @@ public class TypeMur extends BObject  {
 		    .field("epaisseur", ""+epaisseur)
 		    .field("prixUnitaire", ""+prixUnitaire)
             .getValue();
+	}
+
+	public String serialize(Objects objects) {
+		int id = objects.getIdOfTypeMur(this);
+		return String.join(",",
+		    String.valueOf(id),
+		    Deserialize.escapeString(nom),
+		    Deserialize.escapeString(description),
+		    String.valueOf(epaisseur),
+		    String.valueOf(prixUnitaire)
+		);
 	}
 }

@@ -102,4 +102,17 @@ public class RevetementPlafondSol extends HasPrice {
 	public void draw(DrawingContext ctxt, boolean isFocused) {
 		ctxt.tui().error("revetementMur.draw: cannot draw revetementMur");
 	}
+
+	public String serialize(Objects objects) {
+		int id = objects.getIdOfRevetementPlafondSol(this);
+		int rId = objects.getIdOfTypeRevetement(typeRevetement);
+
+		return String.join(",",
+		    String.valueOf(id),
+		    String.valueOf(rId),
+		    String.valueOf(pos1L),
+		    String.valueOf(pos1H),
+		    String.valueOf(pos2L),
+		    String.valueOf(pos2H));
+	}
 }

@@ -65,4 +65,25 @@ public class PlafondSol extends HasPrice {
 		    .field("ouvertures", super.toStringArrayList( (ArrayList<BObject>) ((ArrayList<?>) ouvertures)))
             .getValue();
 	}
+
+	public String serialize(Objects objects) {
+		int id = objects.getIdOfPlafondSol(this);
+
+		String out = String.valueOf(id) + "\n";
+
+		if (!revetements.isEmpty()) {
+			out += "PROP:RevetementPlafondSol\n";
+			for (RevetementPlafondSol r: revetements)
+				out += r.serialize(objects) + "\n";
+			out += "EOS:RevetementPlafondSol\n";
+		}
+		if (!ouvertures.isEmpty()) {
+			out += "PROP:OuvertureNiveaux\n";
+			for (OuvertureNiveaux o: ouvertures)
+				out += o.serialize(objects) + "\n";
+			out += "EOS:OuvertureNiveaux\n";
+		}
+
+		return out + "EOS:Entry";
+	}
 }

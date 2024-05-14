@@ -50,9 +50,6 @@ public class Deserialize {
 	// - 1_PlafondSol
 	// - PlafondSols
 	// - Pieces
-	// 
-	// Reste à faire :
-	//
 	//  niveaux
 	//  apparts
 
@@ -64,13 +61,22 @@ public class Deserialize {
 	private static final String REGEX_DOUBLE = "[0-9]+(\\.[0-9]+)?";
 	private static final String REGEX_STRING = "[^,]*"; // NB: un String peut être vide, d'où le *
 
-	private String unescapeString(String escaped) {
-		return escaped
-			.replaceAll("&c", ",")
-			.replaceAll("&n", "\n")
-			.replaceAll("&r", "\r")
-			.replaceAll("&&", "&")
-		;
+	// pour plus de flexibilité
+	private static final String[] ESCAPE_SEQUENCES_REAL = { ",", "\n", "\r", "&" };
+	private static final String[] ESCAPE_SEQUENCES_ESCAPED = { "&c", "&n", "&r", "&&" };
+
+	public static String unescapeString(String escaped) {
+		for (int i = 0; i < ESCAPE_SEQUENCES_ESCAPED.length; i++)
+			escaped = escaped.replaceAll(ESCAPE_SEQUENCES_ESCAPED[i], ESCAPE_SEQUENCES_REAL[i]);
+
+		return escaped;
+	}
+
+	public static String escapeString(String incoming) {
+		for (int i = 0; i < ESCAPE_SEQUENCES_ESCAPED.length; i++)
+			incoming = incoming.replaceAll(ESCAPE_SEQUENCES_REAL[i], ESCAPE_SEQUENCES_ESCAPED[i]);
+
+		return incoming;
 	}
 
 	public Deserialize(Config config) {
@@ -579,11 +585,11 @@ public class Deserialize {
 					TypeMur typeMur = objects.typesMur.get(Integer.parseInt(splitted[4]));
 
 					// lire les RevetementMur des 2 côtés et les OuvertureMur
-					HashMap<Integer, RevetementMur> r1 = new HashMap<>();
+					HashMap<Integer, RevetementMur> r1;
 					ArrayList<RevetementMur> r1_list = new ArrayList<>();
-					HashMap<Integer, RevetementMur> r2 = new HashMap<>();
+					HashMap<Integer, RevetementMur> r2;
 					ArrayList<RevetementMur> r2_list = new ArrayList<>();
-					HashMap<Integer, OuvertureMur> o = new HashMap<>();
+					HashMap<Integer, OuvertureMur> o;
 					ArrayList<OuvertureMur> o_list = new ArrayList<>();
 					config.tui.diveWhere("props");
 					for (
@@ -761,64 +767,6 @@ public class Deserialize {
 		return ouvertureNiveaux;
 	}
 
-	/// read 1 PlafondSol
-	private HashMap<Integer, PlafondSol> onePlafondSolFromString (HashMap<Integer, PlafondSol> plafondSols, String line, Objects objects) throws IOException {
-		config.tui.diveWhere("1_PlafondSol");
-
-		final String regex = String.join(",", REGEX_INT);
-		debug("regex: '" + regex + "'");
-		if (line.matches(regex)) {
-			String[] splitted = line.split(",");
-
-			try {
-				int id = Integer.parseInt(splitted[0]);
-
-				if (plafondSols.keySet().contains(id)) {
-					errorIdAgain(id);
-				}
-
-				// lire les RevetementPlafondSol et les OuvertureNiveaux
-				HashMap<Integer, RevetementPlafondSol> r = new HashMap<>();
-				ArrayList<RevetementPlafondSol> r_list = new ArrayList<>();
-				HashMap<Integer, OuvertureNiveaux> o = new HashMap<>();
-				ArrayList<OuvertureNiveaux> o_list = new ArrayList<>();
-				config.tui.diveWhere("props");
-				for (
-					SmartReader.ReadResult propResult = sreader.readLine();
-					propResult.getState() == SmartReader.ReadState.LINE;
-					propResult = sreader.readLine()
-				) {
-					String propType = propResult.getText().replaceFirst("PROP:", "");
-					debug("reading 1_plafondSol prop '" + TUI.blue(propType) + "'");
-					switch (propType) {
-						case "RevetementPlafondSol" -> {
-							r = revetementPlafondSolsFromString(objects.typesRevetement);
-							r_list = manageHashMapToArrayList(r, objects.revetementsPlafondSol);
-						}
-						case "OuvertureNiveaux" -> {
-							o = ouvertureNiveauxFromString(objects.typesOuverturesNiveau);
-							o_list = manageHashMapToArrayList(o, objects.ouverturesNiveaux);
-						}
-						default -> error("propriété du plafondSol inconnue: '" + propResult.getText() + "'");
-					}
-				}
-				config.tui.popWhere();
-
-				PlafondSol object = new PlafondSol(id, r_list, o_list);
-				plafondSols.put(id, object);
-				debug("read " + object);
-			} catch (NumberFormatException e) {
-				errorParse(line, e.getMessage());
-			}
-		} else {
-			errorSyntax(line);
-		}
-
-		config.tui.popWhere();
-		return plafondSols;
-	}
-
-
 	/// PlafondSol
 	private HashMap<Integer, PlafondSol> plafondSolsFromString (Objects objects) throws IOException {
 		config.tui.diveWhere("PlafondSols");
@@ -833,7 +781,52 @@ public class Deserialize {
 			result = sreader.readLine()
 		) {
 			String line = result.getText();
-			onePlafondSolFromString(plafondSols, line, objects);
+			if (line.matches(regex)) {
+				String[] splitted = line.split(",");
+
+				try {
+					int id = Integer.parseInt(splitted[0]);
+
+					if (plafondSols.keySet().contains(id)) {
+						errorIdAgain(id);
+					}
+
+					// lire les RevetementPlafondSol et les OuvertureNiveaux
+					HashMap<Integer, RevetementPlafondSol> r;
+					ArrayList<RevetementPlafondSol> r_list = new ArrayList<>();
+					HashMap<Integer, OuvertureNiveaux> o;
+					ArrayList<OuvertureNiveaux> o_list = new ArrayList<>();
+					config.tui.diveWhere("props");
+					for (
+						SmartReader.ReadResult propResult = sreader.readLine();
+						propResult.getState() == SmartReader.ReadState.LINE;
+						propResult = sreader.readLine()
+					) {
+						String propType = propResult.getText().replaceFirst("PROP:", "");
+						debug("reading plafondSol prop '" + TUI.blue(propType) + "'");
+						switch (propType) {
+							case "RevetementPlafondSol" -> {
+								r = revetementPlafondSolsFromString(objects.typesRevetement);
+								r_list = manageHashMapToArrayList(r, objects.revetementsPlafondSol);
+							}
+							case "OuvertureNiveaux" -> {
+								o = ouvertureNiveauxFromString(objects.typesOuverturesNiveau);
+								o_list = manageHashMapToArrayList(o, objects.ouverturesNiveaux);
+							}
+							default -> error("propriété du plafondSol inconnue: '" + propResult.getText() + "'");
+						}
+					}
+					config.tui.popWhere();
+
+					PlafondSol object = new PlafondSol(id, r_list, o_list);
+					plafondSols.put(id, object);
+					debug("read " + object);
+				} catch (NumberFormatException e) {
+					errorParse(line, e.getMessage());
+				}
+			} else {
+				errorSyntax(line);
+			}
 		}
 
 		config.tui.ended();
@@ -867,8 +860,16 @@ public class Deserialize {
 				// lire les points, murs, le plafond et le sol
 				ArrayList<Point> points = new ArrayList<>();
 				ArrayList<Mur> murs = new ArrayList<>();
+
+				HashMap<Integer, PlafondSol> plafonds;
+				ArrayList<PlafondSol> plafonds_list;
+				HashMap<Integer, PlafondSol> sols;
+				ArrayList<PlafondSol> sols_list;
+
+				// TODO: plusieurs plafonds/sols
 				PlafondSol plafond = null;
 				PlafondSol sol = null;
+
 				config.tui.diveWhere("props");
 				for (
 					SmartReader.ReadResult propResult = sreader.readLine();
@@ -930,30 +931,33 @@ public class Deserialize {
 								error("LINE expected but received " + result.getState() + " when reading murs for Piece");
 							}
 						}
-						case "plafond", "sol" -> {
-							SmartReader.ReadResult plafondSolsResult = sreader.readLine();
-							if (plafondSolsResult.getState() == SmartReader.ReadState.LINE) {
-								String plafondSolLine = plafondSolsResult.getText();
-								HashMap<Integer, PlafondSol> plafondSolMap = new HashMap<>();
-								onePlafondSolFromString(plafondSolMap, plafondSolLine, objects);
-								if (plafondSolMap.size() == 1) {
-									PlafondSol tmpPlafondSol = plafondSolMap.get(plafondSolMap.keySet().iterator().next());
-									if (propType.equals("sol"))
-										plafond = tmpPlafondSol;
-									else
-										sol = tmpPlafondSol;
-									debug(TUI.green("successfully") + " read one plafondSol for piece");
-								} else {
-									error("la lecture du plafondSol a échoué: aucun objet n'a été assigné à la pièce");
-								}
+						case "plafond" -> {
+							plafonds = plafondSolsFromString(objects);
+							plafonds_list = manageHashMapToArrayList(plafonds, objects.plafondsSols);
+
+							// TODO: plusieurs plafonds/sols
+							if (!plafonds_list.isEmpty()) {
+								plafond = plafonds_list.getFirst();
+								debug("using first plafond " + plafond.toString());
 							} else {
-								error("LINE expected but received " + result.getState() + " when reading plafondSols for Piece");
+								debug("plafonds is empty !!!");
+							}
+						}
+						case "sol" -> {
+							sols = plafondSolsFromString(objects);
+							sols_list = manageHashMapToArrayList(sols, objects.plafondsSols);
+
+							// TODO: plusieurs plafonds/sols
+							if (!sols_list.isEmpty()) {
+								sol = sols_list.getFirst();
+								debug("using first sol " + sol.toString());
+							} else {
+								debug("sols is empty !!!");
 							}
 						}
 						default -> error("propriété de la piece inconnue: '" + propResult.getText() + "'");
 					}
 				}
-				config.tui.popWhere();
 
 				Piece object = new Piece(id, unescapeString(splitted[1]), unescapeString(splitted[2]), points, murs, plafond, sol);
 				pieces.put(id, object);

@@ -125,4 +125,40 @@ public class Mur extends HasPrice {
 		    .field("ouvertures", super.toStringArrayList( (ArrayList<BObject>) ((ArrayList<?>) ouvertures)))
 		    .getValue();
 	}
+
+	public String serialize(Objects objects) {
+		int id = objects.getIdOfMur(this);
+		int debutId = objects.getIdOfPoint(pointDebut);
+		int finId = objects.getIdOfPoint(pointFin);
+		int typeId = objects.getIdOfTypeMur(typeMur);
+
+		String out = String.join(",",
+		    String.valueOf(id),
+		    String.valueOf(debutId),
+		    String.valueOf(finId),
+		    String.valueOf(hauteur),
+		    String.valueOf(typeId)
+		) + "\n";
+
+		if (!revetements1.isEmpty()) {
+			out += "PROP:RevetementMur:1\n";
+			for (RevetementMur r: revetements1)
+				out += r.serialize(objects) + "\n";
+			out += "EOS:RevetementMur:1\n";
+		}
+		if (!revetements2.isEmpty()) {
+			out += "PROP:RevetementMur:2\n";
+			for (RevetementMur r: revetements2)
+				out += r.serialize(objects) + "\n";
+			out += "EOS:RevetementMur:2\n";
+		}
+		if (!ouvertures.isEmpty()) {
+			out += "PROP:OuvertureMur\n";
+			for (OuvertureMur o: ouvertures)
+				out += o.serialize(objects) + "\n";
+			out += "EOS:OuvertureMur\n";
+		}
+
+		return out + "EOS:Entry";
+	}
 }
