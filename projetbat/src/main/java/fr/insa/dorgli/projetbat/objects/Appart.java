@@ -1,5 +1,6 @@
 package fr.insa.dorgli.projetbat.objects;
 
+import fr.insa.dorgli.projetbat.Deserialize;
 import java.util.ArrayList;
 
 public class Appart {
@@ -65,7 +66,12 @@ public class Appart {
 	public String serialize(Objects objects) {
 		int id = objects.getIdOfAppart(this);
 
-		String out = String.join(",", String.valueOf(id), nom, description, String.valueOf(objects.getIdOfTypeAppart(typeAppart))) + "\n";
+		String out = String.join(",",
+		    String.valueOf(id),
+		    Deserialize.escapeString(nom),
+		    Deserialize.escapeString(description),
+		    String.valueOf(objects.getIdOfTypeAppart(typeAppart))
+		) + "\n";
 
 		if (!pieces.isEmpty()) {
 			out += "PROP:pieces\n";

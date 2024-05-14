@@ -162,25 +162,31 @@ public class Mur implements ToString, ToStringShort, Drawable {
 		int finId = objects.getIdOfPoint(pointFin);
 		int typeId = objects.getIdOfTypeMur(typeMur);
 
-		String out = String.join(",", String.valueOf(id), String.valueOf(debutId), String.valueOf(finId), String.valueOf(hauteur), String.valueOf(typeId)) + "\n";
+		String out = String.join(",",
+		    String.valueOf(id),
+		    String.valueOf(debutId),
+		    String.valueOf(finId),
+		    String.valueOf(hauteur),
+		    String.valueOf(typeId)
+		) + "\n";
 
 		if (!revetements1.isEmpty()) {
-			out += "PROP:revetements1\n";
+			out += "PROP:RevetementMur:1\n";
 			for (RevetementMur r: revetements1)
 				out += r.serialize(objects) + "\n";
-			out += "EOS:revetements1\n";
+			out += "EOS:RevetementMur:1\n";
 		}
 		if (!revetements2.isEmpty()) {
-			out += "PROP:revetements2\n";
+			out += "PROP:RevetementMur:2\n";
 			for (RevetementMur r: revetements2)
 				out += r.serialize(objects) + "\n";
-			out += "EOS:revetements2\n";
+			out += "EOS:RevetementMur:2\n";
 		}
 		if (!ouvertures.isEmpty()) {
-			out += "PROP:ouvertures\n";
+			out += "PROP:OuvertureMur\n";
 			for (OuvertureMur o: ouvertures)
 				out += o.serialize(objects) + "\n";
-			out += "EOS:ouvertures\n";
+			out += "EOS:OuvertureMur\n";
 		}
 
 		return out + "EOS:Entry";

@@ -53,6 +53,11 @@ public class Point implements ToStringShort {
 
 	public String serialize(Objects objects) {
 		int id = objects.getIdOfPoint(this);
-		return String.join(",", String.valueOf(id), String.valueOf(x), String.valueOf(y), String.valueOf(niveauId));
+		return String.join(",",
+		    String.valueOf(id),
+		    String.valueOf(x),
+		    String.valueOf(y),
+		    String.valueOf(niveauId)
+		);
 	}
 }

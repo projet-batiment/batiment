@@ -91,6 +91,14 @@ public class RevetementPlafondSol implements ToStringShort {
 
 	public String serialize(Objects objects) {
 		int id = objects.getIdOfRevetementPlafondSol(this);
-		return String.join(",", String.valueOf(id), String.valueOf(objects.getIdOfTypeRevetement(typeRevetement)), String.valueOf(pos1L), String.valueOf(pos1H), String.valueOf(pos2L), String.valueOf(pos2H));
+		int rId = objects.getIdOfTypeRevetement(typeRevetement);
+
+		return String.join(",",
+		    String.valueOf(id),
+		    String.valueOf(rId),
+		    String.valueOf(pos1L),
+		    String.valueOf(pos1H),
+		    String.valueOf(pos2L),
+		    String.valueOf(pos2H));
 	}
 }

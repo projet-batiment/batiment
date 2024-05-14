@@ -1,5 +1,6 @@
 package fr.insa.dorgli.projetbat.objects;
 
+import fr.insa.dorgli.projetbat.Deserialize;
 import fr.insa.dorgli.projetbat.ToString;
 import fr.insa.dorgli.projetbat.ToStringShort;
 import java.util.ArrayList;
@@ -108,7 +109,12 @@ public class Batiment implements ToString, ToStringShort {
 
 	public String serialize(Objects objects) {
 		int id = objects.getIdOfBatiment(this);
-		String out = String.join(",", String.valueOf(id), nom, description, String.valueOf(typeBatiment)) + "\n";
+		String out = String.join(",",
+		    String.valueOf(id),
+		    Deserialize.escapeString(nom),
+		    Deserialize.escapeString(description),
+		    String.valueOf(typeBatiment)
+		) + "\n";
 
 		if (!niveaux.isEmpty()) {
 			out += "PROP:niveaux\n";

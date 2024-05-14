@@ -1,5 +1,6 @@
 package fr.insa.dorgli.projetbat.objects;
 
+import fr.insa.dorgli.projetbat.Deserialize;
 import fr.insa.dorgli.projetbat.ToString;
 import fr.insa.dorgli.projetbat.ToStringShort;
 import fr.insa.dorgli.projetbat.gui.Drawable;
@@ -148,7 +149,11 @@ public class Piece implements ToString, ToStringShort, Drawable {
 
 	public String serialize(Objects objects) {
 		int id = objects.getIdOfPiece(this);
-		String out = String.join(",", String.valueOf(id), nom, description) + "\n";
+		String out = String.join(",",
+		    String.valueOf(id),
+		    Deserialize.escapeString(nom),
+		    Deserialize.escapeString(description)
+		) + "\n";
 
 		if (!points.isEmpty()) {
 			out += "PROP:points\n";
@@ -168,11 +173,11 @@ public class Piece implements ToString, ToStringShort, Drawable {
 		}
 		if (plafond != null) {
 			out += "PROP:plafond\n";
-			out += plafond.serialize(objects) + "\nEOS:plafond";
+			out += plafond.serialize(objects) + "\nEOS:plafond\n";
 		}
 		if (sol != null) {
 			out += "PROP:sol\n";
-			out += sol.serialize(objects) + "\nEOS:sol";
+			out += sol.serialize(objects) + "\nEOS:sol\n";
 		}
 
 		return out + "EOS:Entry";

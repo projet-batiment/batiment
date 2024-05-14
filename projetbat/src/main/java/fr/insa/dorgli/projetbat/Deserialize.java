@@ -50,9 +50,6 @@ public class Deserialize {
 	// - 1_PlafondSol
 	// - PlafondSols
 	// - Pieces
-	// 
-	// Reste à faire :
-	//
 	//  niveaux
 	//  apparts
 
@@ -64,13 +61,22 @@ public class Deserialize {
 	private static final String REGEX_DOUBLE = "[0-9]+(\\.[0-9]+)?";
 	private static final String REGEX_STRING = "[^,]*"; // NB: un String peut être vide, d'où le *
 
-	private String unescapeString(String escaped) {
-		return escaped
-			.replaceAll("&c", ",")
-			.replaceAll("&n", "\n")
-			.replaceAll("&r", "\r")
-			.replaceAll("&&", "&")
-		;
+	// pour plus de flexibilité
+	private static final String[] ESCAPE_SEQUENCES_REAL = { ",", "\n", "\r", "&" };
+	private static final String[] ESCAPE_SEQUENCES_ESCAPED = { "&c", "&n", "&r", "&&" };
+
+	public static String unescapeString(String escaped) {
+		for (int i = 0; i < ESCAPE_SEQUENCES_ESCAPED.length; i++)
+			escaped = escaped.replaceAll(ESCAPE_SEQUENCES_ESCAPED[i], ESCAPE_SEQUENCES_REAL[i]);
+
+		return escaped;
+	}
+
+	public static String escapeString(String incoming) {
+		for (int i = 0; i < ESCAPE_SEQUENCES_ESCAPED.length; i++)
+			incoming = incoming.replaceAll(ESCAPE_SEQUENCES_REAL[i], ESCAPE_SEQUENCES_ESCAPED[i]);
+
+		return incoming;
 	}
 
 	public Deserialize(Config config) {

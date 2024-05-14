@@ -1,5 +1,6 @@
 package fr.insa.dorgli.projetbat.objects;
 
+import fr.insa.dorgli.projetbat.Deserialize;
 import fr.insa.dorgli.projetbat.ToStringShort;
 
 public class TypeOuvertureNiveau implements ToStringShort {
@@ -77,6 +78,13 @@ public class TypeOuvertureNiveau implements ToStringShort {
 
 	public String serialize(Objects objects) {
 		int id = objects.getIdOfTypeOuvertureNiveau(this);
-		return String.join(",", String.valueOf(id), nom, description, String.valueOf(hauteur), String.valueOf(largeur), String.valueOf(prixOuverture));
+		return String.join(",",
+		    String.valueOf(id),
+		    Deserialize.escapeString(nom),
+		    Deserialize.escapeString(description),
+		    String.valueOf(hauteur),
+		    String.valueOf(largeur),
+		    String.valueOf(prixOuverture)
+		);
 	}
 }

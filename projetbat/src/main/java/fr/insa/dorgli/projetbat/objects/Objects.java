@@ -53,7 +53,7 @@ public class Objects {
 			out += each.serialize(this) + "\n";
 		out += "EOS:Point\n\n";
 
-		out += "OBJECTS:TypeRevetemnt\n\n";
+		out += "OBJECTS:TypeRevetement\n\n";
 		for (TypeRevetement each: typesRevetement.values())
 			out += each.serialize(this) + "\n";
 		out += "EOS:TypeRevetement\n\n";

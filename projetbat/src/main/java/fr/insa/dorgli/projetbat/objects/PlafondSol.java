@@ -86,16 +86,16 @@ public class PlafondSol implements ToString, ToStringShort {
 		String out = String.valueOf(id) + "\n";
 
 		if (!revetements.isEmpty()) {
-			out += "PROP:revetements\n";
+			out += "PROP:RevetementPlafondSol\n";
 			for (RevetementPlafondSol r: revetements)
 				out += r.serialize(objects) + "\n";
-			out += "EOS:revetements\n";
+			out += "EOS:RevetementPlafondSol\n";
 		}
 		if (!ouvertures.isEmpty()) {
-			out += "PROP:ouvertures\n";
+			out += "PROP:OuvertureNiveaux\n";
 			for (OuvertureNiveaux o: ouvertures)
 				out += o.serialize(objects) + "\n";
-			out += "EOS:ouvertures\n";
+			out += "EOS:OuvertureNiveaux\n";
 		}
 
 		return out + "EOS:Entry";
