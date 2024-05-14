@@ -1,5 +1,5 @@
 FILE
-version:3
+version:4
 projectName:Maisonnette
 projectDescription:Exemple de sauvegarde simple mais complète qui contient tout ce que notre programme sait gérer;&nIl permet aussi de faire tests en tous genres sur le bon fonctionnement de notre logiciel
 EOS:FILE
@@ -253,6 +253,7 @@ PROP:OuvertureNiveaux
 6011,240,0,0
 EOS:OuvertureNiveaux
 
+EOS:Entry
 EOS:plafond
 PROP:sol
 
@@ -262,6 +263,7 @@ PROP:RevetementPlafondSol
 6021,213,0,1,0,3
 EOS:RevetementPlafondSol
 
+EOS:Entry
 EOS:sol
 EOS:Entry
 
@@ -277,6 +279,7 @@ PROP:RevetementPlafondSol
 6030,217,0,0,0,0
 EOS:RevetementPlafondSol
 
+EOS:Entry
 EOS:plafond
 PROP:sol
 
@@ -288,6 +291,7 @@ PROP:OuvertureNiveaux
 6041,241,2,2
 EOS:OuvertureNiveaux
 
+EOS:Entry
 EOS:sol
 EOS:Entry
 
@@ -303,6 +307,7 @@ PROP:RevetementPlafondSol
 6050,217,0,0,0,0
 EOS:RevetementPlafondSol
 
+EOS:Entry
 EOS:plafond
 PROP:sol
 
@@ -311,6 +316,7 @@ PROP:RevetementPlafondSol
 6060,213,0,0,0,0
 EOS:RevetementPlafondSol
 
+EOS:Entry
 EOS:sol
 EOS:Entry
 
@@ -326,6 +332,7 @@ PROP:RevetementPlafondSol
 6070,217,0,0,0,0
 EOS:RevetementPlafondSol
 
+EOS:Entry
 EOS:plafond
 PROP:sol
 
@@ -334,6 +341,7 @@ PROP:RevetementPlafondSol
 6080,213,0,0,0,0
 EOS:RevetementPlafondSol
 
+EOS:Entry
 EOS:sol
 EOS:Entry
 
@@ -349,6 +357,7 @@ PROP:RevetementPlafondSol
 6090,217,0,0,0,0
 EOS:RevetementPlafondSol
 
+EOS:Entry
 EOS:plafond
 PROP:sol
 
@@ -360,6 +369,7 @@ PROP:OuvertureNiveaux
 6101,240,0,0
 EOS:OuvertureNiveaux
 
+EOS:Entry
 EOS:sol
 EOS:Entry
 
