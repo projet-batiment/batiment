@@ -4,6 +4,7 @@ import fr.insa.dorgli.projetbat.ui.TUI;
 import fr.insa.dorgli.projetbat.core.Config;
 import fr.insa.dorgli.projetbat.core.Project;
 import fr.insa.dorgli.projetbat.utils.SmartReader;
+import fr.insa.dorgli.projetbat.utils.StructuredToString;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -19,6 +20,8 @@ public class Deserialize {
 	// - unescapeString et escapeString : pour permettre des \n, des virgules dans la sauvegarde
 	// - fonctions d'erreur
 	// - une méthode générique
+	//
+	// - une classe PseudoPoint pour lire temporairement les points et ensuite leur attribuer un réel niveau
 	// 
 	// - deserializeFile : lire la sauvegarde depuis une fichier dont le chemin est spécifié en arguments
 	// 
@@ -117,6 +120,37 @@ public class Deserialize {
 		return out;
 	}
 
+	private class PseudoPoint {
+		Point point;
+		int niveauId;
+
+		public PseudoPoint(int id, double x, double y, int niveauId) {
+			this.point = new Point(id, x, y);
+			this.niveauId = niveauId;
+		}
+
+		public Point getPoint() {
+			return point;
+		}
+
+ 		public void setNiveau(HashMap<Integer, Niveau> niveaux) {
+			if (niveaux.containsKey(niveauId)) {
+				point.setNiveau(niveaux.get(niveauId));
+				debug("pseudoPoint: set niveau of point " + point.toString());
+			} else {
+				error("le point " + point.toStringShort() + " pointe un niveau inexistant (id " + niveauId + ")");
+			}
+		}
+
+		@Override
+		public String toString() {
+			return new StructuredToString.OfBObject(getClass().getSimpleName())
+			    .field("niveauId", String.valueOf(niveauId))
+			    .field("point", point.toString(1))
+			    .getValue();
+		}
+	}
+
 	public Project deserializeFile(String path) throws FileNotFoundException {
 		return deserializeFile(new File(path));
 	}
@@ -126,6 +160,7 @@ public class Deserialize {
 		config.tui.begin();
 
 		Project newProject = new Project();
+		ArrayList<PseudoPoint> pseudoPoints = new ArrayList<>();
 
 		sreader = new SmartReader(config.tui, file);
 
@@ -149,7 +184,7 @@ public class Deserialize {
 
 						switch (objectsKind) {
 							case "Batiment" ->		newProject.objects.batiments = batimentsFromString(newProject.objects);
-							case "Point" -> 		newProject.objects.points = pointsFromString();
+							case "Point" -> 		newProject.objects.points = pointsFromString(pseudoPoints);
 							case "TypeRevetement" -> 	newProject.objects.typesRevetement = typeRevetementsFromString();
 							case "TypeOuvertureMur" -> 	newProject.objects.typesOuverturesMur = typeOuvertureMursFromString();
 							case "TypeOuvertureNiveau" -> 	newProject.objects.typesOuverturesNiveau = typeOuvertureNiveauxFromString();
@@ -185,6 +220,10 @@ public class Deserialize {
 					warn(TUI.red("triggering fake EOF because of " + config.tui.getErrCounter() + " errors"));
 					break;
 				}
+			}
+
+			for (PseudoPoint p: pseudoPoints) {
+				p.setNiveau(newProject.objects.niveaux);
 			}
 
 		} catch (IOException e) {
@@ -278,7 +317,7 @@ public class Deserialize {
 	}
 
 	/// Point
-	private HashMap<Integer, Point> pointsFromString() throws IOException {
+	private HashMap<Integer, Point> pointsFromString(ArrayList<PseudoPoint> pseudoPoints) throws IOException {
 		config.tui.diveWhere("Points");
 		config.tui.begin();
 		HashMap<Integer, Point> points = new HashMap<>();
@@ -305,9 +344,10 @@ public class Deserialize {
 					double y = Double.parseDouble(splitted[2]);
 					int niveauId = Integer.parseInt(splitted[3]);
 
-					Point object = new Point(id, x, y, niveauId);
-					points.put(id, object);
-					debug("read " + object);
+					PseudoPoint pseudoObject = new PseudoPoint(id, x, y, niveauId);
+					points.put(id, pseudoObject.getPoint());
+					pseudoPoints.add(pseudoObject);
+					debug("read pseudo object " + pseudoObject);
 				} catch (NumberFormatException e) {
 					errorParse(line, e.getMessage());
 				}
@@ -1111,9 +1151,10 @@ public class Deserialize {
 					// lire les propriétés directes du niveau
 					double hauteur = Double.parseDouble(splitted[3]);
 
-					// lire les Pieces et les Apparts
+					// lire les Pieces, Apparts et orpheanMurs
 					ArrayList<Piece> pieces = new ArrayList<>();
 					ArrayList<Appart> apparts = new ArrayList<>();
+					ArrayList<Mur> orpheanMurs = new ArrayList<>();
 					config.tui.diveWhere("props");
 					for (
 						SmartReader.ReadResult propResult = sreader.readLine();
@@ -1175,12 +1216,38 @@ public class Deserialize {
 									error("LINE expected but received " + result.getState() + " when reading pieces for Appart");
 								}
 							}
+							case "orpheanMurs" -> {
+								SmartReader.ReadResult orpheanMursResult = sreader.readLine();
+								if (orpheanMursResult.getState() == SmartReader.ReadState.LINE) {
+									String text = orpheanMursResult.getText();
+									if (text.matches(REGEX_INT + "(," + REGEX_INT + ")*")) {
+										String[] orpheanMursIds = text.split(",");
+										for (String each: orpheanMursIds) {
+											try {
+												int orpheanMurId = Integer.parseInt(each);
+												Mur orpheanMur = objects.murs.get(orpheanMurId);
+												if (orpheanMur == null) {
+													errorIdNone("Piece", orpheanMurId);
+												} else {
+													orpheanMurs.add(orpheanMur);
+												}
+											} catch (NumberFormatException e) {
+												errorParse(line, e.getMessage());
+											}
+										}
+									} else {
+										errorSyntax(text);
+									}
+								} else {
+									error("LINE expected but received " + result.getState() + " when reading orpheanMurs for Appart");
+								}
+							}
 							default -> error("propriété du niveau inconnue: '" + propResult.getText() + "'");
 						}
 					}
 					config.tui.popWhere();
 
-					Niveau object = new Niveau(id, unescapeString(splitted[1]), unescapeString(splitted[2]), hauteur, pieces, apparts);
+					Niveau object = new Niveau(id, unescapeString(splitted[1]), unescapeString(splitted[2]), hauteur, pieces, apparts, orpheanMurs);
 					niveaux.put(id, object);
 					debug("read " + object);
 				} catch (NumberFormatException e) {

@@ -57,29 +57,27 @@ public class Appart extends BObject {
 
 	@Override
 	public String toString(int depth, boolean indentFirst) {
-		return new StructuredToString.OfBObject(depth, getClass().getSimpleName(), indentFirst)
-		    .field("nom", nom)
-		    .field("description", description)
+		return new StructuredToString.OfBObject(depth, this, indentFirst)
+		    .textField("nom", nom)
+		    .textField("description", description)
 		    .fieldShortCollection("pieces", (Collection<BObject>) ((ArrayList<?>) pieces))
 		    .field("typeAppart", typeAppart.toString(depth + 1))
 		    .getValue();
 	}
 
 	public String serialize(Objects objects) {
-		int id = objects.getIdOfAppart(this);
-
 		String out = String.join(",",
-		    String.valueOf(id),
+		    String.valueOf(super.getId()),
 		    Deserialize.escapeString(nom),
 		    Deserialize.escapeString(description),
-		    String.valueOf(objects.getIdOfTypeAppart(typeAppart))
+		    String.valueOf(typeAppart.getId())
 		) + "\n";
 
 		if (!pieces.isEmpty()) {
 			out += "PROP:pieces\n";
 			String[] pieceIds = new String[pieces.size()];
 			for (int i = 0; i < pieceIds.length; i++) {
-				pieceIds[i] = String.valueOf(objects.getIdOfPiece(pieces.get(i)));
+				pieceIds[i] = String.valueOf(pieces.get(i).getId());
 			}
 			out += String.join(",", pieceIds) + "\n";
 		}

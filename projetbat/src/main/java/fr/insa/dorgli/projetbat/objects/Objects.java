@@ -119,9 +119,9 @@ public class Objects {
 
 	///// create objects (with ID & into matching HashMap)
 
-	public Point createPoint(double x, double y, int niveauId) {
+	public Point createPoint(double x, double y, Niveau niveau) {
 		int id = generateId();
-		Point point = new Point(id, x, y, niveauId);
+		Point point = new Point(id, x, y, niveau);
 		points.put(id, point);
 		return point;
 	}
@@ -149,9 +149,9 @@ public class Objects {
 		return batiment;
 	}
 
-	public Niveau createNiveau(String nom, String description, double hauteur, ArrayList<Piece> pieces, ArrayList<Appart> apparts) {
+	public Niveau createNiveau(String nom, String description, double hauteur, ArrayList<Piece> pieces, ArrayList<Appart> apparts, ArrayList<Mur> orpheanMurs) {
 		int id = generateId();
-		Niveau niveau = new Niveau(id, nom, description, hauteur, pieces, apparts);
+		Niveau niveau = new Niveau(id, nom, description, hauteur, pieces, apparts, orpheanMurs);
 		niveaux.put(id, niveau);
 		return niveau;
 	}
@@ -300,153 +300,6 @@ public class Objects {
 
 	public RevetementPlafondSol getRevetementPlafondSolById(int id) {
 		return revetementsPlafondSol.get(id);
-	}
-
-	///// get ID of object, return -1 if not found
-
-	public int getIdOfMur(Mur murRecherche){
-		for (int i: murs.keySet()) {
-			if (murs.get(i) == murRecherche) {
-				return i;
-			}
-		}
-		return -1;
-	}
-
-	public int getIdOfTypeAppart(TypeAppart typeAppartRecherche){
-		for (int i: typesAppart.keySet()){
-			if (typesAppart.get(i) == typeAppartRecherche){
-				return i;
-			}
-		}
-		return -1;
-	}
-
-	public int getIdOfBatiment(Batiment batimentRecherche){
-		for (int i: batiments.keySet()){
-			if (batiments.get(i) == batimentRecherche){
-				return i;
-			}
-		}
-		return -1;
-	}
-
-	public int getIdOfNiveau(Niveau niveauRecherche){
-		for (int i: niveaux.keySet()){
-			if (niveaux.get(i) == niveauRecherche){
-				return i;
-			}
-		}
-		return -1;
-	}
-
-	public int getIdOfAppart(Appart appartRecherche){
-		for (int i: apparts.keySet()){
-			if (apparts.get(i) == appartRecherche){
-				return i;
-			}
-		}
-		return -1;
-	}
-
-	public int getIdOfPiece(Piece pieceRecherche){
-		for (int i: pieces.keySet()){
-			if (pieces.get(i) == pieceRecherche){
-				return i;
-			}
-		}
-		return -1;
-	}
-
-	public int getIdOfPlafondSol(PlafondSol plafondSolRecherche){
-		for (int i: plafondsSols.keySet()){
-			if (plafondsSols.get(i) == plafondSolRecherche){
-				return i;
-			}
-		}
-		return -1;
-	}
-
-	public int getIdOfPoint(Point pointRecherche){
-		for (int i: points.keySet()){
-			if (points.get(i) == pointRecherche){
-				return i;
-			}
-		}
-		return -1;
-	}
-
-
-	public int getIdOfOuvertureMur(OuvertureMur ouvertureMurRecherche){
-		for (int i: ouverturesMur.keySet()){
-			if (ouverturesMur.get(i) == ouvertureMurRecherche){
-				return i;
-			}
-		}
-		return -1;
-	}
-
-	public int getIdOfOuvertureNiveaux(OuvertureNiveaux ouvertureNiveauxRecherche){
-		for (int i: ouverturesNiveaux.keySet()){
-			if (ouverturesNiveaux.get(i) == ouvertureNiveauxRecherche){
-				return i;
-			}
-		}
-		return -1;
-	}
-
-	public int getIdOfTypeRevetement(TypeRevetement typeRevetementRecherche){
-	for ( int i : typesRevetement.keySet() ){
-		if (typesRevetement.get(i) == typeRevetementRecherche){
-			return i;
-		}
-	}
-	return -1;
-	}
-
-	public int getIdOfTypeOuvertureMur(TypeOuvertureMur typeouvertureMurRecherche){
-		for ( int i : typesOuverturesMur.keySet() ){
-			if (typesOuverturesMur.get(i) == typeouvertureMurRecherche){
-				return i;
-			}
-		}
-		return -1;
-	}
-
-	public int getIdOfTypeOuvertureNiveau(TypeOuvertureNiveau typeouvertureNiveauRecherche){
-		for ( int i : typesOuverturesNiveau.keySet() ){
-			if (typesOuverturesNiveau.get(i) == typeouvertureNiveauRecherche){
-				return i;
-			}
-		}
-		return -1;
-	}
-
-	public int getIdOfTypeMur(TypeMur typemurRecherche){
-		for ( int i : typesMur.keySet() ){
-			if (typesMur.get(i) == typemurRecherche){
-				return i;
-			}
-		}
-		return -1;
-	}
-
-	public int getIdOfRevetementPlafondSol(RevetementPlafondSol revetementPlafondSolRecherche){
-		for ( int i : revetementsPlafondSol.keySet() ){
-			if (revetementsPlafondSol.get(i) == revetementPlafondSolRecherche){
-				return i;
-			}
-		}
-		return -1;
-	}
-
-	public int getIdOfRevetementMur (RevetementMur revetementMurRecherche){
-		for ( int i : revetementsMur.keySet() ){
-			if (revetementsMur.get(i) == revetementMurRecherche){
-				return i;
-			}
-		}
-		return -1;
 	}
 
 	///// toString custom implementation

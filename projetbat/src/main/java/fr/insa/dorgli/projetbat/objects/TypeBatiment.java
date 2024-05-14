@@ -35,9 +35,9 @@ public class TypeBatiment extends BObject {
 
 	@Override
 	public String toString(int depth, boolean indentFirst) {
-		return new StructuredToString.OfBObject(depth, getClass().getSimpleName(), indentFirst)
-		    .field("nom", nom)
-		    .field("description", description)
-            .getValue();
+		return new StructuredToString.OfBObject(depth, this, indentFirst)
+		    .textField("nom", nom)
+		    .textField("description", description)
+        	    .getValue();
 	}
 }

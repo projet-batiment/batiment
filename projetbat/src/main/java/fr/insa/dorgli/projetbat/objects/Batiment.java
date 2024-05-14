@@ -78,9 +78,9 @@ public class Batiment extends HasPrice {
 
 	@Override
 	public String toString(int depth, boolean indentFirst) {
-		return new StructuredToString.OfBObject(depth, getClass().getSimpleName(), indentFirst)
-		    .field("nom", nom)
-		    .field("description", description)
+		return new StructuredToString.OfBObject(depth, this, indentFirst)
+		    .textField("nom", nom)
+		    .textField("description", description)
 		    .field("typeBatiment", typeBatiment.toString(depth + 1))
 		    .fieldShortCollection("apparts", (ArrayList<BObject>) ((ArrayList<?>) apparts))
 		    .field("niveaux", (ArrayList<BObject>) ((ArrayList<?>) niveaux))
@@ -88,10 +88,8 @@ public class Batiment extends HasPrice {
 	}
 
 	public String serialize(Objects objects) {
-		int id = objects.getIdOfBatiment(this);
-
 		String out = String.join(",",
-		    String.valueOf(id),
+		    String.valueOf(super.getId()),
 		    Deserialize.escapeString(nom),
 		    Deserialize.escapeString(description),
 		    String.valueOf(typeBatiment.getId())
@@ -101,7 +99,7 @@ public class Batiment extends HasPrice {
 			out += "PROP:niveaux\n";
 			String[] niveauIds = new String[niveaux.size()];
 			for (int i = 0; i < niveauIds.length; i++) {
-				niveauIds[i] = String.valueOf(objects.getIdOfNiveau(niveaux.get(i)));
+				niveauIds[i] = String.valueOf(niveaux.get(i).getId());
 			}
 			out += String.join(",", niveauIds) + "\n";
 		}
@@ -109,7 +107,7 @@ public class Batiment extends HasPrice {
 			out += "PROP:apparts\n";
 			String[] appartIds = new String[apparts.size()];
 			for (int i = 0; i < appartIds.length; i++) {
-				appartIds[i] = String.valueOf(objects.getIdOfAppart(apparts.get(i)));
+				appartIds[i] = String.valueOf(apparts.get(i).getId());
 			}
 			out += String.join(",", appartIds) + "\n";
 		}

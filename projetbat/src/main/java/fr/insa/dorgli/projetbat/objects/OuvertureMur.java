@@ -41,11 +41,11 @@ public class OuvertureMur extends Drawable {
 
 	@Override
 	public String toString(int depth, boolean indentFirst) {
-		return new StructuredToString.OfBObject(depth, getClass().getSimpleName(), indentFirst)
-		    .field("posL", ""+posL)
-		    .field("posH", ""+posH)
+		return new StructuredToString.OfBObject(depth, this, indentFirst)
+		    .field("posL", String.valueOf(posL))
+		    .field("posH", String.valueOf(posH))
 		    .field("typeOuverture", typeOuverture.toString(depth + 1))
-            .getValue();
+        	    .getValue();
 	}
 
 	@Override
@@ -54,10 +54,9 @@ public class OuvertureMur extends Drawable {
 	}
 
 	public String serialize(Objects objects) {
-		int id = objects.getIdOfOuvertureMur(this);
 		return String.join(",",
-		    String.valueOf(id),
-		    String.valueOf(objects.getIdOfTypeOuvertureMur(typeOuverture)),
+		    String.valueOf(super.getId()),
+		    String.valueOf(typeOuverture.getId()),
 		    String.valueOf(posL),
 		    String.valueOf(posH)
 		);

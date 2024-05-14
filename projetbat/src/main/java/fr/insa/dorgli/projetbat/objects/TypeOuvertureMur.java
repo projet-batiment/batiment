@@ -60,19 +60,18 @@ public class TypeOuvertureMur extends BObject {
 
 	@Override
 	public String toString(int depth, boolean indentFirst) {
-		return new StructuredToString.OfBObject(depth, getClass().getSimpleName(), indentFirst)
-		    .field("nom", nom)
-		    .field("description", description)
-		    .field("largeur", ""+largeur)
-		    .field("hauteur", ""+hauteur)
-		    .field("prixOuverture", ""+prixOuverture)
-            .getValue();
+		return new StructuredToString.OfBObject(depth, this, indentFirst)
+		    .textField("nom", nom)
+		    .textField("description", description)
+		    .field("largeur", String.valueOf(largeur))
+		    .field("hauteur", String.valueOf(hauteur))
+		    .field("prixOuverture", String.valueOf(prixOuverture))
+        	    .getValue();
 	}
 
 	public String serialize(Objects objects) {
-		int id = objects.getIdOfTypeOuvertureMur(this);
 		return String.join(",",
-		    String.valueOf(id),
+		    String.valueOf(super.getId()),
 		    Deserialize.escapeString(nom),
 		    Deserialize.escapeString(description),
 		    String.valueOf(hauteur),

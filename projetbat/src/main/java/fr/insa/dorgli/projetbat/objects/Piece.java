@@ -111,20 +111,19 @@ public class Piece extends HasPrice {
 
 	@Override
 	public String toString(int depth, boolean indentFirst) {
-		return new StructuredToString.OfBObject(depth, getClass().getSimpleName(), indentFirst)
-		    .field("nom", nom)
-		    .field("description", description)
+		return new StructuredToString.OfBObject(depth, this, indentFirst)
+		    .textField("nom", nom)
+		    .textField("description", description)
 		    .fieldShortCollection("points", (ArrayList<BObject>) ((ArrayList<?>) points))
 		    .fieldShortCollection("murs", (ArrayList<BObject>) ((ArrayList<?>) murs))
 		    .field("plafond", plafond.toString(depth + 1))
 		    .field("sol", sol.toString(depth + 1))
-            .getValue();
+        	    .getValue();
 	}
 
 	public String serialize(Objects objects) {
-		int id = objects.getIdOfPiece(this);
 		String out = String.join(",",
-		    String.valueOf(id),
+		    String.valueOf(super.getId()),
 		    Deserialize.escapeString(nom),
 		    Deserialize.escapeString(description)
 		) + "\n";
@@ -133,7 +132,7 @@ public class Piece extends HasPrice {
 			out += "PROP:points\n";
 			String[] pointIds = new String[points.size()];
 			for (int i = 0; i < pointIds.length; i++) {
-				pointIds[i] = String.valueOf(objects.getIdOfPoint(points.get(i)));
+				pointIds[i] = String.valueOf(points.get(i).getId());
 			}
 			out += String.join(",", pointIds) + "\n";
 		}
@@ -141,7 +140,7 @@ public class Piece extends HasPrice {
 			out += "PROP:murs\n";
 			String[] murIds = new String[murs.size()];
 			for (int i = 0; i < murIds.length; i++) {
-				murIds[i] = String.valueOf(objects.getIdOfMur(murs.get(i)));
+				murIds[i] = String.valueOf(murs.get(i).getId());
 			}
 			out += String.join(",", murIds) + "\n";
 		}

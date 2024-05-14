@@ -91,11 +91,11 @@ public class RevetementMur extends HasPrice {
 
 	@Override
 	public String toString(int depth, boolean indentFirst) {
-		return new StructuredToString.OfBObject(depth, getClass().getSimpleName(), indentFirst)
-		    .field("pos1L", ""+pos1L)
-		    .field("pos1H", ""+pos1H)
-		    .field("pos2L", ""+pos2L)
-		    .field("pos2H", ""+pos2H)
+		return new StructuredToString.OfBObject(depth, this, indentFirst)
+		    .field("pos1L", String.valueOf(pos1L))
+		    .field("pos1H", String.valueOf(pos1H))
+		    .field("pos2L", String.valueOf(pos2L))
+		    .field("pos2H", String.valueOf(pos2H))
 		    .field("typeOuverture", typeRevetement.toString(depth + 1))
         	    .getValue();
 	}
@@ -106,12 +106,9 @@ public class RevetementMur extends HasPrice {
 	}
 
 	public String serialize(Objects objects) {
-		int id = objects.getIdOfRevetementMur(this);
-		int rId = objects.getIdOfTypeRevetement(typeRevetement);
-
 		return String.join(",",
-		    String.valueOf(id),
-		    String.valueOf(rId),
+		    String.valueOf(super.getId()),
+		    String.valueOf(typeRevetement.getId()),
 		    String.valueOf(pos1L),
 		    String.valueOf(pos1H),
 		    String.valueOf(pos2L),

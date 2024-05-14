@@ -6,13 +6,17 @@ import fr.insa.dorgli.projetbat.utils.StructuredToString;
 public class Point extends Drawable {
 	private double x;
 	private double y;
-	private int niveauId;
+	private Niveau niveau;
 
-	public Point(int id, double x, double y, int niveauId) {
+	public Point(int id, double x, double y) {
+		this(id, x, y, null);
+	}
+
+	public Point(int id, double x, double y, Niveau niveau) {
 		super(id);
 		this.x = x;
 		this.y = y;
-		this.niveauId = niveauId;
+		this.niveau = niveau;
 	}
 
 	public double getX() {
@@ -31,12 +35,12 @@ public class Point extends Drawable {
 		this.y = y;
 	}
 
-	public int getNiveauId() {
-		return niveauId;
+	public Niveau getNiveau() {
+		return niveau;
 	}
 
-	public void setNiveauId(int niveauId) {
-		this.niveauId = niveauId;
+	public void setNiveau(Niveau niveau) {
+		this.niveau = niveau;
 	}
 
 	@Override
@@ -48,20 +52,19 @@ public class Point extends Drawable {
 
 	@Override
 	public String toString(int depth, boolean indentFirst) {
-		return new StructuredToString.OfBObject(depth, getClass().getSimpleName(), indentFirst)
-		    .field("x", ""+x)
-		    .field("y", ""+y)
-		    .field("niveauId", ""+niveauId)
-            .getValue();
+		return new StructuredToString.OfBObject(depth, this, indentFirst)
+		    .field("x", String.valueOf(x))
+		    .field("y", String.valueOf(y))
+		    .field("niveau", niveau == null ? "(null)" : niveau.toString(depth + 1))
+        	    .getValue();
 	}
 
 	public String serialize(Objects objects) {
-		int id = objects.getIdOfPoint(this);
 		return String.join(",",
-		    String.valueOf(id),
+		    String.valueOf(super.getId()),
 		    String.valueOf(x),
 		    String.valueOf(y),
-		    String.valueOf(niveauId)
+		    String.valueOf(niveau.getId())
 		);
 	}
 }

@@ -8,6 +8,10 @@ public class StructuredToString {
 	private String indent;
 	private String out;
 
+	public StructuredToString(String title) {
+		this(0, title, true);
+	}
+
 	public StructuredToString(int depth, String title) {
 		this(depth, title, true);
 	}
@@ -50,12 +54,28 @@ public class StructuredToString {
 	}
 
 	public static class OfBObject extends StructuredToString {
+		public OfBObject(String title) {
+			super(title);
+		}
+
 		public OfBObject(int depth, String title) {
 			super(depth, title);
 		}
 
 		public OfBObject(int depth, String title, boolean indentFirst) {
 			super(depth, title, indentFirst);
+		}
+
+		public OfBObject(BObject object) {
+			super(object.toStringShort());
+		}
+
+		public OfBObject(int depth, BObject object) {
+			super(depth, object.toStringShort());
+		}
+
+		public OfBObject(int depth, BObject object, boolean indentFirst) {
+			super(depth, object.toStringShort(), indentFirst);
 		}
 
 		@Override

@@ -60,16 +60,14 @@ public class PlafondSol extends HasPrice {
 
 	@Override
 	public String toString(int depth, boolean indentFirst) {
-		return new StructuredToString.OfBObject(depth, getClass().getSimpleName(), indentFirst)
+		return new StructuredToString.OfBObject(depth, this, indentFirst)
 		    .fieldShortCollection("revetements", (ArrayList<BObject>) ((ArrayList<?>) revetements))
 		    .fieldShortCollection("ouvertures", (ArrayList<BObject>) ((ArrayList<?>) ouvertures))
         	    .getValue();
 	}
 
 	public String serialize(Objects objects) {
-		int id = objects.getIdOfPlafondSol(this);
-
-		String out = String.valueOf(id) + "\n";
+		String out = String.valueOf(super.getId()) + "\n";
 
 		if (!revetements.isEmpty()) {
 			out += "PROP:RevetementPlafondSol\n";

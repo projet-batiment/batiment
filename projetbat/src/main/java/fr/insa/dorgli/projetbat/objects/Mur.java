@@ -18,9 +18,10 @@ public class Mur extends HasPrice {
 			ArrayList<RevetementMur> revetements2, ArrayList<OuvertureMur> ouvertures) throws IllegalArgumentException {
 		super(id);
 
-		if (pointDebut.getNiveauId() != pointFin.getNiveauId())
+		if (pointDebut.getNiveau() != pointFin.getNiveau()) {
 			throw new IllegalArgumentException("Un mur doit avoir des points sur le même niveau! '"
-					+ pointDebut.getNiveauId() + "' != '" + pointFin.getNiveauId() + "'");
+			    + pointDebut.getNiveau().toStringShort() + "' != '" + pointFin.getNiveau().toStringShort() + "'");
+		}
 
 		this.pointDebut = pointDebut;
 		this.pointFin = pointFin;
@@ -118,10 +119,10 @@ public class Mur extends HasPrice {
 
 	@Override
 	public String toString(int depth, boolean indentFirst) {
-		return new StructuredToString.OfBObject(depth, getClass().getSimpleName(), indentFirst)
+		return new StructuredToString.OfBObject(depth, this, indentFirst)
 		    .field("pointDebut", pointDebut.toString(depth + 1))
 		    .field("pointFin", pointFin.toString(depth + 1))
-		    .field("hauteur", ""+hauteur)
+		    .field("hauteur", String.valueOf(hauteur))
 		    .fieldShortCollection("revetements1", (ArrayList<BObject>) ((ArrayList<?>) revetements1))
 		    .fieldShortCollection("revetements2", (ArrayList<BObject>) ((ArrayList<?>) revetements2))
 		    .fieldShortCollection("ouvertures", (ArrayList<BObject>) ((ArrayList<?>) ouvertures))
@@ -129,17 +130,12 @@ public class Mur extends HasPrice {
 	}
 
 	public String serialize(Objects objects) {
-		int id = objects.getIdOfMur(this);
-		int debutId = objects.getIdOfPoint(pointDebut);
-		int finId = objects.getIdOfPoint(pointFin);
-		int typeId = objects.getIdOfTypeMur(typeMur);
-
 		String out = String.join(",",
-		    String.valueOf(id),
-		    String.valueOf(debutId),
-		    String.valueOf(finId),
+		    String.valueOf(super.getId()),
+		    String.valueOf(pointDebut.getId()),
+		    String.valueOf(pointFin.getId()),
 		    String.valueOf(hauteur),
-		    String.valueOf(typeId)
+		    String.valueOf(typeMur.getId())
 		) + "\n";
 
 		if (!revetements1.isEmpty()) {

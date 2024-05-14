@@ -50,18 +50,17 @@ public class TypeMur extends BObject  {
 
 	@Override
 	public String toString(int depth, boolean indentFirst) {
-		return new StructuredToString.OfBObject(depth, getClass().getSimpleName(), indentFirst)
-		    .field("nom", nom)
-		    .field("description", description)
-		    .field("epaisseur", ""+epaisseur)
-		    .field("prixUnitaire", ""+prixUnitaire)
-            .getValue();
+		return new StructuredToString.OfBObject(depth, this, indentFirst)
+		    .textField("nom", nom)
+		    .textField("description", description)
+		    .field("epaisseur", String.valueOf(epaisseur))
+		    .field("prixUnitaire", String.valueOf(prixUnitaire))
+        	    .getValue();
 	}
 
 	public String serialize(Objects objects) {
-		int id = objects.getIdOfTypeMur(this);
 		return String.join(",",
-		    String.valueOf(id),
+		    String.valueOf(super.getId()),
 		    Deserialize.escapeString(nom),
 		    Deserialize.escapeString(description),
 		    String.valueOf(epaisseur),
