@@ -10,6 +10,28 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class MainPane extends BorderPane {
+	private OutilsTop outilsTop;
+	private OutilsLeft outilsLeft;
+	private OutilsRight outilsRight;
+	private OutilsDown outilsDown;
+	private DessinPane dessin;
+
+	public MainPane(){
+		this.outilsTop = new OutilsTop();
+		this.outilsLeft = new OutilsLeft();
+		this.outilsRight = new OutilsRight();
+		this.outilsDown = new OutilsDown();
+		this.dessin = new DessinPane(this);
+
+		this.setTop(this.outilsTop);
+		this.setTop(this.outilsLeft);
+		this.setTop(this.outilsRight);
+		this.setTop(this.outilsDown);
+		this.setTop(this.dessin);
+	}
+}
+
+		
 	private Config config;
 	private Controller controller;
 	private Stage mainStage;
