@@ -3,6 +3,7 @@ package fr.insa.dorgli.projetbat.objects;
 import fr.insa.dorgli.projetbat.ui.gui.DrawingContext;
 import java.util.ArrayList;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
+import javafx.scene.paint.Color;
 
 public class Piece extends HasPrice {
 	private String nom;
@@ -101,9 +102,18 @@ public class Piece extends HasPrice {
 		dcx.tui().diveWhere("piece.draw");
 
 		dcx.tui().debug("in" + (isFocused ? " focused" : "") + " Piece " + this.toStringShort());
+
+		// dessiner la pièce elle même
+//		Point[] points = new Point[murs.size() * 2];
+//		for (int i = 0; i < murs.size(); i++) {
+//			points[2*i] = murs.get(i).getPointDebut();
+//			points[2*i + 1] = murs.get(i).getPointFin();
+//		}
+		dcx.drawPolygon(this, points.toArray(Point[]::new), isFocused ? Color.NAVAJOWHITE : Color.CORAL);
+
 		dcx.tui().debug("drawing " + murs.size() + " murs objects");
-		for (Mur mur: murs) {
-			dcx.draw(mur);
+		for (int i = 0; i < murs.size(); i++) {
+			dcx.draw(murs.get(i));
 		}
 
 		dcx.tui().popWhere();

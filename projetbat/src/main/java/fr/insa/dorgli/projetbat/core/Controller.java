@@ -55,12 +55,13 @@ public class Controller {
 				alert.setContentText(ex.getLocalizedMessage());
 
 				alert.showAndWait();
-
 			} catch (Exception ex) {
 				Alert alert = new Alert(AlertType.ERROR);
 				alert.setTitle("Erreur de lecture");
 				alert.setHeaderText("Une erreur est survenue lors de la lecture du fichier");
 				alert.setContentText(ex.getMessage() + "\n\n" + ex.getLocalizedMessage());
+				config.tui.debug("debugging an error:");
+				ex.printStackTrace(System.out);
 
 				alert.showAndWait();
 			}

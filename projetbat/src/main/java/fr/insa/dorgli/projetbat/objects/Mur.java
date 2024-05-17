@@ -111,7 +111,7 @@ public class Mur extends HasPrice {
 		// TODO: amnesic debug dive
 		dcx.tui().debug("Mur: drawing " + (isFocused ? "focused " : "") + "Mur " + this.toStringShort());
 		if (isFocused) {
-			dcx.drawLine(this, pointDebut.getX(), pointDebut.getY(), pointFin.getX(), pointFin.getY(), 15, Color.INDIANRED);
+			dcx.drawLine(this, pointDebut.getX(), pointDebut.getY(), pointFin.getX(), pointFin.getY(), 15, Color.NAVAJOWHITE);
 		} else {
 			dcx.drawLine(this, pointDebut.getX(), pointDebut.getY(), pointFin.getX(), pointFin.getY(), 10, Color.DIMGRAY);
 		}

@@ -10,7 +10,13 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 import java.awt.geom.Line2D;
+import java.awt.geom.Path2D;
+import java.awt.geom.Point2D;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class CanvasContainer extends Pane {
 	private final Config config;
@@ -20,6 +26,7 @@ public class CanvasContainer extends Pane {
 	private final GraphicsContext ctxt;
 	private final DrawingContext drawingContext;
 	private final HashMap<Line2D.Double, Drawable> drawnLines;
+	private final HashMap<Path2D.Double, Drawable> drawnPolygons;
 
 	private Niveau currentNiveau;
 	private Rectangle totalDrawingRectangle;
@@ -56,10 +63,14 @@ public class CanvasContainer extends Pane {
 		canvas.setOnMouseClicked(eh -> {
 			mainPane.getController().canvasClicked(eh);
 		});
+		canvas.setOnMouseMoved(eh -> {
+			//mainPane.getController().canvasClicked(eh);
+		});
 
  		ctxt = canvas.getGraphicsContext2D();
 		totalDrawingRectangle = new Rectangle( (int)Math.ceil(super.getWidth()), (int)Math.ceil(super.getHeight()) );
 		drawnLines = new HashMap<>();
+		drawnPolygons = new HashMap<>();
 
 		drawingContext = new DrawingContext(config, this);
 		drawingContext.setSelectedObject(currentNiveau); // TODO!! TMP !!
@@ -262,11 +273,10 @@ public class CanvasContainer extends Pane {
 	//////////////// linking stuff
 
 	public Drawable getClosestLinked(double clickX, double clickY) {
-//		if (drawnLines.isEmpty()) {
-//			config.tui.log("canvasContainer/getClosestLinked: drawnLines is empty!");
-//			return null;
-//		}
+		return getClosestLinked(clickX, clickY, scaleToView(15));
+	}
 
+	public Drawable getClosestLinked(double clickX, double clickY, double lineMaxDistance) {
 		config.tui.log("canvasContainer/getClosestLinked: x: " + scaleToView(clickX) + ", " + scaleToView(ctxt.getTransform().getTx()));
 		config.tui.log("canvasContainer/getClosestLinked: y: " + scaleToView(clickY) + ", " + scaleToView(ctxt.getTransform().getTy()));
 		clickX = scaleToView(clickX - ctxt.getTransform().getTx());
@@ -278,23 +288,41 @@ public class CanvasContainer extends Pane {
 			return null;
 		}
 
-		double closestDistance = Double.POSITIVE_INFINITY;
+		double closestDistance = lineMaxDistance;
 		Drawable closestObject = null;
 		double currentDistance;
 
-		for (Line2D.Double currentLine: drawnLines.keySet()) {
-			currentDistance = currentLine.ptSegDist(clickX, clickY);
-			Drawable currentObject = drawnLines.get(currentLine);
+		// on cherche parmi les lignes
+		for (HashMap.Entry<Line2D.Double, Drawable> currentEntry: drawnLines.entrySet()) {
+			currentDistance = currentEntry.getKey().ptSegDist(clickX, clickY);
 			config.tui.debug("canvasContainer/getClosestLinked: closest " + (closestObject == null ? null : closestObject.getId()) + "(" + closestDistance + ")");
-			config.tui.debug("canvasContainer/getClosestLinked: current " + currentObject.getId() + "(" + currentDistance + ")" + " at (" + currentLine.getX1() + ":" + currentLine.getY1() + ") -- (" + currentLine.getX1() + ":" + currentLine.getY1() + ")");
+			config.tui.debug("canvasContainer/getClosestLinked: current "
+			    + currentEntry.getValue().getId() + "(" + currentDistance + ")" 
+			    + " at (" + currentEntry.getKey().getX1() + ":" + currentEntry.getKey().getY1()
+			    + ") -- (" + currentEntry.getKey().getX1() + ":" + currentEntry.getKey().getY1() + ")");
+
 			if (currentDistance < closestDistance) {
-				config.tui.debug("canvasContainer/getClosestLinked: this is closer !!!!");
+				config.tui.debug("canvasContainer/getClosestLinked: this is closer");
 				closestDistance = currentDistance;
-				closestObject = currentObject;
+				closestObject = currentEntry.getValue();
 			}
 		}
 
-		return closestObject;
+		// si on a une ligne assez proche, on la renvoie
+		if (closestObject != null) {
+			config.tui.debug("canvasContainer/getClosestLinked: found a close line: " + closestObject.toStringShort());
+			return closestObject;
+		}
+
+		// on cherche parmi les path2d (polygones)
+		for (HashMap.Entry<Path2D.Double, Drawable> currentEntry: drawnPolygons.entrySet()) {
+			if (currentEntry.getKey().contains(clickX, clickY)) {
+				config.tui.debug("canvasContainer/getClosestLinked: found a close path2d: " + currentEntry.getValue().toStringShort());
+				return currentEntry.getValue();
+			}
+		}
+
+		return null;
 	}
 
 	//////////////// draw stuff
@@ -372,6 +400,98 @@ public class CanvasContainer extends Pane {
 			config.tui.debug("Drew line with (" + x1 + ":" + y1 + ") -- (" + x2 + ":" + y2 + "), width " + width);
 
 			ctxt.setLineWidth(savedWidth);
+		}
+
+		config.tui.popWhere();
+	}
+
+	// classe uniquement pour trier des points dans le sens horaire autour d'un point central
+	private class PointPolarCompare implements Comparator<Point2D.Double> {
+		private final Point2D.Double center;
+
+		public PointPolarCompare(Point2D.Double center) {
+			this.center = center;
+		}
+
+		@Override
+		public int compare(final Point2D.Double a, final Point2D.Double b) {
+			double valueA = Math.atan2(a.getY() - center.getY(), a.getX() - center.getX());
+			double valueB = Math.atan2(b.getY() - center.getY(), b.getX() - center.getX());
+
+			if (valueA > valueB)
+				return 1;
+			if (valueA > valueB)
+				return -1;
+			else
+				return 0;
+		}
+	}
+
+	/**
+	 * @param linkedObject Drawable object to be attached to this line
+	 * @param points Points with coordinates in DATA standards
+	 * @param color
+	 */
+	public void drawPolygon(Drawable linkedObject, Point2D.Double[] points, Color color) {
+		if (points.length < 3) {
+			config.tui.error("canvasContainer/drawPolygon: polygon contains less than 3 points: " + points.length);
+			return;
+		}
+
+		config.tui.diveWhere("canvasContainer/drawPolygon");
+		Path2D.Double path = new Path2D.Double();
+
+		double centerX = 0;
+		double centerY = 0;
+
+		// pour chaque point:
+		// - on récupère ses coordonnées en standards DATA qu'on convertit en CANVAS
+		// - on l'ajoute à center pour ensuite calculer le centre du polygone
+		for (Point2D.Double p: points) {
+			p.setLocation(dataToCanvasUnit(p.getX()), dataToCanvasUnit(p.getY()));
+			centerX += p.getX();
+			centerY += p.getY();
+		}
+
+		// centre du polygone
+		Point2D.Double center = new Point2D.Double(centerX/points.length, centerY/points.length);
+		// trier les points par angle autour du centre
+		Arrays.sort(points, new PointPolarCompare(center));
+
+		double[] xlist = new double[points.length];
+		double[] ylist = new double[points.length];
+
+		// pour chaque point, dans le bon ordre:
+		// - on l'ajoute au polygone à dessiner
+		// - on le fitPoint
+		// - on l'ajoute au path lié au linkedObject
+		for (int i = 0; i < points.length; i++) {
+			Point2D.Double p = points[i];
+			double x = p.getX();
+			double y = p.getY();
+
+			xlist[i] = x;
+			ylist[i] = y;
+
+			fitPoint(x, y);
+
+			if (i == 0)
+				path.moveTo(x, y);
+			else
+				path.lineTo(x, y);
+		}
+
+		// ajouter le path et le linkedObject aux liens
+		drawnPolygons.put(path, linkedObject);
+
+		// dessiner + log
+		if (disableDrawing) {
+			config.tui.debug("NODRAW - processed polygon " + Arrays.toString(xlist) + ", " + Arrays.toString(ylist));
+		} else {
+			ctxt.setFill(color);
+			ctxt.fillPolygon(xlist, ylist, points.length);
+
+			config.tui.debug("Drew polygon " + Arrays.toString(xlist) + ", " + Arrays.toString(ylist) + ", " + color);
 		}
 
 		config.tui.popWhere();
