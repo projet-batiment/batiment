@@ -90,7 +90,7 @@ public class TUI {
 		}
 	}
 
-	private boolean logLevelGreaterOrEqual(LogLevel compareLevel) {
+	public boolean logLevelGreaterOrEqual(LogLevel compareLevel) {
 		return logLevelValue(compareLevel) <= logLevelValue(logLevel);
 	}
 

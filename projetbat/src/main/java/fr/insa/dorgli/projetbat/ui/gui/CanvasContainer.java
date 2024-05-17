@@ -3,6 +3,7 @@ package fr.insa.dorgli.projetbat.ui.gui;
 import fr.insa.dorgli.projetbat.core.Config;
 import fr.insa.dorgli.projetbat.objects.Drawable;
 import fr.insa.dorgli.projetbat.objects.Niveau;
+import fr.insa.dorgli.projetbat.ui.TUI;
 import java.awt.Rectangle;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -12,15 +13,12 @@ import javafx.scene.transform.Affine;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 public class CanvasContainer extends Pane {
 	private final Config config;
-	private final MainPane mainPane;
 
 	private final Canvas canvas;
 	private final GraphicsContext ctxt;
@@ -31,33 +29,37 @@ public class CanvasContainer extends Pane {
 	private Niveau currentNiveau;
 	private Rectangle totalDrawingRectangle;
 
-	private double zoomFactor;
-	private double moveFactor;
+	private final double zoomFactor;
+	private final double moveFactor;
 	private double scaledMoveFactor;
+	private boolean isFitted;
 
 	private boolean disableDrawing = true;
 
 	private final int pointRadius = 5;
 	private final Color pointColor = Color.RED;
 
-//	private double scaleLabelValue = 1;
-
 	public CanvasContainer(Config config, MainPane mainPane) {
 		this.config = config;
-		this.mainPane = mainPane;
 
 		canvas = new Canvas(this.getWidth(), this.getHeight());
 		canvas.widthProperty().bind(this.widthProperty());
 		canvas.widthProperty().addListener((o) -> {
 			config.tui.debug("canvasContainer: widht has changed, recsaling and redrawing");
-			rescaleBufferedScaledValues();
-			redraw();
+			scaleMoveFactor();
+			if (isFitted)
+				moveView(Direction.FIT);
+			else
+				redraw();
 		});
 		canvas.heightProperty().bind(this.heightProperty());
 		canvas.heightProperty().addListener((o) -> {
 			config.tui.debug("canvasContainer: height has changed, recsaling and redrawing");
-			rescaleBufferedScaledValues();
-			redraw();
+			scaleMoveFactor();
+			if (isFitted)
+				moveView(Direction.FIT);
+			else
+				redraw();
 		});
 
 		canvas.setOnMouseClicked(eh -> {
@@ -107,22 +109,6 @@ public class CanvasContainer extends Pane {
 		config.tui.debug("canvasContainer/scaleMoveFactor: new: " + moveFactor + " scaled -> " + scaledMoveFactor);
 	}
 
-	// Rescale after dimensions having resized
-	public void rescaleBufferedScaledValues() {
-		config.tui.debug("canvasContainer/rescale Etc: rescaling the buffered values and refiting the canvas within the totalDrawingRectangle");
-
-		// first off: fit the canvas inside the totalDrawingRectangle
-		fitPoint(0, 0); // origin doesn't move once it is initialized
-		fitPoint((int)canvas.getWidth(), (int)canvas.getHeight());
-
-		// then: rescale all the buffered values
-		scaleMoveFactor();
-
-		// finally: redraw
-		config.tui.debug("canvasContainer/rescale Etc: triggering a redraw");
-//		redraw();
-	}
-
 	// convertit les distances de la partie "structure" en distances sur le canvas
 	// actuellement (première norme) : (double) 1 mètre <=> (double) 100 pointsCanvas
 	public double dataToCanvasUnit(double dataUnit) {
@@ -147,7 +133,7 @@ public class CanvasContainer extends Pane {
 			ctxt.setTransform(affine);
 
 		// rescale every buffered scaling value
-		rescaleBufferedScaledValues();
+		scaleMoveFactor();
 		return affine;
 	}
 
@@ -172,6 +158,7 @@ public class CanvasContainer extends Pane {
 		config.tui.diveWhere("canvasContainer/moveView");
 
 		clear();
+		isFitted = false;
 
 		switch (direction) {
 			// TODO: mauvaise adaptation lors d'un changement de taille de fenêtre (bugs visuels lors de redraw, formes étirées
@@ -185,7 +172,6 @@ public class CanvasContainer extends Pane {
 			case Direction.FORWARDS -> zoomWithScale(zoomFactor);
 			case Direction.BACKWARDS -> zoomWithScale(1 / zoomFactor);
 
-			case Direction.CENTER -> config.tui.error("direction " + direction + " is not implemented yet!");
 			case Direction.RESET -> {
 				Affine affine = zoomWithScale(1 / ctxt.getTransform().getMxx(), false);
 				affine.setTx(0);
@@ -197,6 +183,8 @@ public class CanvasContainer extends Pane {
 				// on recalcule le totalDrawingRectangle
 				recalculateTotalDrawingRectangle();
 				config.tui.diveWhere("zoom FIT");
+
+				isFitted = true;
 
 				// on calcul le zoom à appliquer
 				// totalDrawingRectangle ne peut techniquement jamais avoir des dimensions nulles
@@ -513,11 +501,15 @@ public class CanvasContainer extends Pane {
 		boolean localDisableDrawing = disableDrawing;
 		disableDrawing = true; // do not draw anything !!
 
-		fitPoint(0, 0);
-		fitPoint((int)canvas.getWidth(), (int)canvas.getHeight());
-
 		config.tui.debug("recalculateTotalDrawingRectangle: triggering redraw in order to place all the canvas-objects in that holly rectangle again");
 		redraw();
+
+		if (totalDrawingRectangle.getWidth() == 0 && totalDrawingRectangle.getHeight() == 0) {
+			// the rectangle is empty => fit the canvas itself
+			config.tui.debug("recalculateTotalDrawingRectangle: fitting the canvas because the rectangle is empty");
+			fitPoint(0, 0);
+			fitPoint((int)canvas.getWidth(), (int)canvas.getHeight());
+		}
 
 		disableDrawing = localDisableDrawing; // restore the original disableDrawing flag
 
@@ -543,15 +535,13 @@ public class CanvasContainer extends Pane {
 		config.tui.begin();
 		config.tui.debug("graphicsContext.transform (affine): " + canvas.getGraphicsContext2D().getTransform().toString());
 
-		if (! disableDrawing) {
+		if (config.tui.logLevelGreaterOrEqual(TUI.LogLevel.DEBUG) && ! disableDrawing) {
 			Color c = Color.TEAL;
 			config.tui.debug("drawing canvas with a " + c + " background");
 			ctxt.setFill(Color.TEAL);
 			ctxt.fillRect(0, 0, getWidth(), getHeight());
 		}
 
-//		if (currentNiveau != null)
-//			currentNiveau.draw(config.tui, this);
 		drawingContext.redraw();
 
 		config.tui.ended();
@@ -561,11 +551,6 @@ public class CanvasContainer extends Pane {
 	public Niveau getCurrentNiveau() {
 		return currentNiveau;
 	}
-
-//	public void setCurrentNiveau(Niveau currentNiveau) {
-//		this.currentNiveau = currentNiveau;
-//		drawingContext.setFocusedObject(currentNiveau); // TODO!! TMP !!
-//	}
 
 	public DrawingContext getDrawingContext() {
 		return drawingContext;

@@ -62,9 +62,9 @@ public class OutilsTop extends MenuBar {
 	private final MenuItem buttonDebug;
 	private final MenuItem buttonTrace;
 	private final SeparatorMenuItem separatorOptions2;
-	private final MenuItem buttonFancy;
-	private final MenuItem buttonFancy2;
-	private final MenuItem buttonFancy3;
+	private final MenuItem buttonFancyTotalDrawingRectangleEdge;
+	private final MenuItem buttonFancyTotalDrawingRectangleFill;
+	private final MenuItem buttonFancyRedraw;
 
 	// aide
 	private final Menu menuAide;
@@ -280,52 +280,52 @@ public class OutilsTop extends MenuBar {
 
 		buttonQuiet = new MenuItem("Quiet");
 		buttonQuiet.setOnAction(event -> {
-			config.tui.setLogLevel(TUI.LogLevel.QUIET);
+			controller.setLogLevel(TUI.LogLevel.QUIET);
 			config.tui.log("clicked: quiet");
 		});
 
 		buttonNormal = new MenuItem("Normal");
 		buttonNormal.setOnAction(event -> {
-			config.tui.setLogLevel(TUI.LogLevel.NORMAL);
+			controller.setLogLevel(TUI.LogLevel.NORMAL);
 			config.tui.log("clicked: normal");
 		});
 
 		buttonLog = new MenuItem("Verbose");
 		buttonLog.setOnAction(event -> {
-			config.tui.setLogLevel(TUI.LogLevel.LOG);
+			controller.setLogLevel(TUI.LogLevel.LOG);
 			config.tui.log("clicked: log");
 		});
 
 		buttonDebug = new MenuItem("Debug");
 		buttonDebug.setOnAction(event -> {
-			config.tui.setLogLevel(TUI.LogLevel.DEBUG);
+			controller.setLogLevel(TUI.LogLevel.DEBUG);
 			config.tui.log("clicked: debug");
 		});
 
 		buttonTrace = new MenuItem("Trace");
 		buttonTrace.setOnAction(event -> {
-			config.tui.setLogLevel(TUI.LogLevel.TRACE);
+			controller.setLogLevel(TUI.LogLevel.TRACE);
 			config.tui.log("clicked: trace");
 		});
 
 		separatorOptions2 = new SeparatorMenuItem();
 
-		buttonFancy = new MenuItem("Fancy 1");
-		buttonFancy.setOnAction(event -> {
-			config.tui.log("clicked: fancy");
+		buttonFancyTotalDrawingRectangleEdge = new MenuItem("TotalDrawingRectangle edge");
+		buttonFancyTotalDrawingRectangleEdge.setOnAction(event -> {
+			config.tui.log("clicked: TotalDrawingRectangle edge");
 			config.getMainPane().getCanvasContainer().logTotalDrawingRectangle();
 		});
 
-		buttonFancy2 = new MenuItem("Fancy 2");
-		buttonFancy2.setOnAction(event -> {
-			config.tui.log("clicked: fancy2");
+		buttonFancyTotalDrawingRectangleFill = new MenuItem("TotalDrawingRectangle fill");
+		buttonFancyTotalDrawingRectangleFill.setOnAction(event -> {
+			config.tui.log("clicked: TotalDrawingRectangle fill");
 			config.getMainPane().getCanvasContainer().clearFancy();
 		});
 
-		buttonFancy3 = new MenuItem("Fancy 3");
-		buttonFancy3.setOnAction(event -> {
-			config.tui.log("clicked: fancy3");
-			config.getMainPane().getCanvasContainer().TMPDrawOriginPoint();
+		buttonFancyRedraw = new MenuItem("Redraw");
+		buttonFancyRedraw.setOnAction(event -> {
+			config.tui.log("clicked: redraw");
+			config.getMainPane().getCanvasContainer().redraw();
 		});
 
 		menuOptions = new Menu("Options", null,
@@ -337,9 +337,9 @@ public class OutilsTop extends MenuBar {
 		    buttonDebug,
 		    buttonTrace,
 		    separatorOptions2,
-		    buttonFancy,
-		    buttonFancy2,
-		    buttonFancy3
+		    buttonFancyTotalDrawingRectangleEdge,
+		    buttonFancyTotalDrawingRectangleFill,
+		    buttonFancyRedraw
 		);
 
 		///// Menu Aide

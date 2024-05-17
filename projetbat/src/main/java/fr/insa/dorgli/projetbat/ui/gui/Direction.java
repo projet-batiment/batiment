@@ -6,7 +6,6 @@ public enum Direction {
 	UP,
 	DOWN,
 
-	CENTER,
 	FIT,
 	RESET,
 

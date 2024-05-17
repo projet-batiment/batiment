@@ -4,6 +4,7 @@ import fr.insa.dorgli.projetbat.objects.Deserialize;
 import fr.insa.dorgli.projetbat.ui.gui.Direction;
 import fr.insa.dorgli.projetbat.objects.Drawable;
 import fr.insa.dorgli.projetbat.objects.Niveau;
+import fr.insa.dorgli.projetbat.ui.TUI;
 import java.io.File;
 import java.io.FileNotFoundException;
 import javafx.event.ActionEvent;
@@ -98,13 +99,18 @@ public class Controller {
 				Drawable closestObject = config.getMainPane().getCanvasContainer().getClosestLinked(event.getX(), event.getY());
 				if (closestObject == null) {
 					config.tui.log("controller: no object to be focused");
+					config.getMainPane().getCanvasContainer().getDrawingContext().setSelectedObject(null); // implies redraw
 				} else {
 					config.tui.log("controller: focusing object " + closestObject.getId() + " now: " + closestObject.toString());
-					config.getMainPane().getCanvasContainer().getDrawingContext().setSelectedObject(closestObject);
-					config.getMainPane().getCanvasContainer().redraw();
+					config.getMainPane().getCanvasContainer().getDrawingContext().setSelectedObject(closestObject); // implies redraw
 				}
 			}
 		}
+	}
+
+	public void setLogLevel(TUI.LogLevel newLevel) {
+		config.tui.setLogLevel(newLevel);
+		config.getMainPane().getCanvasContainer().redraw();
 	}
 
 	public void devisTotal() {

@@ -113,6 +113,7 @@ public class DrawingContext {
 
 	public void setSelectedObject(Drawable selectedObject) {
 		this.selectedObject = selectedObject;
+		cc.redraw();
 	}
 
 	public Config getConfig() {
