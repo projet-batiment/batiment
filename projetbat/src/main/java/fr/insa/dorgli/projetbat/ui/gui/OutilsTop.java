@@ -3,211 +3,377 @@ package fr.insa.dorgli.projetbat.ui.gui;
 import fr.insa.dorgli.projetbat.core.Config;
 import fr.insa.dorgli.projetbat.core.Controller;
 import fr.insa.dorgli.projetbat.ui.TUI;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;	
-import javafx.application.Application;
-import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
-import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
-public class OutilsTop extends HBox {
+public class OutilsTop extends MenuBar {
+	private final Config config;
+	private final Controller controller;
 
-MenuBar menuBar = new Menubar();
-Menu menu1= new Menu("fichier");
-Menu menu2= new Menu("affichage");
-Menu menu3= new Menu("créer");
-Menu menu4= new Menu("options");
-Menu menu5= new Menu("aide");
+	// fichier
+	private final Menu menuFichier;
+	private final MenuItem buttonOpenFile;
+	private final MenuItem buttonSaveFile;
+	private final MenuItem buttonSaveAs;
 
+	// créer
+	private final Menu menuCreer;
+	private final MenuItem buttonBatiment;
+	private final MenuItem buttonNiveau;
+	private final MenuItem buttonAppart;
+	private final MenuItem buttonPiece;
+	private final MenuItem buttonMur;
+	private final SeparatorMenuItem separatorCreer;
+	private final MenuItem buttonTypeBatiment;
+	private final MenuItem buttonTypeAppart;
+	private final MenuItem buttonTypeMur;
+	private final MenuItem buttonTypeRevetement;
+	private final MenuItem buttonTypeOuvertureNiveaux;
+	private final MenuItem buttonTypeOuvertureMur;
 
-MenuItem buttonOpenFile = new MenuItem("Ouvrir...");
-MenuItem buttonSaveFile = new MenuItem("Sauvegarder");
+	// devis
+	private final Menu menuDevis;
+	private final MenuItem buttonDevisTotal;
+	private final MenuItem buttonDevisFocused;
+	private final MenuItem buttonSaveDevisAs;
 
-MenuItem buttonZoomIn = new MenuItem("Zoom +");
-MenuItem buttonZoomOut = new MenuItem("Zoom -");
-MenuItem buttonZoomFit = new MenuItem("Zoom fit");
-MenuItem buttonMoveUp = new MenuItem("Move up");
-MenuItem buttonMoveDown = new MenuItem("Move down");
-MenuItem buttonMoveLeft = new MenuItem("Move left");
-MenuItem buttonMoveRight = new MenuItem("Move right");
-MenuItem buttonResetView = new MenuItem("Reset");
+	// afficher
+	private final Menu menuAfficher;
+	private final MenuItem buttonZoomIn;
+	private final MenuItem buttonZoomOut;
+	private final MenuItem buttonZoomFit;
+	private final SeparatorMenuItem separatorAfficher1;
+	private final MenuItem buttonMoveUp;
+	private final MenuItem buttonMoveDown;
+	private final MenuItem buttonMoveLeft;
+	private final MenuItem buttonMoveRight;
+	private final SeparatorMenuItem separatorAfficher2;
+	private final MenuItem buttonResetView;
 
-MenuItem buttonMur = new MenuItem("Mur");
-MenuItem buttonPiece = new MenuItem("Piece");
-MenuItem buttonNiveau = new MenuItem("Niveau");
-MenuItem buttonAppart = new MenuItem("Appart");
-MenuItem buttonPlafond = new MenuItem("Plafond");
-MenuItem buttonSol = new MenuItem("Sol");
-MenuItem buttonTypeMur = new MenuItem("Type Mur");
-MenuItem buttonTypeRevetement = new MenuItem("Type Revetement");
-MenuItem buttonTypeAppart = new MenuItem("Type Appart");
-MenuItem buttonTypeOuvertureNiveau = new MenuItem("Type Ouverture Niveau");
-MenuItem buttonTypeOuvertureMur = new MenuItem("Type Ouverture Mur");
+	// options
+	private final Menu menuOptions;
+	private final MenuItem buttonPreferences;
+	private final SeparatorMenuItem separatorOptions1;
+	private final MenuItem buttonQuiet;
+	private final MenuItem buttonNormal;
+	private final MenuItem buttonLog;
+	private final MenuItem buttonDebug;
+	private final MenuItem buttonTrace;
+	private final SeparatorMenuItem separatorOptions2;
+	private final MenuItem buttonFancy;
+	private final MenuItem buttonFancy2;
+	private final MenuItem buttonFancy3;
 
-MenuItem buttonDebug = new MenuItem("Debug");
-MenuItem buttonFancy = new MenuItem("Fancy");
-MenuItem buttonFancy2 = new MenuItem("Fancy 2");
-MenuItem buttonFancy3 = new MenuItem("Fancy 3");
+	// aide
+	private final Menu menuAide;
+	private final MenuItem buttonAide;
+	private final SeparatorMenuItem separatorAide;
+	private final MenuItem buttonApropos;
 
-MenuItem buttonAide = new MenuItem("Aide");
-SeparatorMenuItem separator = new SeparatorMenuItem();
-
-menu1.getItems().add(buttonOpenFile);
-menu1.getItems().add(separator);
-menu1.getItems().add(buttonSaveFile);
-menu1.getItems().add(separator);
-
-menu2.getItems().add(buttonZoomIn);
-menu2.getItems().add(separator);
-menu2.getItems().add(buttonZoomOut);
-menu2.getItems().add(separator);
-menu2.getItems().add(buttonZoomFit);
-menu2.getItems().add(separator);
-menu2.getItems().add(buttonMoveUp);
-menu2.getItems().add(separator);
-menu2.getItems().add(buttonMoveDown);
-menu2.getItems().add(separator);
-menu2.getItems().add(buttonMoveLeft);
-menu2.getItems().add(separator);
-menu2.getItems().add(buttonMoveRight);
-menu2.getItems().add(separator);
-menu2.getItems().add(buttonResetView);
-menu2.getItems().add(separator);
-
-menu3.getItems().add(buttonMur);
-menu3.getItems().add(separator);
-menu3.getItems().add(buttonPiece);
-menu3.getItems().add(separator);
-menu3.getItems().add(buttonNiveau);
-menu3.getItems().add(separator);
-menu3.getItems().add(buttonAppart);
-menu3.getItems().add(separator);
-menu3.getItems().add(buttonPlafond);
-menu3.getItems().add(separator);
-menu3.getItems().add(buttonSol);
-menu3.getItems().add(separator);
-menu3.getItems().add(buttonTypeMur);
-menu3.getItems().add(separator);
-menu3.getItems().add(buttonTypeRevetement);
-menu3.getItems().add(separator);
-menu3.getItems().add(buttonTypeAppart);
-menu3.getItems().add(separator);
-menu3.getItems().add(buttonTypeOuvertureMur);
-menu3.getItems().add(separator);
-menu3.getItems().add(buttonTypeOuvertureNiveau);
-menu3.getItems().add(separator);
-
-menu4.getItems().add(buttonDebug);
-menu4.getItems().add(separator);
-menu4.getItems().add(buttonFancy);
-menu4.getItems().add(separator);
-menu4.getItems().add(buttonFancy2);
-menu4.getItems().add(separator);
-menu4.getItems().add(buttonFancy3);
-menu4.getItems().add(separator);
-
-menu5.getItems().add(buttonAide);
-menu5.getItems().add(separator);
-
-buttonAide.setOnAction(e -> {
-        System.out.println("Veuillez poser votre question à l'un des créateurs de ce projet, il aura sûrment réponse à votre question");
-        });
-menuBar.getMenus().add(menu1);
-menuBar.getMenus().add(menu2);
-menuBar.getMenus().add(menu3);
-menuBar.getMenus().add(menu4);
-menuBar.getMenus().add(menu5);
-
-VBox vBox = new VBox(menuBar);
-        
-Scene scene = new Scene(vBox, 960, 600);
-primaryStage.setScene(scene);
-primaryStage.show();
-
-}  
-
-  public OutilsTop(Config config, Stage mainStage) {
+	public OutilsTop(Config config) {
 		this.config = config;
-		config.setMainPane(this);
-		controller = new Controller(config, this);
+		this.controller = config.getMainPane().getController();
 
-		buttonOpenFile = new Button("Ouvrir...");
+		///// Menu Fichier
+
+		buttonOpenFile = new MenuItem("Ouvrir...");
 		buttonOpenFile.setOnAction(event -> {
+			config.tui.log("clicked: open file");
 			controller.openFile(event);
 		});
 
-		buttonSaveFile = new Button("Enregistrer");
+		buttonSaveFile = new MenuItem("Enregistrer");
 		buttonSaveFile.setOnAction(event -> {
+			config.tui.log("clicked: save file");
 			controller.saveFile(event);
 		});
 
-		buttonDebug = new Button("Debug");
-		buttonDebug.setOnAction(event -> {
-			config.tui.setLogLevel(TUI.LogLevel.DEBUG);
-			config.tui.debug("debugging: on");
+		buttonSaveAs = new MenuItem("Enregistrer sous...");
+		buttonSaveAs.setOnAction(event -> {
+			config.tui.log("clicked: save as");
+			controller.saveFile(event);
 		});
 
-		buttonZoomIn = new Button("Zoom In");
+		menuFichier = new Menu("Fichier", null,
+		    buttonOpenFile,
+		    buttonSaveFile,
+		    buttonSaveAs
+		);
+
+		///// Menu Créer
+
+		buttonBatiment = new MenuItem("Batiment");
+		buttonBatiment.setOnAction(event -> {
+			config.tui.log("clicked: create: new Batiment");
+		});
+
+		buttonNiveau = new MenuItem("Niveau");
+		buttonNiveau.setOnAction(event -> {
+			config.tui.log("clicked: create: new Niveau");
+		});
+
+		buttonAppart = new MenuItem("Appart");
+		buttonAppart.setOnAction(event -> {
+			config.tui.log("clicked: create: new Appart");
+		});
+
+		buttonPiece = new MenuItem("Piece");
+		buttonPiece.setOnAction(event -> {
+			config.tui.log("clicked: create: new Piece");
+		});
+
+		buttonMur = new MenuItem("Mur");
+		buttonMur.setOnAction(event -> {
+			config.tui.log("clicked: create: new Mur");
+		});
+
+		separatorCreer = new SeparatorMenuItem();
+
+		buttonTypeBatiment = new MenuItem("Type Batiment");
+		buttonTypeBatiment.setOnAction(event -> {
+			config.tui.log("clicked: create: new TypeBatiment");
+		});
+
+		buttonTypeAppart = new MenuItem("Type Appart");
+		buttonTypeAppart.setOnAction(event -> {
+			config.tui.log("clicked: create: new TypeAppart");
+		});
+
+		buttonTypeMur = new MenuItem("Type Mur");
+		buttonTypeMur.setOnAction(event -> {
+			config.tui.log("clicked: create: new TypeMur");
+		});
+
+		buttonTypeRevetement = new MenuItem("Type Revetement");
+		buttonTypeRevetement.setOnAction(event -> {
+			config.tui.log("clicked: create: new TypeRevetement");
+		});
+
+		buttonTypeOuvertureNiveaux = new MenuItem("Type Ouverture Niveaux");
+		buttonTypeOuvertureNiveaux.setOnAction(event -> {
+			config.tui.log("clicked: create: new TypeOuvertureNiveaux");
+		});
+
+		buttonTypeOuvertureMur = new MenuItem("Type Ouverture Mur");
+		buttonTypeOuvertureMur.setOnAction(event -> {
+			config.tui.log("clicked: create: new TypeOuvertureMur");
+		});
+
+		menuCreer = new Menu("Créer", null,
+		    buttonBatiment,
+		    buttonNiveau,
+		    buttonAppart,
+		    buttonPiece,
+		    buttonMur,
+		    separatorCreer,
+		    buttonTypeBatiment,
+		    buttonTypeAppart,
+		    buttonTypeMur,
+		    buttonTypeRevetement,
+		    buttonTypeOuvertureNiveaux,
+		    buttonTypeOuvertureMur
+		);
+
+		///// Menu Devis
+
+		buttonDevisTotal = new MenuItem("Calculer le devis total");
+		buttonDevisTotal.setOnAction(event -> {
+			config.tui.log("clicked: devis total");
+			controller.devisTotal();
+		});
+
+		buttonDevisFocused = new MenuItem("Calculer le devis de l'objet actuel");
+		buttonDevisFocused.setOnAction(event -> {
+			config.tui.log("clicked: devis focused");
+			controller.devisFocused();
+		});
+
+		buttonSaveDevisAs = new MenuItem("Enregistrer le devis actuel sous...");
+		buttonSaveDevisAs.setOnAction(event -> {
+			config.tui.log("clicked: save devis as");
+			controller.saveDevis();
+		});
+
+		menuDevis = new Menu("Devis", null,
+		    buttonDevisTotal,
+		    buttonDevisFocused,
+		    buttonSaveDevisAs
+		);
+
+		///// Menu Afficher
+
+		buttonZoomIn = new MenuItem("Zoom +");
 		buttonZoomIn.setOnAction(event -> {
 			config.tui.log("clicked: zoom in");
 			controller.moveCanvasView(Direction.FORWARDS);
 		});
-		buttonZoomOut = new Button("Zoom Out");
+
+		buttonZoomOut = new MenuItem("Zoom -");
 		buttonZoomOut.setOnAction(event -> {
 			config.tui.log("clicked: zoom out");
 			controller.moveCanvasView(Direction.BACKWARDS);
 		});
-		buttonZoomFit = new Button("Zoom Fit");
+
+		buttonZoomFit = new MenuItem("Zoom fit");
 		buttonZoomFit.setOnAction(event -> {
 			config.tui.log("clicked: zoom fit");
 			controller.moveCanvasView(Direction.FIT);
 		});
-		buttonResetView = new Button("Reset View");
-		buttonResetView.setOnAction(event -> {
-			config.tui.log("clicked: reset view");
-			controller.moveCanvasView(Direction.RESET);
-		});
-		buttonMoveLeft = new Button("Move Left");
-		buttonMoveLeft.setOnAction(event -> {
-			config.tui.log("clicked: move left");
-			controller.moveCanvasView(Direction.LEFT);
-		});
-		buttonMoveRight = new Button("Move Right");
-		buttonMoveRight.setOnAction(event -> {
-			config.tui.log("clicked: move right");
-			controller.moveCanvasView(Direction.RIGHT);
-		});
-		buttonMoveUp = new Button("Move Up");
+
+		separatorAfficher1 = new SeparatorMenuItem();
+
+		buttonMoveUp = new MenuItem("Move up");
 		buttonMoveUp.setOnAction(event -> {
 			config.tui.log("clicked: move up");
 			controller.moveCanvasView(Direction.UP);
 		});
-		buttonMoveDown = new Button("Move Down");
+
+		buttonMoveDown = new MenuItem("Move down");
 		buttonMoveDown.setOnAction(event -> {
 			config.tui.log("clicked: move down");
 			controller.moveCanvasView(Direction.DOWN);
 		});
 
-		buttonFancy = new Button("Fancy !");
+		buttonMoveLeft = new MenuItem("Move left");
+		buttonMoveLeft.setOnAction(event -> {
+			config.tui.log("clicked: move left");
+			controller.moveCanvasView(Direction.LEFT);
+		});
+
+		buttonMoveRight = new MenuItem("Move right");
+		buttonMoveRight.setOnAction(event -> {
+			config.tui.log("clicked: move right");
+			controller.moveCanvasView(Direction.RIGHT);
+		});
+
+		separatorAfficher2 = new SeparatorMenuItem();
+
+		buttonResetView = new MenuItem("Reset view");
+		buttonResetView.setOnAction(event -> {
+			config.tui.log("clicked: reset view");
+			controller.moveCanvasView(Direction.RESET);
+		});
+
+		menuAfficher = new Menu("Affichage", null,
+		    buttonZoomIn,
+		    buttonZoomOut,
+		    buttonZoomFit,
+		    separatorAfficher1,
+		    buttonMoveUp,
+		    buttonMoveDown,
+		    buttonMoveLeft,
+		    buttonMoveRight,
+		    separatorAfficher2,
+		    buttonResetView
+		);
+
+		///// Menu Options
+
+		buttonPreferences = new MenuItem("Préférences");
+		buttonPreferences.setOnAction(event -> {
+			config.tui.log("clicked: preferences");
+		});
+
+		separatorOptions1 = new SeparatorMenuItem();
+
+		buttonQuiet = new MenuItem("Quiet");
+		buttonQuiet.setOnAction(event -> {
+			config.tui.setLogLevel(TUI.LogLevel.QUIET);
+			config.tui.log("clicked: quiet");
+		});
+
+		buttonNormal = new MenuItem("Normal");
+		buttonNormal.setOnAction(event -> {
+			config.tui.setLogLevel(TUI.LogLevel.NORMAL);
+			config.tui.log("clicked: normal");
+		});
+
+		buttonLog = new MenuItem("Verbose");
+		buttonLog.setOnAction(event -> {
+			config.tui.setLogLevel(TUI.LogLevel.LOG);
+			config.tui.log("clicked: log");
+		});
+
+		buttonDebug = new MenuItem("Debug");
+		buttonDebug.setOnAction(event -> {
+			config.tui.setLogLevel(TUI.LogLevel.DEBUG);
+			config.tui.log("clicked: debug");
+		});
+
+		buttonTrace = new MenuItem("Trace");
+		buttonTrace.setOnAction(event -> {
+			config.tui.setLogLevel(TUI.LogLevel.TRACE);
+			config.tui.log("clicked: trace");
+		});
+
+		separatorOptions2 = new SeparatorMenuItem();
+
+		buttonFancy = new MenuItem("Fancy 1");
 		buttonFancy.setOnAction(event -> {
 			config.tui.log("clicked: fancy");
-			canvasContainer.logTotalDrawingRectangle();
+			config.getMainPane().getCanvasContainer().logTotalDrawingRectangle();
 		});
-		buttonFancy2 = new Button("Fancy2 !");
+
+		buttonFancy2 = new MenuItem("Fancy 2");
 		buttonFancy2.setOnAction(event -> {
 			config.tui.log("clicked: fancy2");
-			canvasContainer.clearFancy();
+			config.getMainPane().getCanvasContainer().clearFancy();
 		});
-		buttonFancy3 = new Button("Fancy3 !");
+
+		buttonFancy3 = new MenuItem("Fancy 3");
 		buttonFancy3.setOnAction(event -> {
 			config.tui.log("clicked: fancy3");
-			canvasContainer.TMPDrawOriginPoint();
+			config.getMainPane().getCanvasContainer().TMPDrawOriginPoint();
 		});
+
+		menuOptions = new Menu("Options", null,
+		    buttonPreferences,
+		    separatorOptions1,
+		    buttonQuiet,
+		    buttonNormal,
+		    buttonLog,
+		    buttonDebug,
+		    buttonTrace,
+		    separatorOptions2,
+		    buttonFancy,
+		    buttonFancy2,
+		    buttonFancy3
+		);
+
+		///// Menu Aide
+
+		buttonAide = new MenuItem("Afficher l'aide");
+		buttonAide.setOnAction(e -> {
+			config.tui.log("clicked: help");
+			controller.menuClickedHelp();
+		});
+
+		buttonApropos = new MenuItem("À propos de " + Config.applicationName);
+		buttonApropos.setOnAction(e -> {
+			config.tui.log("clicked: apropos");
+		});
+
+		separatorAide = new SeparatorMenuItem();
+
+		menuAide = new Menu("Aide", null,
+		    buttonAide,
+		    separatorAide,
+		    buttonApropos
+		);
+
+		///// MenuBar
+
+		super.getMenus().addAll(
+		    menuFichier,
+		    menuCreer,
+		    menuDevis,
+		    menuAfficher,
+		    menuOptions,
+		    menuAide
+		);
+	}
 
 //		refreshButton = new Button("actualiser");
 //    		refreshButton.setOnAction(evt -> {
@@ -244,41 +410,5 @@ primaryStage.show();
 //			System.out.println(" revetement plafond: " + get.pieces.plafond.revetements.typeRevetement + "|prix revetement : " + get.pieces.plafond.revetements.typeRevetement.prixUnitaire);
 //			System.out.println(" revetement sol: " + get.pieces.sol.revetements.typeRevetement + "|prix revetement : " + get.pieces.sol.revetements.typeRevetement.prixUnitaire);
 //		});
-
-		labelCanvasScale = new Label("x1");
-
-		super.setRight(new VBox(
-		    buttonOpenFile,
-		    buttonSaveFile,
-		    buttonDebug,
-
-		    buttonZoomIn,
-		    buttonZoomOut,
-		    buttonZoomFit,
-		    buttonResetView,
-
-		    buttonMoveLeft,
-		    buttonMoveRight,
-		    buttonMoveUp,
-		    buttonMoveDown,
-
-		    buttonFancy,
-		    buttonFancy2,
-		    buttonFancy3,
-
-//		    refreshButton,
-//		    detailButton,
-//		    totalButton,
-//		    totrevButton,
-//		    totouvButton,
-
-		    labelCanvasScale
-		));
-
-		this.canvasContainer = new CanvasContainer(config, this);
-		super.setCenter(this.canvasContainer);
-
-		super.minWidthProperty().bind(mainStage.minWidthProperty());
-		super.minHeightProperty().bind(mainStage.minHeightProperty());
-	}
+}
 

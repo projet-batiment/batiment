@@ -4,6 +4,7 @@ package fr.insa.dorgli.projetbat.core;
 
 import fr.insa.dorgli.projetbat.ui.TUI;
 import fr.insa.dorgli.projetbat.ui.gui.MainPane;
+import javafx.stage.Stage;
 
 // Cette classe contient donc tous les paramètres de l'application (verbeux, etc)
 // Ainsi qu'un annuaire de tous les objets créés lors de l'exécution (dans des hashmap)
@@ -13,15 +14,43 @@ public class Config {
 		public static double MIN_HEIGHT = 400;
 	}
 
-	public final int version = 4;
-	public final int minimumSavefileVersion = 4;
-	public final int maximumSavefileVersion = 4;
+	// propriétés statiques
+	public static String applicationName = "ProjetBat";
 
+	public static int version = 4;
+	public static int minimumSavefileVersion = 4;
+	public static int maximumSavefileVersion = 4;
+
+	// propriétés constantes
 	// TODO: classe UI (abstraite??) pour gérer les logs tui/gui
-	public final TUI tui = new TUI(TUI.LogLevel.DEBUG);
-	public final State state = new State();
-	public Project project = new Project();
-	private MainPane mainPane = null;
+	private Stage mainStage;
+	public final TUI tui;
+	public final Controller controller;
+	private MainPane mainPane;
+
+	// propriétés variables
+	public Project project;
+
+	public Config() {
+		this(TUI.LogLevel.NORMAL, new Project());
+	}
+
+	public Config(TUI.LogLevel loglevel, Project project) {
+		this.tui = new TUI(loglevel);
+ 		this.controller = new Controller(this);
+		this.project = project;
+	}
+
+	public Stage getMainStage() {
+		return mainStage;
+	}
+
+	public void setMainStage(Stage mainStage) {
+		if (mainStage != null)
+			this.mainStage = mainStage;
+		else
+			tui.error("config: tried to reassign the mainStage ! " + this.mainStage + " !-> " + mainStage);
+	}
 
 	public MainPane getMainPane() {
 		return mainPane;

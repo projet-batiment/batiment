@@ -16,16 +16,17 @@ public class Projetbat extends Application {
 //	}
 
 	@Override
-	public void start(Stage stage) {
+	public void start(Stage mainStage) {
 		config.tui.diveWhere("Run");
+		config.setMainStage(mainStage);
 
-		stage.setMinWidth(Config.GuiConfig.MIN_WIDTH);
-		stage.setMinHeight(Config.GuiConfig.MIN_HEIGHT);
+		mainStage.setMinWidth(Config.GuiConfig.MIN_WIDTH);
+		mainStage.setMinHeight(Config.GuiConfig.MIN_HEIGHT);
 
-		Scene scene = new Scene(new MainPane(config, stage));
-		stage.setScene(scene);
-		stage.setTitle("Nouveau");
-		stage.show();
+		Scene scene = new Scene(new MainPane(config, mainStage));
+		mainStage.setScene(scene);
+		mainStage.setTitle("Nouveau");
+		mainStage.show();
 
 //		if (config.savefilePath != null) {
 //			try {

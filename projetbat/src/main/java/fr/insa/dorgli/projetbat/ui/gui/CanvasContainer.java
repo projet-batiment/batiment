@@ -131,9 +131,6 @@ public class CanvasContainer extends Pane {
 		double ourCenterY = scaleToView(super.getHeight() / 2 - affine.getTy());
 		affine.appendScale(scale, scale, ourCenterX, ourCenterY);
 
-		// apply the changes + GUI log
-		mainPane.setLabelCanvasScaleText(affine.getMxx());
-
 		// only apply if ask to do so
 		if (setIt)
 			ctxt.setTransform(affine);

@@ -2,7 +2,6 @@ package fr.insa.dorgli.projetbat.core;
 
 import fr.insa.dorgli.projetbat.objects.Deserialize;
 import fr.insa.dorgli.projetbat.ui.gui.Direction;
-import fr.insa.dorgli.projetbat.ui.gui.MainPane;
 import fr.insa.dorgli.projetbat.objects.Drawable;
 import fr.insa.dorgli.projetbat.objects.Niveau;
 import java.io.File;
@@ -14,12 +13,13 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 
 public class Controller {
-	private final MainPane mainPane;
 	private final Config config;
 
-	public Controller(Config config, MainPane mainPane) {
+	public final State state;
+
+	public Controller(Config config) {
 		this.config = config;
-		this.mainPane = mainPane;
+		this.state = new State();
 	}
 
 	public void openFile(ActionEvent event) {
@@ -28,7 +28,7 @@ public class Controller {
 		config.tui.debug("reading file after ActionEvent: " + event.toString());
 
 		FileChooser fileChooser = new FileChooser();
-		File f = fileChooser.showOpenDialog(this.mainPane.getMainStage());
+		File f = fileChooser.showOpenDialog(config.getMainStage());
 		if (f != null) {
 			try {
 				Deserialize deserializer = new Deserialize(config);
@@ -42,10 +42,10 @@ public class Controller {
 					if (! config.project.objects.niveaux.isEmpty()) {
 						// toute l'efficacité de java en une ligne pour avoir le premier niveau :
 						Niveau currentNiveau = config.project.objects.niveaux.values().iterator().next();
-						mainPane.getCanvasContainer().getDrawingContext().setRootObject(currentNiveau);
+						config.getMainPane().getCanvasContainer().getDrawingContext().setRootObject(currentNiveau);
 						config.tui.debug("set the currentNiveau to " + currentNiveau.toString());
 					}
-					mainPane.getCanvasContainer().moveView(Direction.FIT); // implies a redraw
+					config.getMainPane().getCanvasContainer().moveView(Direction.FIT); // implies a redraw
 				}
 
 			} catch (FileNotFoundException ex) {
@@ -84,12 +84,12 @@ public class Controller {
 	}
 
 	public void moveCanvasView(Direction direction) {
-		mainPane.getCanvasContainer().moveView(direction);
+		config.getMainPane().getCanvasContainer().moveView(direction);
 	}
 
 	public void canvasClicked(MouseEvent event) {
 		config.tui.log("controller: a click occurred in the canvasContainer at (" + event.getX() + ":" + event.getY() + ")");
-		switch (config.state.actionState) {
+		switch (state.actionState) {
 			case State.ActionState.CREATE_MUR, State.ActionState.CREATE_PIECE
 			    -> config.tui.log("controller: TODO: clicked canvas in CREATE_VISUALLY mode");
 
@@ -111,6 +111,28 @@ public class Controller {
 		alert.setTitle("Devis total");
 		alert.setHeaderText("Devis total - " + config.project.projectName);
 		alert.setContentText("Prix calculé : " + "TODO!!!");
+
+		alert.showAndWait();
+	}
+
+	public void devisFocused() {
+		Alert alert = new Alert(AlertType.ERROR);
+		alert.setTitle("Devis de l'objet actuel");
+		alert.setHeaderText("Devis de l'objet actuel - " + config.project.projectName);
+		alert.setContentText("Prix calculé : " + "TODO!!!");
+
+		alert.showAndWait();
+	}
+
+	public void saveDevis() {
+		config.tui.error("controller: TODO: saveDevis");
+	}
+
+	public void menuClickedHelp() {
+		Alert alert = new Alert(AlertType.INFORMATION);
+		alert.setTitle("Aide");
+		alert.setHeaderText(Config.applicationName);
+		alert.setContentText("Veuillez poser votre question à l'un des créateurs de ce projet, il aura sûrement réponse à votre question !");
 
 		alert.showAndWait();
 	}
