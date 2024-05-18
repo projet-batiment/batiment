@@ -2,8 +2,7 @@ package fr.insa.dorgli.projetbat.core;
 
 import fr.insa.dorgli.projetbat.objects.Deserialize;
 import fr.insa.dorgli.projetbat.ui.gui.Direction;
-import fr.insa.dorgli.projetbat.objects.Drawable;
-import fr.insa.dorgli.projetbat.objects.Niveau;
+import fr.insa.dorgli.projetbat.objects.*;
 import fr.insa.dorgli.projetbat.ui.TUI;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -89,10 +88,33 @@ public class Controller {
 		config.getMainWindow().getCanvasContainer().moveView(direction);
 	}
 
+	Point firstPoint; // TODO!!! TMP!!!
 	public void canvasClicked(MouseEvent event) {
 		config.tui.log("controller: a click occurred in the canvasContainer at (" + event.getX() + ":" + event.getY() + ")");
 		switch (state.actionState) {
 			case State.ActionState.CREATE_MUR_1 -> {
+				Drawable closestObject = config.getMainWindow().getCanvasContainer().getClosestLinked(event.getX(), event.getY());
+//				Point firstPoint;
+				if (closestObject instanceof Point closestPoint) {
+					firstPoint = closestPoint;
+				} else {
+					firstPoint = config.project.objects.createPoint(event.getX(), event.getY(), (Niveau) state.viewRootElement);
+				}
+				config.tui.debug("controller: click/createMur/1: firstPoint = " + firstPoint);
+				state.actionState = State.ActionState.CREATE_MUR_2;
+			}
+			case State.ActionState.CREATE_MUR_2 -> {
+				Drawable closestObject = config.getMainWindow().getCanvasContainer().getClosestLinked(event.getX(), event.getY());
+				Point endPoint;
+				if (closestObject instanceof Point closestPoint) {
+					endPoint = closestPoint;
+				} else {
+					endPoint = config.project.objects.createPoint(event.getX(), event.getY(), (Niveau) state.viewRootElement);
+				}
+				config.tui.debug("controller: click/createMur/2: endPoint = " + endPoint);
+				Mur mur = config.project.objects.createMur(firstPoint, endPoint, ((Niveau)state.viewRootElement).getHauteur(), null);
+				config.getMainWindow().getSidePaneContainer().useObject(mur);
+				state.actionState = State.ActionState.DEFAULT;
 			}
 
 			default -> {
@@ -143,5 +165,9 @@ public class Controller {
 		alert.setContentText("Veuillez poser votre question à l'un des créateurs de ce projet, il aura sûrement réponse à votre question !");
 
 		alert.showAndWait();
+	}
+
+	public void createMur() {
+		state.actionState = State.ActionState.CREATE_MUR_1;
 	}
 }

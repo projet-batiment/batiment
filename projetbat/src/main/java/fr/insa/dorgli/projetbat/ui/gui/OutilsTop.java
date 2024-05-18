@@ -2,7 +2,11 @@ package fr.insa.dorgli.projetbat.ui.gui;
 
 import fr.insa.dorgli.projetbat.core.Config;
 import fr.insa.dorgli.projetbat.core.Controller;
+import fr.insa.dorgli.projetbat.objects.Batiment;
+import fr.insa.dorgli.projetbat.objects.Mur;
+import fr.insa.dorgli.projetbat.objects.Niveau;
 import fr.insa.dorgli.projetbat.ui.TUI;
+import javafx.event.ActionEvent;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -20,19 +24,26 @@ public class OutilsTop extends MenuBar {
 	private final MenuItem buttonSaveAs;
 
 	// créer
-	private final Menu menuCreer;
-	private final MenuItem buttonBatiment;
-	private final MenuItem buttonNiveau;
-	private final MenuItem buttonAppart;
-	private final MenuItem buttonPiece;
-	private final MenuItem buttonMur;
+	private final Menu menuEditer;
+
+	private final MenuItem buttonBatimentEdit;
+	private final MenuItem buttonNiveauEdit;
+	private final MenuItem buttonProjectEdit;
+	private final MenuItem buttonDeleteFocused;
+	private final MenuItem buttonFocusedToRoot;
+
+	private final MenuItem buttonBatimentCreer;
+	private final MenuItem buttonNiveauCreer;
+	private final MenuItem buttonAppartCreer;
+	private final MenuItem buttonPieceCreer;
+	private final MenuItem buttonMurCreer;
 	private final SeparatorMenuItem separatorCreer;
-	private final MenuItem buttonTypeBatiment;
-	private final MenuItem buttonTypeAppart;
-	private final MenuItem buttonTypeMur;
-	private final MenuItem buttonTypeRevetement;
-	private final MenuItem buttonTypeOuvertureNiveaux;
-	private final MenuItem buttonTypeOuvertureMur;
+	private final MenuItem buttonTypeBatimentCreer;
+	private final MenuItem buttonTypeAppartCreer;
+	private final MenuItem buttonTypeMurCreer;
+	private final MenuItem buttonTypeRevetementCreer;
+	private final MenuItem buttonTypeOuvertureNiveauxCreer;
+	private final MenuItem buttonTypeOuvertureMurCreer;
 
 	// devis
 	private final Menu menuDevis;
@@ -99,83 +110,154 @@ public class OutilsTop extends MenuBar {
 		});
 
 		menuFichier = new Menu("Fichier", null,
-		    buttonOpenFile,
-		    buttonSaveFile,
-		    buttonSaveAs
+			buttonOpenFile,
+			buttonSaveFile,
+			buttonSaveAs
 		);
 
-		///// Menu Créer
+		///// Menu Éditer
 
-		buttonBatiment = new MenuItem("Batiment");
-		buttonBatiment.setOnAction(event -> {
+		buttonBatimentCreer = new MenuItem("Batiment");
+		buttonBatimentCreer.setOnAction(event -> {
 			config.tui.log("clicked: create: new Batiment");
 		});
 
-		buttonNiveau = new MenuItem("Niveau");
-		buttonNiveau.setOnAction(event -> {
+		buttonNiveauCreer = new MenuItem("Niveau");
+		buttonNiveauCreer.setOnAction(event -> {
 			config.tui.log("clicked: create: new Niveau");
 		});
 
-		buttonAppart = new MenuItem("Appart");
-		buttonAppart.setOnAction(event -> {
+		buttonAppartCreer = new MenuItem("Appart");
+		buttonAppartCreer.setOnAction(event -> {
 			config.tui.log("clicked: create: new Appart");
 		});
 
-		buttonPiece = new MenuItem("Piece");
-		buttonPiece.setOnAction(event -> {
+		buttonPieceCreer = new MenuItem("Piece");
+		buttonPieceCreer.setOnAction(event -> {
 			config.tui.log("clicked: create: new Piece");
 		});
 
-		buttonMur = new MenuItem("Mur");
-		buttonMur.setOnAction(event -> {
+		buttonMurCreer = new MenuItem("Mur");
+		buttonMurCreer.setOnAction(event -> {
 			config.tui.log("clicked: create: new Mur");
+			config.controller.createMur();
 		});
 
 		separatorCreer = new SeparatorMenuItem();
 
-		buttonTypeBatiment = new MenuItem("Type Batiment");
-		buttonTypeBatiment.setOnAction(event -> {
+		buttonTypeBatimentCreer = new MenuItem("Type Batiment");
+		buttonTypeBatimentCreer.setOnAction(event -> {
 			config.tui.log("clicked: create: new TypeBatiment");
 		});
 
-		buttonTypeAppart = new MenuItem("Type Appart");
-		buttonTypeAppart.setOnAction(event -> {
+		buttonTypeAppartCreer = new MenuItem("Type Appart");
+		buttonTypeAppartCreer.setOnAction(event -> {
 			config.tui.log("clicked: create: new TypeAppart");
 		});
 
-		buttonTypeMur = new MenuItem("Type Mur");
-		buttonTypeMur.setOnAction(event -> {
+		buttonTypeMurCreer = new MenuItem("Type Mur");
+		buttonTypeMurCreer.setOnAction(event -> {
 			config.tui.log("clicked: create: new TypeMur");
 		});
 
-		buttonTypeRevetement = new MenuItem("Type Revetement");
-		buttonTypeRevetement.setOnAction(event -> {
+		buttonTypeRevetementCreer = new MenuItem("Type Revetement");
+		buttonTypeRevetementCreer.setOnAction(event -> {
 			config.tui.log("clicked: create: new TypeRevetement");
 		});
 
-		buttonTypeOuvertureNiveaux = new MenuItem("Type Ouverture Niveaux");
-		buttonTypeOuvertureNiveaux.setOnAction(event -> {
+		buttonTypeOuvertureNiveauxCreer = new MenuItem("Type Ouverture Niveaux");
+		buttonTypeOuvertureNiveauxCreer.setOnAction(event -> {
 			config.tui.log("clicked: create: new TypeOuvertureNiveaux");
 		});
 
-		buttonTypeOuvertureMur = new MenuItem("Type Ouverture Mur");
-		buttonTypeOuvertureMur.setOnAction(event -> {
+		buttonTypeOuvertureMurCreer = new MenuItem("Type Ouverture Mur");
+		buttonTypeOuvertureMurCreer.setOnAction(event -> {
 			config.tui.log("clicked: create: new TypeOuvertureMur");
 		});
 
-		menuCreer = new Menu("Créer", null,
-		    buttonBatiment,
-		    buttonNiveau,
-		    buttonAppart,
-		    buttonPiece,
-		    buttonMur,
-		    separatorCreer,
-		    buttonTypeBatiment,
-		    buttonTypeAppart,
-		    buttonTypeMur,
-		    buttonTypeRevetement,
-		    buttonTypeOuvertureNiveaux,
-		    buttonTypeOuvertureMur
+		buttonProjectEdit = new MenuItem("Projet");
+		buttonProjectEdit.setOnAction(event -> {
+			config.tui.log("clicked: edit current project");
+		});
+
+		buttonBatimentEdit = new MenuItem("Batiment actuel");
+		buttonBatimentEdit.setOnAction(event -> {
+			config.tui.log("clicked: edit current Batiment");
+		});
+
+		buttonNiveauEdit = new MenuItem("Niveau actuel");
+		buttonNiveauEdit.setOnAction(event -> {
+			config.tui.log("clicked: edit current Niveau");
+		});
+
+		buttonDeleteFocused = new MenuItem("Supprimer la sélection");
+		buttonDeleteFocused.setOnAction(event -> {
+			config.tui.log("clicked: delete focused");
+		});
+
+		buttonFocusedToRoot = new MenuItem("L'objet sélectionné");
+		buttonFocusedToRoot.setOnAction(event -> {
+			config.tui.log("clicked: focused to root");
+		});
+
+		////////////// TODO!!!!!!!!!!!!!!!! ne marche pas: initialisé à vide
+		////////////// TODO!!!!!!!!!!!!!!!! utiliser rootElement dans State
+		Menu menuNiveaux = new Menu("Niveau...");
+		for (Niveau niveau: config.project.objects.niveaux.values()) {
+			String niveauNom = niveau.getNom();
+			if (niveauNom.length() > 18) {
+				niveauNom = niveauNom.substring(0, 15) + "...";
+			}
+			MenuItem niveauButton = new MenuItem(niveauNom);
+			niveauButton.setOnAction((ActionEvent eh) -> {
+				config.tui.debug("clicked: focus niveau " + niveau);
+				config.getMainWindow().getCanvasContainer().getDrawingContext().setRootObject(niveau);
+			});
+			menuNiveaux.getItems().add(niveauButton);
+		}
+
+		////////////// TODO!!!!!!!!!!!!!!!! ne marche pas: initialisé à vide
+		////////////// TODO!!!!!!!!!!!!!!!! utiliser rootElement dans State
+		Menu menuBatiments = new Menu("Batiment...");
+		for (Batiment batiment: config.project.objects.batiments.values()) {
+			String batimentNom = batiment.getNom();
+			if (batimentNom.length() > 18) {
+				batimentNom = batimentNom.substring(0, 15) + "...";
+			}
+			MenuItem batimentButton = new MenuItem(batimentNom);
+			batimentButton.setOnAction((ActionEvent eh) -> {
+				config.tui.debug("clicked: focus batiment " + batiment);
+				config.getMainWindow().getCanvasContainer().getDrawingContext().setRootObject(batiment);
+			});
+			menuBatiments.getItems().add(batimentButton);
+		}
+
+		menuEditer = new Menu("Actions", null,
+			new Menu("Créer...", null,
+				buttonBatimentCreer,
+				buttonNiveauCreer,
+				buttonAppartCreer,
+				buttonPieceCreer,
+				buttonMurCreer,
+				separatorCreer,
+				buttonTypeBatimentCreer,
+				buttonTypeAppartCreer,
+				buttonTypeMurCreer,
+				buttonTypeRevetementCreer,
+				buttonTypeOuvertureNiveauxCreer,
+				buttonTypeOuvertureMurCreer
+			),
+			new Menu("Éditer...", null,
+				buttonProjectEdit,
+				buttonBatimentEdit,
+				buttonNiveauEdit
+			),
+			new Menu("Afficher...", null,
+				buttonFocusedToRoot,
+				menuNiveaux,
+				menuBatiments
+			),
+			buttonDeleteFocused
 		);
 
 		///// Menu Devis
@@ -199,9 +281,9 @@ public class OutilsTop extends MenuBar {
 		});
 
 		menuDevis = new Menu("Devis", null,
-		    buttonDevisTotal,
-		    buttonDevisFocused,
-		    buttonSaveDevisAs
+			buttonDevisTotal,
+			buttonDevisFocused,
+			buttonSaveDevisAs
 		);
 
 		///// Menu Afficher
@@ -266,17 +348,17 @@ public class OutilsTop extends MenuBar {
 		});
 
 		menuAfficher = new Menu("Affichage", null,
-		    buttonZoomIn,
-		    buttonZoomOut,
-		    buttonZoomFit,
-		    buttonZoomZero,
-		    separatorAfficher1,
-		    buttonMoveUp,
-		    buttonMoveDown,
-		    buttonMoveLeft,
-		    buttonMoveRight,
-		    separatorAfficher2,
-		    buttonResetView
+			buttonZoomIn,
+			buttonZoomOut,
+			buttonZoomFit,
+			buttonZoomZero,
+			separatorAfficher1,
+			buttonMoveUp,
+			buttonMoveDown,
+			buttonMoveLeft,
+			buttonMoveRight,
+			separatorAfficher2,
+			buttonResetView
 		);
 
 		///// Menu Options
@@ -339,17 +421,22 @@ public class OutilsTop extends MenuBar {
 		});
 
 		menuOptions = new Menu("Options", null,
-		    buttonPreferences,
-		    separatorOptions1,
-		    buttonQuiet,
-		    buttonNormal,
-		    buttonLog,
-		    buttonDebug,
-		    buttonTrace,
-		    separatorOptions2,
-		    buttonFancyTotalDrawingRectangleEdge,
-		    buttonFancyTotalDrawingRectangleFill,
-		    buttonFancyRedraw
+			buttonPreferences,
+			separatorOptions1,
+
+			new Menu("LogLevel", null,
+				buttonQuiet,
+				buttonNormal,
+				buttonLog,
+				buttonDebug,
+				buttonTrace
+			),
+
+			new Menu("Fancy", null,
+				buttonFancyTotalDrawingRectangleEdge,
+				buttonFancyTotalDrawingRectangleFill,
+				buttonFancyRedraw
+			)
 		);
 
 		///// Menu Aide
@@ -368,20 +455,19 @@ public class OutilsTop extends MenuBar {
 		separatorAide = new SeparatorMenuItem();
 
 		menuAide = new Menu("Aide", null,
-		    buttonAide,
-		    separatorAide,
-		    buttonApropos
+			buttonAide,
+			separatorAide,
+			buttonApropos
 		);
 
 		///// MenuBar
 
-		super.getMenus().addAll(
-		    menuFichier,
-		    menuCreer,
-		    menuDevis,
-		    menuAfficher,
-		    menuOptions,
-		    menuAide
+		super.getMenus().addAll(menuFichier,
+			menuEditer,
+			menuDevis,
+			menuAfficher,
+			menuOptions,
+			menuAide
 		);
 	}
 
@@ -390,17 +476,17 @@ public class OutilsTop extends MenuBar {
 	}
 
 //		refreshButton = new Button("actualiser");
-//    		refreshButton.setOnAction(evt -> {
+//			refreshButton.setOnAction(evt -> {
 //			System.out.println(Piece.prix);
 //		});
 //
 //		totalButton = new Button ("Devis total");
-//    		totalButton.setOnAction(evt -> {
+//			totalButton.setOnAction(evt -> {
 //			controller.devisTotal();
 //		});
 //
-//    		detailButton = new Button ("DetailPieces");
-//    		detailButton.setOnAction(evt -> {
+//			detailButton = new Button ("DetailPieces");
+//			detailButton.setOnAction(evt -> {
 //			message.setText("DETAIL PIECES");
 //			System.out.println(get.appart.TypeAppart + " n°: " + get.appart.nom);
 //			System.out.println("piece : " + get.pieces.nom + "| prix : " + get.pieces.prix );
@@ -409,15 +495,15 @@ public class OutilsTop extends MenuBar {
 //			System.out.println("prix sol : " + get.pieces.sol.prixPlafondSol );
 //		});
 //
-//    		totouvButton = new Button ("TotalOuverture");
-//    		totouvButton.setOnAction(evt -> {
+//			totouvButton = new Button ("TotalOuverture");
+//			totouvButton.setOnAction(evt -> {
 //			message.setText("TOTAL OUVERTURE");
 //			System.out.println("ouvertures du plafond : " + get.pieces.plafond.ouvertures.TypeOuvertureNiveau + "| prix ouverture : " + get.pieces.plafond.ouvertures.TypeOuvertureNiveau.prixOuverture);
 //			System.out.println("ouvertures du plafond : " + get.pieces.sol.ouvertures.TypeOuvertureNiveau + "| prix ouverture : " + get.pieces.sol.ouvertures.TypeOuvertureNiveau.prixOuverture);
 //			System.out.println("ouvertures des murs : " + get.pieces.murs.ouvertures.TypeOuvertureMur + "| prix ouverture : " + get.pieces.murs.ouvertures.TypeOuvertureMur.prixUnitaire);
 //		});
 //
-//    		totrevButton = new Button ("TotalRevetement");
+//			totrevButton = new Button ("TotalRevetement");
 //   		totrevButton.setOnAction(evt -> {
 //			message.setText(" TOTAL REVETEMENT");
 //			System.out.println(" revetement mur: " + get.pieces.murs.revetements1.typeRevetement + "| prix revetement : " + get.pieces.murs.revetement1.typeRevetement.prixUnitaire);

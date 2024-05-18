@@ -2,7 +2,6 @@ package fr.insa.dorgli.projetbat.objects;
 
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 import fr.insa.dorgli.projetbat.ui.gui.DrawingContext;
-import java.awt.geom.Line2D;
 import java.util.ArrayList;
 import javafx.scene.paint.Color;
 
@@ -15,6 +14,9 @@ public class Mur extends DrawableLine implements HasPrice {
 	private ArrayList<RevetementMur> revetements2;
 	private ArrayList<OuvertureMur> ouvertures;
 
+	public Mur(int id, Point pointDebut, Point pointFin, double hauteur, TypeMur typeMur) throws IllegalArgumentException {
+		this(id, pointDebut, pointFin, hauteur, typeMur, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+	}
 	public Mur(int id, Point pointDebut, Point pointFin, double hauteur, TypeMur typeMur, ArrayList<RevetementMur> revetements1,
 			ArrayList<RevetementMur> revetements2, ArrayList<OuvertureMur> ouvertures) throws IllegalArgumentException {
 		super(id);

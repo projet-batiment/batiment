@@ -133,6 +133,13 @@ public class Objects {
 		return appart;
 	}
 
+	public Mur createMur(Point pointDebut, Point pointFin, double hauteur, TypeMur typeMur) {
+		int id = generateId();
+		Mur mur = new Mur(id, pointDebut, pointFin, hauteur, typeMur);
+		murs.put(id, mur);
+		return mur;
+	}
+
 	public Mur createMur(Point pointDebut, Point pointFin, double hauteur, TypeMur typeMur,
 			ArrayList<RevetementMur> revetements1, ArrayList<RevetementMur> revetements2,
 			ArrayList<OuvertureMur> ouvertures) {
