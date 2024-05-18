@@ -3,7 +3,7 @@ package fr.insa.dorgli.projetbat.core;
 // Config contient une description exhaustive et détaillée de l'état actuel du programme
 
 import fr.insa.dorgli.projetbat.ui.TUI;
-import fr.insa.dorgli.projetbat.ui.gui.MainPane;
+import fr.insa.dorgli.projetbat.ui.gui.MainWindow;
 import javafx.stage.Stage;
 
 // Cette classe contient donc tous les paramètres de l'application (verbeux, etc)
@@ -26,7 +26,7 @@ public class Config {
 	private Stage mainStage;
 	public final TUI tui;
 	public final Controller controller;
-	private MainPane mainPane;
+	private MainWindow mainWindow;
 
 	// propriétés variables
 	public Project project;
@@ -52,14 +52,14 @@ public class Config {
 			tui.error("config: tried to reassign the mainStage ! " + this.mainStage + " !-> " + mainStage);
 	}
 
-	public MainPane getMainPane() {
-		return mainPane;
+	public MainWindow getMainWindow() {
+		return mainWindow;
 	}
 
-	public void setMainPane(MainPane mainPane) {
-		if (mainPane != null)
-			this.mainPane = mainPane;
+	public void setMainWindow(MainWindow mainWindow) {
+		if (mainWindow != null)
+			this.mainWindow = mainWindow;
 		else
-			tui.error("config: tried to reassign the mainPane ! " + this.mainPane + " !-> " + mainPane);
+			tui.error("config: tried to reassign the mainWindow ! " + this.mainWindow + " !-> " + mainWindow);
 	}
 }

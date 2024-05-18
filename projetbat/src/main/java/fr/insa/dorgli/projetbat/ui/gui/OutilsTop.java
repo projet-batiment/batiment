@@ -74,7 +74,7 @@ public class OutilsTop extends MenuBar {
 
 	public OutilsTop(Config config) {
 		this.config = config;
-		this.controller = config.getMainPane().getController();
+		this.controller = config.getMainWindow().getController();
 
 		///// Menu Fichier
 
@@ -313,19 +313,19 @@ public class OutilsTop extends MenuBar {
 		buttonFancyTotalDrawingRectangleEdge = new MenuItem("TotalDrawingRectangle edge");
 		buttonFancyTotalDrawingRectangleEdge.setOnAction(event -> {
 			config.tui.log("clicked: TotalDrawingRectangle edge");
-			config.getMainPane().getCanvasContainer().logTotalDrawingRectangle();
+			config.getMainWindow().getCanvasContainer().logTotalDrawingRectangle();
 		});
 
 		buttonFancyTotalDrawingRectangleFill = new MenuItem("TotalDrawingRectangle fill");
 		buttonFancyTotalDrawingRectangleFill.setOnAction(event -> {
 			config.tui.log("clicked: TotalDrawingRectangle fill");
-			config.getMainPane().getCanvasContainer().clearFancy();
+			config.getMainWindow().getCanvasContainer().clearFancy();
 		});
 
 		buttonFancyRedraw = new MenuItem("Redraw");
 		buttonFancyRedraw.setOnAction(event -> {
 			config.tui.log("clicked: redraw");
-			config.getMainPane().getCanvasContainer().redraw();
+			config.getMainWindow().getCanvasContainer().redraw();
 		});
 
 		menuOptions = new Menu("Options", null,

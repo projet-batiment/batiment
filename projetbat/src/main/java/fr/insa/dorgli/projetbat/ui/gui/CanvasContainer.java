@@ -39,7 +39,7 @@ public class CanvasContainer extends Pane {
 	private final int pointRadius = 5;
 	private final Color pointColor = Color.RED;
 
-	public CanvasContainer(Config config, MainPane mainPane) {
+	public CanvasContainer(Config config, MainWindow mainWindow) {
 		this.config = config;
 
 		canvas = new Canvas(this.getWidth(), this.getHeight());
@@ -63,10 +63,10 @@ public class CanvasContainer extends Pane {
 		});
 
 		canvas.setOnMouseClicked(eh -> {
-			mainPane.getController().canvasClicked(eh);
+			mainWindow.getController().canvasClicked(eh);
 		});
 		canvas.setOnMouseMoved(eh -> {
-			//mainPane.getController().canvasClicked(eh);
+			//mainWindow.getController().canvasClicked(eh);
 		});
 
  		ctxt = canvas.getGraphicsContext2D();

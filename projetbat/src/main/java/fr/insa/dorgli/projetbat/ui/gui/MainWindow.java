@@ -2,20 +2,20 @@ package fr.insa.dorgli.projetbat.ui.gui;
 
 import fr.insa.dorgli.projetbat.core.Config;
 import fr.insa.dorgli.projetbat.core.Controller;
+import fr.insa.dorgli.projetbat.ui.gui.sidepane.SidePaneContainer;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
-public class MainPane extends BorderPane {
+public class MainWindow extends BorderPane {
 	private final Controller controller;
 
 	private final CanvasContainer canvasContainer;
 
 	private final OutilsTop outilsTop;
-//	private final OutilsRight outilsRight;
-//	private final OutilsDown outilsDown;
+	private final SidePaneContainer sidePaneContainer;
 
-	public MainPane(Config config, Stage mainStage) {
-		config.setMainPane(this);
+	public MainWindow(Config config, Stage mainStage) {
+		config.setMainWindow(this);
 		this.controller = config.controller;
 
 		super.minWidthProperty().bind(mainStage.minWidthProperty());
@@ -27,12 +27,8 @@ public class MainPane extends BorderPane {
 		this.outilsTop = new OutilsTop(config);
 		this.setTop(outilsTop);
 
-//		this.outilsRight = new OutilsRight(config);
-//		this.outilsDown = new OutilsDown(config);
-
-//		this.setTop(this.outilsLeft);
-//		this.setTop(this.outilsRight);
-//		this.setTop(this.outilsDown);
+		this.sidePaneContainer = new SidePaneContainer(config);
+		this.setRight(sidePaneContainer);
 	}
 
 	public Controller getController() {
@@ -41,5 +37,9 @@ public class MainPane extends BorderPane {
 
 	public CanvasContainer getCanvasContainer() {
 		return canvasContainer;
+	}
+
+	public SidePaneContainer getSidePaneContainer() {
+		return sidePaneContainer;
 	}
 }

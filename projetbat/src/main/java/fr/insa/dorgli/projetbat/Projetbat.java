@@ -1,7 +1,7 @@
 package fr.insa.dorgli.projetbat;
 
 import fr.insa.dorgli.projetbat.core.Config;
-import fr.insa.dorgli.projetbat.ui.gui.MainPane;
+import fr.insa.dorgli.projetbat.ui.gui.MainWindow;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
@@ -23,7 +23,7 @@ public class Projetbat extends Application {
 		mainStage.setMinWidth(Config.GuiConfig.MIN_WIDTH);
 		mainStage.setMinHeight(Config.GuiConfig.MIN_HEIGHT);
 
-		Scene scene = new Scene(new MainPane(config, mainStage));
+		Scene scene = new Scene(new MainWindow(config, mainStage));
 		mainStage.setScene(scene);
 		mainStage.setTitle("Nouveau");
 		mainStage.show();

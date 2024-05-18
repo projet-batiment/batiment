@@ -43,10 +43,10 @@ public class Controller {
 					if (! config.project.objects.niveaux.isEmpty()) {
 						// toute l'efficacité de java en une ligne pour avoir le premier niveau :
 						Niveau currentNiveau = config.project.objects.niveaux.values().iterator().next();
-						config.getMainPane().getCanvasContainer().getDrawingContext().setRootObject(currentNiveau);
+						config.getMainWindow().getCanvasContainer().getDrawingContext().setRootObject(currentNiveau);
 						config.tui.debug("set the currentNiveau to " + currentNiveau.toString());
 					}
-					config.getMainPane().getCanvasContainer().moveView(Direction.FIT); // implies a redraw
+					config.getMainWindow().getCanvasContainer().moveView(Direction.FIT); // implies a redraw
 				}
 
 			} catch (FileNotFoundException ex) {
@@ -86,7 +86,7 @@ public class Controller {
 	}
 
 	public void moveCanvasView(Direction direction) {
-		config.getMainPane().getCanvasContainer().moveView(direction);
+		config.getMainWindow().getCanvasContainer().moveView(direction);
 	}
 
 	public void canvasClicked(MouseEvent event) {
@@ -96,21 +96,22 @@ public class Controller {
 			    -> config.tui.log("controller: TODO: clicked canvas in CREATE_VISUALLY mode");
 
 			default -> {
-				Drawable closestObject = config.getMainPane().getCanvasContainer().getClosestLinked(event.getX(), event.getY());
+				Drawable closestObject = config.getMainWindow().getCanvasContainer().getClosestLinked(event.getX(), event.getY());
 				if (closestObject == null) {
 					config.tui.log("controller: no object to be focused");
-					config.getMainPane().getCanvasContainer().getDrawingContext().setSelectedObject(null); // implies redraw
+					config.getMainWindow().getCanvasContainer().getDrawingContext().setSelectedObject(null); // implies redraw
 				} else {
 					config.tui.log("controller: focusing object " + closestObject.getId() + " now: " + closestObject.toString());
-					config.getMainPane().getCanvasContainer().getDrawingContext().setSelectedObject(closestObject); // implies redraw
+					config.getMainWindow().getCanvasContainer().getDrawingContext().setSelectedObject(closestObject); // implies redraw
 				}
+				config.getMainWindow().getSidePaneContainer().useObject(closestObject);
 			}
 		}
 	}
 
 	public void setLogLevel(TUI.LogLevel newLevel) {
 		config.tui.setLogLevel(newLevel);
-		config.getMainPane().getCanvasContainer().redraw();
+		config.getMainWindow().getCanvasContainer().redraw();
 	}
 
 	public void devisTotal() {
