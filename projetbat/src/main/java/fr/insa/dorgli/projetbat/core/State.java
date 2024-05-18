@@ -7,12 +7,9 @@ public class State {
 	public enum ActionState {
 		DEFAULT, // none
 
-		SELECT,
-		EDIT_OBJECT,
-
 		// below: create visually, with the mouse on the canvas
-		CREATE_MUR,
-		CREATE_PIECE,
+		CREATE_MUR_1,
+		CREATE_MUR_2,
 	}
 
 	public BObject viewRootElement;

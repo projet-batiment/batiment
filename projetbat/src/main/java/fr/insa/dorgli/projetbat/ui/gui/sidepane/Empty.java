@@ -2,7 +2,7 @@ package fr.insa.dorgli.projetbat.ui.gui.sidepane;
 
 import javafx.scene.control.Label;
 
-public class Empty extends SidePane {
+public class Empty extends ParentSidePane {
 	public Empty() {
 		final String text = "Aucun objet n'est sélectionné";
 

@@ -2,7 +2,10 @@ package fr.insa.dorgli.projetbat.ui.gui;
 
 import fr.insa.dorgli.projetbat.core.Config;
 import fr.insa.dorgli.projetbat.objects.Drawable;
+import fr.insa.dorgli.projetbat.objects.DrawableLine;
+import fr.insa.dorgli.projetbat.objects.DrawablePoint;
 import fr.insa.dorgli.projetbat.objects.Niveau;
+import fr.insa.dorgli.projetbat.objects.Point;
 import fr.insa.dorgli.projetbat.ui.TUI;
 import java.awt.Rectangle;
 import javafx.scene.canvas.Canvas;
@@ -16,6 +19,7 @@ import java.awt.geom.Point2D;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Arrays;
+import java.util.HashSet;
 
 public class CanvasContainer extends Pane {
 	private final Config config;
@@ -23,8 +27,9 @@ public class CanvasContainer extends Pane {
 	private final Canvas canvas;
 	private final GraphicsContext ctxt;
 	private final DrawingContext drawingContext;
-	private final HashMap<Line2D.Double, Drawable> drawnLines;
+	private final HashSet<DrawableLine> drawnLines;
 	private final HashMap<Path2D.Double, Drawable> drawnPolygons;
+	private final HashSet<DrawablePoint> drawnPoints;
 
 	private Niveau currentNiveau;
 	private Rectangle totalDrawingRectangle;
@@ -37,7 +42,6 @@ public class CanvasContainer extends Pane {
 	private boolean disableDrawing = true;
 
 	private final int pointRadius = 5;
-	private final Color pointColor = Color.RED;
 
 	public CanvasContainer(Config config, MainWindow mainWindow) {
 		this.config = config;
@@ -71,8 +75,10 @@ public class CanvasContainer extends Pane {
 
  		ctxt = canvas.getGraphicsContext2D();
 		totalDrawingRectangle = new Rectangle( (int)Math.ceil(super.getWidth()), (int)Math.ceil(super.getHeight()) );
-		drawnLines = new HashMap<>();
+
+		drawnLines = new HashSet<>();
 		drawnPolygons = new HashMap<>();
+		drawnPoints = new HashSet<>();
 
 		drawingContext = new DrawingContext(config, this);
 		drawingContext.setSelectedObject(currentNiveau); // TODO!! TMP !!
@@ -135,23 +141,6 @@ public class CanvasContainer extends Pane {
 		// rescale every buffered scaling value
 		scaleMoveFactor();
 		return affine;
-	}
-
-	public void TMPDrawOriginPoint() {
-		Affine affine = ctxt.getTransform();
-		double ourCenterX = scaleToView(super.getWidth() / 2 - affine.getTx());
-		double ourCenterY = scaleToView(super.getHeight() / 2 - affine.getTy());
-		drawPoint(ourCenterX, ourCenterY, false);
-
-		double ourMaxX = scaleToView(super.getWidth() - affine.getTx());
-		double ourMaxY = scaleToView(super.getHeight() - affine.getTy());
-		double ourMinX = scaleToView(- affine.getTx());
-		double ourMinY = scaleToView(- affine.getTy());
-
-		drawPoint(ourMinX, ourMinY, false);
-		drawPoint(ourMaxX, ourMinY, false);
-		drawPoint(ourMaxX, ourMaxY, false);
-		drawPoint(ourMinX, ourMaxY, false);
 	}
 
 	public void moveView(Direction direction) {
@@ -241,6 +230,9 @@ public class CanvasContainer extends Pane {
 		config.tui.popWhere();
 	}
 
+	private void fitPoint(Point2D.Double point) {
+		fitPoint(point.getX(), point.getY(), pointRadius);
+	}
 	private void fitPoint(double x, double y) {
 		fitPoint(x, y, pointRadius);
 	}
@@ -264,42 +256,95 @@ public class CanvasContainer extends Pane {
 		return getClosestLinked(clickX, clickY, scaleToView(15));
 	}
 
-	public Drawable getClosestLinked(double clickX, double clickY, double lineMaxDistance) {
+	public Drawable getClosestLinked(double clickX, double clickY, double closestMaxDistance) {
 		config.tui.log("canvasContainer/getClosestLinked: x: " + scaleToView(clickX) + ", " + scaleToView(ctxt.getTransform().getTx()));
 		config.tui.log("canvasContainer/getClosestLinked: y: " + scaleToView(clickY) + ", " + scaleToView(ctxt.getTransform().getTy()));
 		clickX = scaleToView(clickX - ctxt.getTransform().getTx());
 		clickY = scaleToView(clickY - ctxt.getTransform().getTy());
 		config.tui.log("canvasContainer/getClosestLinked: scaled and translated coordinates: (" + clickX + ":" + clickY + ")");
 
-		if (drawnLines.isEmpty()) {
-			config.tui.log("canvasContainer/getClosestLinked: drawnLines is empty!");
-			return null;
-		}
-
-		double closestDistance = lineMaxDistance;
-		Drawable closestObject = null;
+		double closestDistance = closestMaxDistance;
 		double currentDistance;
 
-		// on cherche parmi les lignes
-		for (HashMap.Entry<Line2D.Double, Drawable> currentEntry: drawnLines.entrySet()) {
-			currentDistance = currentEntry.getKey().ptSegDist(clickX, clickY);
-			config.tui.debug("canvasContainer/getClosestLinked: closest " + (closestObject == null ? null : closestObject.getId()) + "(" + closestDistance + ")");
+//		Point2D.Double closestPoint = null;
+//
+//		// on cherche parmi les points
+//		for (Point2D.Double currentPoint: drawnPoints) {
+//			currentDistance = currentPoint.distance(clickX, clickY);
+//			config.tui.debug("canvasContainer/getClosestLinked: closest " + (closestPoint == null ? null : closestPoint) + "(" + closestDistance + ")");
+//			config.tui.debug("canvasContainer/getClosestLinked: current "
+//			    + currentPoint + "(" + currentDistance + ")" 
+//			    + " at (" + currentPoint.getX() + ":" + currentPoint.getY()+ ")");
+//
+//			if (currentDistance < closestDistance) {
+//				config.tui.debug("canvasContainer/getClosestLinked: this is closer");
+//				closestDistance = currentDistance;
+//				closestPoint = currentPoint;
+//			}
+//		}
+
+//		// si on a un points assez proche, on cherche le BObject qui le représente le renvoie
+//		if (closestPoint != null) {
+//			// TODO: rootObject != Niveau
+//			Point template = new Point(-1, scaleFromView(closestPoint.getX()), scaleFromView(closestPoint.getY()), (Niveau) drawingContext.getRootObject());
+//			for (Point bp: config.project.objects.points.values()) {
+//				if (
+//					template.getX() - bp.getX() <= pointRadius * 2
+//					&& template.getY() - bp.getY() <= pointRadius * 2
+//					&& template.getNiveau() == bp.getNiveau()
+//				) {
+//					config.tui.debug("canvasContainer/getClosestLinked: found a close point: " + bp.toStringShort());
+//					return (Drawable) bp;
+//				}
+//			}
+//			config.tui.error("canvasContainer/getClosestLinked: could not find equivalent point: " + template);
+//		}
+
+		// on cherche parmi les points
+		DrawablePoint closestPointObject = null;
+
+		for (DrawablePoint currentPointObject: drawnPoints) {
+			currentDistance = currentPointObject.getPointCanvas().distance(clickX, clickY);
+			config.tui.debug("canvasContainer/getClosestLinked: closest " + (closestPointObject == null ? null : closestPointObject.getId()) + "(" + closestDistance + ")");
 			config.tui.debug("canvasContainer/getClosestLinked: current "
-			    + currentEntry.getValue().getId() + "(" + currentDistance + ")" 
-			    + " at (" + currentEntry.getKey().getX1() + ":" + currentEntry.getKey().getY1()
-			    + ") -- (" + currentEntry.getKey().getX1() + ":" + currentEntry.getKey().getY1() + ")");
+			    + currentPointObject.getId() + "(" + currentDistance + ")" 
+			    + " at (" + currentPointObject.getPointCanvas().getX() + ":" + currentPointObject.getPointCanvas().getY() + ")");
 
 			if (currentDistance < closestDistance) {
 				config.tui.debug("canvasContainer/getClosestLinked: this is closer");
 				closestDistance = currentDistance;
-				closestObject = currentEntry.getValue();
+				closestPointObject = currentPointObject;
+			}
+		}
+
+		// si on a un point assez proche, on le renvoie
+		if (closestPointObject != null) {
+			config.tui.debug("canvasContainer/getClosestLinked: found a close point: " + closestPointObject.toStringShort());
+			return (Drawable) closestPointObject;
+		}
+
+		// on cherche parmi les lignes
+		DrawableLine closestLineObject = null;
+
+		for (DrawableLine currentLineObject: drawnLines) {
+			currentDistance = currentLineObject.getLineCanvas().ptSegDist(clickX, clickY);
+			config.tui.debug("canvasContainer/getClosestLinked: closest " + (closestLineObject == null ? null : closestLineObject.getId()) + "(" + closestDistance + ")");
+			config.tui.debug("canvasContainer/getClosestLinked: current "
+			    + currentLineObject.getId() + "(" + currentDistance + ")" 
+			    + " at (" + currentLineObject.getLineCanvas().getX1() + ":" + currentLineObject.getLineCanvas().getY1()
+			    + ") -- (" + currentLineObject.getLineCanvas().getX1() + ":" + currentLineObject.getLineCanvas().getY1() + ")");
+
+			if (currentDistance < closestDistance) {
+				config.tui.debug("canvasContainer/getClosestLinked: this is closer");
+				closestDistance = currentDistance;
+				closestLineObject = currentLineObject;
 			}
 		}
 
 		// si on a une ligne assez proche, on la renvoie
-		if (closestObject != null) {
-			config.tui.debug("canvasContainer/getClosestLinked: found a close line: " + closestObject.toStringShort());
-			return closestObject;
+		if (closestLineObject != null) {
+			config.tui.debug("canvasContainer/getClosestLinked: found a close line: " + closestLineObject.toStringShort());
+			return (Drawable) closestLineObject;
 		}
 
 		// on cherche parmi les path2d (polygones)
@@ -316,36 +361,48 @@ public class CanvasContainer extends Pane {
 	//////////////// draw stuff
 
 	/**
-	 * @param x x coordinate in DATA standards, the coordinates are then converted into CANVAS standards
-	 * @param y x coordinate in DATA standards, the coordinates are then converted into CANVAS standards
+	 * @param linkedObject
+	 * @param point point with coordinates in DATA standards, the coordinates are then converted into CANVAS standards
+	 * @param color
+	 * @param important
 	 */
-	public void drawPoint(double x, double y) {
-		drawPoint(x, y, true);
-	}
+//	public void drawPoint(DrawablePoint linkedObject, Point2D.Double point, double radius, Color color, boolean important) {
+//		drawPoint(linkedObject, point, true, color, important);
+//	}
 	/**
-	 * @param x x coordinate
-	 * @param y x coordinate
-	 * @param convert wether to convert coordinates from DATA into CANVAS or not
+	 * @param linkedObject
+	 * @param point
+//	 * @param convert wether to convert coordinates from DATA into CANVAS or not
+	 * @param color
+	 * @param important
 	 */
-	public void drawPoint(double x, double y, boolean convert) {
+	public void drawPoint(DrawablePoint linkedObject, Point2D.Double point, double radius, Color color, boolean important) {
+//	public void drawPoint(DrawablePoint linkedObject, Point2D.Double point, boolean convert, Color color, boolean important) {
 		config.tui.diveWhere("canvasContainer/drawPoint");
 
-		if (convert) {
-			// convertir les distances (cf normalisations)
-			x = dataToCanvasUnit(x);
-			y = dataToCanvasUnit(y);
-		}
+		Point2D.Double pointCanvas;
+//		if (convert) {
+//			// convertir les coordonnées DATA -> CANVAS
+			pointCanvas = new Point2D.Double(dataToCanvasUnit(point.getX()), dataToCanvasUnit(point.getY()));
+//		} else {
+//			// copier le point puisqu'il est déjà en coordonnées CANVAS
+//			pointCanvas = point;
+//		}
 
-		// ajouter le nouveau point au totalDrawingRectangle
-		fitPoint(x, y);
+		// ajouter le nouveau point au totalDrawingRectangle et à drawnPoints
+		fitPoint(pointCanvas);
+		linkedObject.setPointCanvas(pointCanvas);
+		drawnPoints.add(linkedObject);
 
 		// dessiner + log
 		if (disableDrawing) {
-			config.tui.debug("NODRAW - processed point with center (" + x + ":" + y + "), radius " + pointRadius);
+			config.tui.debug("NODRAW - processed point with center (" + pointCanvas.getX() + ":" + pointCanvas.getY() + "), radius " + radius);
+		} else if (important || config.tui.logLevelGreaterOrEqual(TUI.LogLevel.DEBUG)) {
+			ctxt.setFill(color);
+			ctxt.fillOval(pointCanvas.getX() - radius, pointCanvas.getY() - radius, radius*2, radius*2);
+			config.tui.debug("Drew point with center (" + pointCanvas.getX() + ":" + pointCanvas.getY() + "), radius " + radius);
 		} else {
-			ctxt.setFill(pointColor);
-			ctxt.fillOval(x - pointRadius, y - pointRadius, pointRadius*2, pointRadius*2);
-			config.tui.debug("Drew point with center (" + x + ":" + y + "), radius " + pointRadius);
+			config.tui.debug("NOT IMPORTANT - processed point with center (" + pointCanvas.getX() + ":" + pointCanvas.getY() + "), radius " + radius);
 		}
 
 		config.tui.popWhere();
@@ -353,22 +410,21 @@ public class CanvasContainer extends Pane {
 
 	/**
 	 * @param linkedObject Drawable object to be attached to this line
-	 * @param x1 first x coordinate in DATA standards
-	 * @param y1 first y coordinate in DATA standards
-	 * @param x2 second x coordinate in DATA standards
-	 * @param y2 second y coordinate in DATA standards
+	 * @param lineData the line to draw with coordinates in DATA standards
 	 * @param width width of the line in DATA standards
 	 * @param color
 	 */
-	public void drawLine(Drawable linkedObject, double x1, double y1, double x2, double y2, double width, Color color) {
+	public void drawLine(DrawableLine linkedObject, Line2D.Double lineData, double width, Color color) {
 		config.tui.diveWhere("canvasContainer/drawLine");
 
-		x1 = dataToCanvasUnit(x1);
-		y1 = dataToCanvasUnit(y1);
-		x2 = dataToCanvasUnit(x2);
-		y2 = dataToCanvasUnit(y2);
+		double x1 = dataToCanvasUnit(lineData.getX1());
+		double y1 = dataToCanvasUnit(lineData.getY1());
+		double x2 = dataToCanvasUnit(lineData.getX2());
+		double y2 = dataToCanvasUnit(lineData.getY2());
 
-		drawnLines.put(new Line2D.Double(x1, y1, x2, y2), linkedObject);
+		Line2D.Double lineCanvas = new Line2D.Double(x1, y1, x2, y2); // in CANVAS standards
+		linkedObject.setLineCanvas(lineCanvas);
+		drawnLines.add(linkedObject);
 
 		// ajouter les extrémités de la nouvelle ligne au totalDrawingRectangle
 		// on prend ici width pour rayon, mais en soit tant que fit prend plus large, ç'est nickel

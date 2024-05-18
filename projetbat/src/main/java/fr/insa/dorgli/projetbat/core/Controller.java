@@ -92,8 +92,8 @@ public class Controller {
 	public void canvasClicked(MouseEvent event) {
 		config.tui.log("controller: a click occurred in the canvasContainer at (" + event.getX() + ":" + event.getY() + ")");
 		switch (state.actionState) {
-			case State.ActionState.CREATE_MUR, State.ActionState.CREATE_PIECE
-			    -> config.tui.log("controller: TODO: clicked canvas in CREATE_VISUALLY mode");
+			case State.ActionState.CREATE_MUR_1 -> {
+			}
 
 			default -> {
 				Drawable closestObject = config.getMainWindow().getCanvasContainer().getClosestLinked(event.getX(), event.getY());

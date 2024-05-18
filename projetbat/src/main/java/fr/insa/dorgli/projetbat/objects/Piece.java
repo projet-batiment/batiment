@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 import javafx.scene.paint.Color;
 
-public class Piece extends HasPrice {
+public class Piece extends Drawable implements HasPrice {
 	private String nom;
 	private String description;
 	private ArrayList<Point> points;

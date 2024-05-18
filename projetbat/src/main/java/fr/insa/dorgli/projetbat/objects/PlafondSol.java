@@ -4,7 +4,7 @@ import fr.insa.dorgli.projetbat.ui.gui.DrawingContext;
 import java.util.ArrayList;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 
-public class PlafondSol extends HasPrice {
+public class PlafondSol extends Drawable implements HasPrice {
 	private ArrayList<RevetementPlafondSol> revetements;
 	private ArrayList<OuvertureNiveaux> ouvertures;
 

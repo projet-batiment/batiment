@@ -3,7 +3,7 @@ package fr.insa.dorgli.projetbat.objects;
 import fr.insa.dorgli.projetbat.ui.gui.DrawingContext;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 
-public class RevetementPlafondSol extends HasPrice {
+public class RevetementPlafondSol extends Drawable implements HasPrice {
 	TypeRevetement typeRevetement;
 	// TODO: à terme, définir les revetements plafond et sol avec des points verticaux sur les murs ?
 	double pos1L;

@@ -11,7 +11,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
-public class MurPane extends SidePane {
+public class MurPane extends ParentSidePane {
 	Mur mur;
 
 	private class Editor extends VBox {

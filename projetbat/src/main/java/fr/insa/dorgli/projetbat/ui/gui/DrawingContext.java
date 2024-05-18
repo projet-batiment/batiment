@@ -3,11 +3,12 @@ package fr.insa.dorgli.projetbat.ui.gui;
 import fr.insa.dorgli.projetbat.core.Config;
 import fr.insa.dorgli.projetbat.ui.TUI;
 import fr.insa.dorgli.projetbat.objects.Drawable;
+import fr.insa.dorgli.projetbat.objects.DrawableLine;
+import fr.insa.dorgli.projetbat.objects.DrawablePoint;
 import fr.insa.dorgli.projetbat.objects.Point;
+import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import javafx.scene.paint.Color;
 
@@ -59,8 +60,7 @@ public class DrawingContext {
 //			 TODO!! toStringShort
 //			config.tui.debug("DrawingContext/draw: skipping already drawn object " + object.toString());
 //		} else {
-			// TODO!! toStringShort
-			config.tui.debug("DrawingContext/draw: drawing object " + object.toString());
+			config.tui.debug("DrawingContext/draw: drawing object " + object.toStringShort());
 			drawnObjects.add(object);
 			object.draw(this, object == selectedObject);
 //		}
@@ -68,12 +68,14 @@ public class DrawingContext {
 
 	///// actual drawing stuff
 
-	public void drawPoint(Drawable linkedObject, double x, double y) {
-		cc.drawPoint(x, y);
+	public void drawPoint(Point point, double radius, Color color, boolean important) {
+		cc.drawPoint((DrawablePoint) point, point.getPoint(), radius, color, important);
 	}
 
-	public void drawLine(Drawable linkedObject, double x1, double y1, double x2, double y2, double width, Color color) {
-		cc.drawLine(linkedObject, x1, y1, x2, y2, width, color);
+	public void drawLine(DrawableLine linkedObject, Point pointDebut, Point pointFin, double width, Color color) {
+		cc.drawLine(linkedObject, new Line2D.Double(pointDebut.getPoint(), pointFin.getPoint()), width, color);
+		draw(pointDebut);
+		draw(pointFin);
 	}
 
 	public void drawPolygon(Drawable linkedObject, Point[] points, Color color) {

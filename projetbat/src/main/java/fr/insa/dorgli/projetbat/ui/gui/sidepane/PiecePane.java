@@ -15,7 +15,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
-public class PiecePane extends SidePane {
+public class PiecePane extends ParentSidePane {
 	Piece piece;
 
 	private class Editor extends VBox {

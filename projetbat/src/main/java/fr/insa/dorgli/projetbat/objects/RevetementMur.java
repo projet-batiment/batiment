@@ -3,7 +3,7 @@ package fr.insa.dorgli.projetbat.objects;
 import fr.insa.dorgli.projetbat.ui.gui.DrawingContext;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 
-public class RevetementMur extends HasPrice {
+public class RevetementMur extends Drawable implements HasPrice {
 	TypeRevetement typeRevetement;
 	double pos1L;
 	double pos1H;

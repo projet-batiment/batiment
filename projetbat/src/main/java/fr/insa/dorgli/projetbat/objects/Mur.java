@@ -2,10 +2,11 @@ package fr.insa.dorgli.projetbat.objects;
 
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 import fr.insa.dorgli.projetbat.ui.gui.DrawingContext;
+import java.awt.geom.Line2D;
 import java.util.ArrayList;
 import javafx.scene.paint.Color;
 
-public class Mur extends HasPrice {
+public class Mur extends DrawableLine implements HasPrice {
 	private Point pointDebut;
 	private Point pointFin;
 	private double hauteur;
@@ -36,16 +37,8 @@ public class Mur extends HasPrice {
 		return this.pointDebut;
 	}
 
-	public void setPointDebut(Point pointDebut) {
-		this.pointDebut = pointDebut;
-	}
-
 	public Point getPointFin() {
 		return this.pointFin;
-	}
-
-	public void setPointFin(Point pointFin) {
-		this.pointFin = pointFin;
 	}
 
 	public double getHauteur() {
@@ -76,8 +69,6 @@ public class Mur extends HasPrice {
 		return this.ouvertures;
 	}
 
-	// fonction temporaire si l'on passe un jour aux outils géométriques de java.awt...
-	// utile pour calculer les aires du mur et de ses revetments
 	private double longueur() {
 		double dcx = pointDebut.getX() - pointFin.getX();
 		double dy = pointFin.getY() - pointDebut.getY();
@@ -111,9 +102,9 @@ public class Mur extends HasPrice {
 		// TODO: amnesic debug dive
 		dcx.tui().debug("Mur: drawing " + (isFocused ? "focused " : "") + "Mur " + this.toStringShort());
 		if (isFocused) {
-			dcx.drawLine(this, pointDebut.getX(), pointDebut.getY(), pointFin.getX(), pointFin.getY(), 15, Color.NAVAJOWHITE);
+			dcx.drawLine(this, pointDebut, pointFin, 15, Color.NAVAJOWHITE);
 		} else {
-			dcx.drawLine(this, pointDebut.getX(), pointDebut.getY(), pointFin.getX(), pointFin.getY(), 10, Color.DIMGRAY);
+			dcx.drawLine(this, pointDebut, pointFin, 10, Color.DIMGRAY);
 		}
 	}
 

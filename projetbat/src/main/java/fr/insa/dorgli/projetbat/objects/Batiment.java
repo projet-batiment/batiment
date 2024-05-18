@@ -4,7 +4,7 @@ import fr.insa.dorgli.projetbat.ui.gui.DrawingContext;
 import java.util.ArrayList;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 
-public class Batiment extends HasPrice {
+public class Batiment extends Drawable implements HasPrice {
 	private String nom;
 	private String description;
 	private TypeBatiment typeBatiment;

@@ -4,6 +4,7 @@ import fr.insa.dorgli.projetbat.core.Config;
 import fr.insa.dorgli.projetbat.objects.BObject;
 import fr.insa.dorgli.projetbat.objects.Mur;
 import fr.insa.dorgli.projetbat.objects.Piece;
+import fr.insa.dorgli.projetbat.objects.Point;
 import javafx.scene.layout.Pane;
 
 public class SidePaneContainer extends Pane {
@@ -27,6 +28,10 @@ public class SidePaneContainer extends Pane {
 			case Mur mur -> {
 				config.tui.debug("useObject: is a mur");
 				newPane = new MurPane(config, mur);
+			}
+			case Point point -> {
+				config.tui.debug("useObject: is a Point");
+				newPane = new PointPane(config, point);
 			}
 			case null, default -> {
 				config.tui.debug("useObject: sth else...");
