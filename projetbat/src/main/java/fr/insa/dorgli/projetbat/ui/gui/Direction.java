@@ -7,6 +7,7 @@ public enum Direction {
 	DOWN,
 
 	FIT,
+	ZOOMZERO,
 	RESET,
 
 	FORWARDS,

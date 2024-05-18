@@ -9,9 +9,8 @@ import javafx.stage.Stage;
 public class MainWindow extends BorderPane {
 	private final Controller controller;
 
-	private final CanvasContainer canvasContainer;
-
 	private final OutilsTop outilsTop;
+	private final CanvasContainer canvasContainer;
 	private final SidePaneContainer sidePaneContainer;
 
 	public MainWindow(Config config, Stage mainStage) {
@@ -21,11 +20,11 @@ public class MainWindow extends BorderPane {
 		super.minWidthProperty().bind(mainStage.minWidthProperty());
 		super.minHeightProperty().bind(mainStage.minHeightProperty());
 
-		this.canvasContainer = new CanvasContainer(config, this);
-		this.setCenter(canvasContainer);
-
 		this.outilsTop = new OutilsTop(config);
 		this.setTop(outilsTop);
+
+		this.canvasContainer = new CanvasContainer(config, this);
+		this.setCenter(canvasContainer);
 
 		this.sidePaneContainer = new SidePaneContainer(config);
 		this.setRight(sidePaneContainer);
@@ -41,5 +40,9 @@ public class MainWindow extends BorderPane {
 
 	public SidePaneContainer getSidePaneContainer() {
 		return sidePaneContainer;
+	}
+
+	public void setButtonZoomZeroSelected(boolean value) {
+		outilsTop.setButtonZoomFitSelected(value);
 	}
 }

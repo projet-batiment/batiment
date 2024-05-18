@@ -3,10 +3,11 @@ package fr.insa.dorgli.projetbat.ui.gui;
 import fr.insa.dorgli.projetbat.core.Config;
 import fr.insa.dorgli.projetbat.objects.Drawable;
 import fr.insa.dorgli.projetbat.objects.DrawableLine;
+import fr.insa.dorgli.projetbat.objects.DrawablePath;
 import fr.insa.dorgli.projetbat.objects.DrawablePoint;
 import fr.insa.dorgli.projetbat.objects.Niveau;
-import fr.insa.dorgli.projetbat.objects.Point;
 import fr.insa.dorgli.projetbat.ui.TUI;
+import fr.insa.dorgli.projetbat.utils.PointPolarCompare;
 import java.awt.Rectangle;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -16,8 +17,6 @@ import javafx.scene.transform.Affine;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Arrays;
 import java.util.HashSet;
 
@@ -27,9 +26,9 @@ public class CanvasContainer extends Pane {
 	private final Canvas canvas;
 	private final GraphicsContext ctxt;
 	private final DrawingContext drawingContext;
-	private final HashSet<DrawableLine> drawnLines;
-	private final HashMap<Path2D.Double, Drawable> drawnPolygons;
 	private final HashSet<DrawablePoint> drawnPoints;
+	private final HashSet<DrawableLine> drawnLines;
+	private final HashSet<DrawablePath> drawnPolygons;
 
 	private Niveau currentNiveau;
 	private Rectangle totalDrawingRectangle;
@@ -77,7 +76,7 @@ public class CanvasContainer extends Pane {
 		totalDrawingRectangle = new Rectangle( (int)Math.ceil(super.getWidth()), (int)Math.ceil(super.getHeight()) );
 
 		drawnLines = new HashSet<>();
-		drawnPolygons = new HashMap<>();
+		drawnPolygons = new HashSet<>();
 		drawnPoints = new HashSet<>();
 
 		drawingContext = new DrawingContext(config, this);
@@ -86,6 +85,8 @@ public class CanvasContainer extends Pane {
 		zoomFactor = Math.sqrt(2);
 		moveFactor = 20;
 		disableDrawing = false;
+
+		isFitted = false;
 
 		super.getChildren().add(canvas);
 	}
@@ -147,7 +148,7 @@ public class CanvasContainer extends Pane {
 		config.tui.diveWhere("canvasContainer/moveView");
 
 		clear();
-		isFitted = false;
+		setIsFitted(false);
 
 		switch (direction) {
 			// TODO: mauvaise adaptation lors d'un changement de taille de fenêtre (bugs visuels lors de redraw, formes étirées
@@ -161,6 +162,8 @@ public class CanvasContainer extends Pane {
 			case Direction.FORWARDS -> zoomWithScale(zoomFactor);
 			case Direction.BACKWARDS -> zoomWithScale(1 / zoomFactor);
 
+			case Direction.ZOOMZERO -> zoomWithScale(1 / ctxt.getTransform().getMxx());
+
 			case Direction.RESET -> {
 				Affine affine = zoomWithScale(1 / ctxt.getTransform().getMxx(), false);
 				affine.setTx(0);
@@ -173,7 +176,7 @@ public class CanvasContainer extends Pane {
 				recalculateTotalDrawingRectangle();
 				config.tui.diveWhere("zoom FIT");
 
-				isFitted = true;
+				setIsFitted(true);
 
 				// on calcul le zoom à appliquer
 				// totalDrawingRectangle ne peut techniquement jamais avoir des dimensions nulles
@@ -266,40 +269,6 @@ public class CanvasContainer extends Pane {
 		double closestDistance = closestMaxDistance;
 		double currentDistance;
 
-//		Point2D.Double closestPoint = null;
-//
-//		// on cherche parmi les points
-//		for (Point2D.Double currentPoint: drawnPoints) {
-//			currentDistance = currentPoint.distance(clickX, clickY);
-//			config.tui.debug("canvasContainer/getClosestLinked: closest " + (closestPoint == null ? null : closestPoint) + "(" + closestDistance + ")");
-//			config.tui.debug("canvasContainer/getClosestLinked: current "
-//			    + currentPoint + "(" + currentDistance + ")" 
-//			    + " at (" + currentPoint.getX() + ":" + currentPoint.getY()+ ")");
-//
-//			if (currentDistance < closestDistance) {
-//				config.tui.debug("canvasContainer/getClosestLinked: this is closer");
-//				closestDistance = currentDistance;
-//				closestPoint = currentPoint;
-//			}
-//		}
-
-//		// si on a un points assez proche, on cherche le BObject qui le représente le renvoie
-//		if (closestPoint != null) {
-//			// TODO: rootObject != Niveau
-//			Point template = new Point(-1, scaleFromView(closestPoint.getX()), scaleFromView(closestPoint.getY()), (Niveau) drawingContext.getRootObject());
-//			for (Point bp: config.project.objects.points.values()) {
-//				if (
-//					template.getX() - bp.getX() <= pointRadius * 2
-//					&& template.getY() - bp.getY() <= pointRadius * 2
-//					&& template.getNiveau() == bp.getNiveau()
-//				) {
-//					config.tui.debug("canvasContainer/getClosestLinked: found a close point: " + bp.toStringShort());
-//					return (Drawable) bp;
-//				}
-//			}
-//			config.tui.error("canvasContainer/getClosestLinked: could not find equivalent point: " + template);
-//		}
-
 		// on cherche parmi les points
 		DrawablePoint closestPointObject = null;
 
@@ -348,10 +317,10 @@ public class CanvasContainer extends Pane {
 		}
 
 		// on cherche parmi les path2d (polygones)
-		for (HashMap.Entry<Path2D.Double, Drawable> currentEntry: drawnPolygons.entrySet()) {
-			if (currentEntry.getKey().contains(clickX, clickY)) {
-				config.tui.debug("canvasContainer/getClosestLinked: found a close path2d: " + currentEntry.getValue().toStringShort());
-				return currentEntry.getValue();
+		for (DrawablePath currentPath: drawnPolygons) {
+			if (currentPath.getPathCanvas().contains(clickX, clickY)) {
+				config.tui.debug("canvasContainer/getClosestLinked: found a container path2d: " + currentPath.toStringShort());
+				return currentPath;
 			}
 		}
 
@@ -449,34 +418,12 @@ public class CanvasContainer extends Pane {
 		config.tui.popWhere();
 	}
 
-	// classe uniquement pour trier des points dans le sens horaire autour d'un point central
-	private class PointPolarCompare implements Comparator<Point2D.Double> {
-		private final Point2D.Double center;
-
-		public PointPolarCompare(Point2D.Double center) {
-			this.center = center;
-		}
-
-		@Override
-		public int compare(final Point2D.Double a, final Point2D.Double b) {
-			double valueA = Math.atan2(a.getY() - center.getY(), a.getX() - center.getX());
-			double valueB = Math.atan2(b.getY() - center.getY(), b.getX() - center.getX());
-
-			if (valueA > valueB)
-				return 1;
-			if (valueA > valueB)
-				return -1;
-			else
-				return 0;
-		}
-	}
-
 	/**
 	 * @param linkedObject Drawable object to be attached to this line
 	 * @param points Points with coordinates in DATA standards
 	 * @param color
 	 */
-	public void drawPolygon(Drawable linkedObject, Point2D.Double[] points, Color color) {
+	public void drawPolygon(DrawablePath linkedObject, Point2D.Double[] points, Color color) {
 		if (points.length < 3) {
 			config.tui.error("canvasContainer/drawPolygon: polygon contains less than 3 points: " + points.length);
 			return;
@@ -526,7 +473,8 @@ public class CanvasContainer extends Pane {
 		}
 
 		// ajouter le path et le linkedObject aux liens
-		drawnPolygons.put(path, linkedObject);
+		linkedObject.setPathCanvas(path);
+		drawnPolygons.add(linkedObject);
 
 		// dessiner + log
 		if (disableDrawing) {
@@ -581,7 +529,11 @@ public class CanvasContainer extends Pane {
 
 	public void clear() {
 		ctxt.clearRect(totalDrawingRectangle.getMinX(), totalDrawingRectangle.getMinY(), totalDrawingRectangle.getWidth(), totalDrawingRectangle.getHeight());
+
+		drawnPoints.clear();
 		drawnLines.clear();
+		drawnPolygons.clear();
+
 		config.tui.debug("canvasContainer/clear: totalDrawingRectangle coordinates: (" + totalDrawingRectangle.getMinX() + ":" + totalDrawingRectangle.getMinY() + ") -> (" + totalDrawingRectangle.getWidth() + ":" + totalDrawingRectangle.getHeight() + ")");
 	}
 
@@ -610,5 +562,14 @@ public class CanvasContainer extends Pane {
 
 	public DrawingContext getDrawingContext() {
 		return drawingContext;
+	}
+
+	public boolean getIsFitted() {
+		return isFitted;
+	}
+
+	private void setIsFitted(boolean value) {
+		isFitted = value;
+		config.getMainWindow().setButtonZoomZeroSelected(value);
 	}
 }

@@ -4,6 +4,7 @@ import fr.insa.dorgli.projetbat.core.Config;
 import fr.insa.dorgli.projetbat.ui.TUI;
 import fr.insa.dorgli.projetbat.objects.Drawable;
 import fr.insa.dorgli.projetbat.objects.DrawableLine;
+import fr.insa.dorgli.projetbat.objects.DrawablePath;
 import fr.insa.dorgli.projetbat.objects.DrawablePoint;
 import fr.insa.dorgli.projetbat.objects.Point;
 import java.awt.geom.Line2D;
@@ -78,7 +79,7 @@ public class DrawingContext {
 		draw(pointFin);
 	}
 
-	public void drawPolygon(Drawable linkedObject, Point[] points, Color color) {
+	public void drawPolygon(DrawablePath linkedObject, Point[] points, Color color) {
 		// hypothèse pour malloc: il y a length doublons => newLength = length/2
 		LinkedHashSet<Point2D.Double> geomPoints = new LinkedHashSet<>(points.length / 2);
 

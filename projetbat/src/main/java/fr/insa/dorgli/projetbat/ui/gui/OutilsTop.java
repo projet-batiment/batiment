@@ -3,6 +3,7 @@ package fr.insa.dorgli.projetbat.ui.gui;
 import fr.insa.dorgli.projetbat.core.Config;
 import fr.insa.dorgli.projetbat.core.Controller;
 import fr.insa.dorgli.projetbat.ui.TUI;
+import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -43,7 +44,8 @@ public class OutilsTop extends MenuBar {
 	private final Menu menuAfficher;
 	private final MenuItem buttonZoomIn;
 	private final MenuItem buttonZoomOut;
-	private final MenuItem buttonZoomFit;
+	private final CheckMenuItem buttonZoomFit;
+	private final MenuItem buttonZoomZero;
 	private final SeparatorMenuItem separatorAfficher1;
 	private final MenuItem buttonMoveUp;
 	private final MenuItem buttonMoveDown;
@@ -204,45 +206,52 @@ public class OutilsTop extends MenuBar {
 
 		///// Menu Afficher
 
-		buttonZoomIn = new MenuItem("Zoom +");
+		buttonZoomIn = new MenuItem("Zoom avant");
 		buttonZoomIn.setOnAction(event -> {
 			config.tui.log("clicked: zoom in");
 			controller.moveCanvasView(Direction.FORWARDS);
 		});
 
-		buttonZoomOut = new MenuItem("Zoom -");
+		buttonZoomOut = new MenuItem("Zoom arrière");
 		buttonZoomOut.setOnAction(event -> {
 			config.tui.log("clicked: zoom out");
 			controller.moveCanvasView(Direction.BACKWARDS);
 		});
 
-		buttonZoomFit = new MenuItem("Zoom fit");
+		buttonZoomFit = new CheckMenuItem("Zoom adaptatif");
+		buttonZoomFit.setSelected(false);
 		buttonZoomFit.setOnAction(event -> {
 			config.tui.log("clicked: zoom fit");
 			controller.moveCanvasView(Direction.FIT);
 		});
 
+		buttonZoomZero = new MenuItem("Réinitialiser le zoom");
+		buttonZoomZero.setOnAction(event -> {
+			config.tui.log("clicked: zoom zero");
+			controller.moveCanvasView(Direction.ZOOMZERO);
+		});
+
 		separatorAfficher1 = new SeparatorMenuItem();
 
-		buttonMoveUp = new MenuItem("Move up");
+		buttonMoveUp = new MenuItem("Déplacer vers le haut");
 		buttonMoveUp.setOnAction(event -> {
 			config.tui.log("clicked: move up");
 			controller.moveCanvasView(Direction.UP);
 		});
 
-		buttonMoveDown = new MenuItem("Move down");
+		buttonMoveDown = new MenuItem("Déplacer vers le bas");
 		buttonMoveDown.setOnAction(event -> {
 			config.tui.log("clicked: move down");
 			controller.moveCanvasView(Direction.DOWN);
 		});
 
-		buttonMoveLeft = new MenuItem("Move left");
+		buttonMoveLeft = new MenuItem("Déplacer vers la gauche");
 		buttonMoveLeft.setOnAction(event -> {
 			config.tui.log("clicked: move left");
 			controller.moveCanvasView(Direction.LEFT);
 		});
 
-		buttonMoveRight = new MenuItem("Move right");
+		buttonMoveRight = new MenuItem("Déplacer vers la droite");
 		buttonMoveRight.setOnAction(event -> {
 			config.tui.log("clicked: move right");
 			controller.moveCanvasView(Direction.RIGHT);
@@ -250,7 +259,7 @@ public class OutilsTop extends MenuBar {
 
 		separatorAfficher2 = new SeparatorMenuItem();
 
-		buttonResetView = new MenuItem("Reset view");
+		buttonResetView = new MenuItem("Réinitialiser la vue");
 		buttonResetView.setOnAction(event -> {
 			config.tui.log("clicked: reset view");
 			controller.moveCanvasView(Direction.RESET);
@@ -260,6 +269,7 @@ public class OutilsTop extends MenuBar {
 		    buttonZoomIn,
 		    buttonZoomOut,
 		    buttonZoomFit,
+		    buttonZoomZero,
 		    separatorAfficher1,
 		    buttonMoveUp,
 		    buttonMoveDown,
@@ -373,6 +383,10 @@ public class OutilsTop extends MenuBar {
 		    menuOptions,
 		    menuAide
 		);
+	}
+
+	public void setButtonZoomFitSelected(boolean value) {
+		buttonZoomFit.setSelected(value);
 	}
 
 //		refreshButton = new Button("actualiser");
