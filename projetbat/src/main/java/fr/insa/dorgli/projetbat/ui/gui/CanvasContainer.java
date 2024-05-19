@@ -542,10 +542,19 @@ public class CanvasContainer extends Pane {
 		config.tui.begin();
 		config.tui.debug("graphicsContext.transform (affine): " + canvas.getGraphicsContext2D().getTransform().toString());
 
+		Affine affine = ctxt.getTransform();
+		double ourMinX = scaleToView(- affine.getTx());
+		double ourMinY = scaleToView(- affine.getTy());
+		double ourMaxX = scaleToView(super.getWidth() - affine.getTx());
+		double ourMaxY = scaleToView(super.getHeight() - affine.getTy());
+
+		ctxt.setFill(Color.WHITE);
+		ctxt.fillRect(ourMinX - 2, ourMinY - 2, ourMaxX + 4, ourMaxY + 4);
+
 		if (config.tui.logLevelGreaterOrEqual(TUI.LogLevel.DEBUG) && ! disableDrawing) {
 			Color c = Color.TEAL;
 			config.tui.debug("drawing canvas with a " + c + " background");
-			ctxt.setFill(Color.TEAL);
+			ctxt.setFill(c);
 			ctxt.fillRect(0, 0, getWidth(), getHeight());
 		}
 

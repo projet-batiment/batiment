@@ -9,11 +9,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class Deserialize {
 	Config config;
 	SmartReader sreader;
+	ArrayList<String> errorMessages = new ArrayList<>();
 
 	///// Sommaire de la classe Deserialize
 	// 
@@ -82,10 +82,12 @@ public class Deserialize {
 	}
 	private void error(String text) {
 		config.tui.error(sreader.getLineNumber() + ": " + text);
+		errorMessages.add(text);
 	}
 
-	private void errorParse(String text, String errMsg) {
-		error("erreur lors de l'interprétation des valeurs: '" + text + "': " + errMsg);
+	private void errorParse(String text, Exception e) {
+		error("erreur lors de l'interprétation des valeurs: '" + text + "': ");
+		e.printStackTrace(System.out);
 	}
 	private void errorSyntax(String text) {
 		error("mauvaise syntaxe: '" + text + "'");
@@ -135,18 +137,60 @@ public class Deserialize {
 		}
 	}
 
-	public Project deserializeFile(String path) throws FileNotFoundException {
+	public class Result {
+		public enum Status {
+			SUCCESS,
+			FILE_NOT_FOUND,
+			PARSE_ERROR,
+			UNEXPECTED_ERROR,
+		}
+
+		public final Status status;
+		public final Project project;
+		public final Exception exception;
+		public final String[] messages;
+
+		// bare OK
+		public Result(Project project) {
+			this(Status.SUCCESS, project, null, null);
+		}
+		// bare ERROR
+		public Result(Status status) {
+			this(status, null, null, null);
+		}
+		// ERROR with messages
+		public Result(Status status, String[] messages) {
+			this(status, null, messages, null);
+		}
+		// ERROR with exception
+		public Result(Status status, Exception exception) {
+			this(status, null, null, exception);
+		}
+		// private all-in-one
+		private Result(Status status, Project project, String[] messages, Exception exception) {
+			this.status = status;
+			this.project = project;
+			this.messages = messages;
+			this.exception = exception;
+		}
+	}
+
+	public Result deserializeFile(String path) {
 		return deserializeFile(new File(path));
 	}
 
-	public Project deserializeFile(File file) throws FileNotFoundException {
+	public Result deserializeFile(File file) {
 		config.tui.diveWhere("deserializeFile");
 		config.tui.begin();
 
 		Project newProject = new Project();
 		ArrayList<PseudoPoint> pseudoPoints = new ArrayList<>();
 
-		sreader = new SmartReader(config.tui, file);
+		try {
+			sreader = new SmartReader(config.tui, file);
+		} catch (FileNotFoundException e) {
+			return config.tui.popWhere( new Result(Result.Status.FILE_NOT_FOUND) );
+		}
 
 		try {
 			for (
@@ -210,19 +254,21 @@ public class Deserialize {
 				p.setNiveau(newProject.objects);
 			}
 
-		} catch (IOException e) {
-			error("erreur d'entrée/sortie lors de la lecture du fichier '" + file.getPath() + "': " + e.getMessage());
+		} catch (Exception e) {
+			error("erreur inattendue lors de la lecture du fichier '" + file.getPath() + "': " + e.getMessage());
+			return config.tui.popWhere( new Result(Result.Status.UNEXPECTED_ERROR, e) );
 		}
+
+		debug("Les objets suivants ont été lus:\n" + newProject.objects.toString());
 
 		if (config.tui.getErrCounter() > 0) {
 			config.tui.ended(TUI.red(config.tui.getErrCounter() + " errors"));
+			return config.tui.popWhere( new Result(Result.Status.PARSE_ERROR, errorMessages.toArray(String[]::new)) );
 		} else {
 			config.tui.ended(TUI.green("success"));
-		}
-		debug("Les objets suivants ont été lus:\n" + newProject.objects.toString());
+	}
 
-		config.tui.popWhere();
-		return newProject;
+		return config.tui.popWhere( new Result(newProject) );
 	}
 
 	/// FileStatements
@@ -251,7 +297,7 @@ public class Deserialize {
 							debug("savefile is of correct version " + savefileVersion);
 						}
 					} catch (NumberFormatException e) {
-						errorParse(line, "failed parsing the version as an integer: " + e.getMessage());
+						errorParse(line, e);
 					}
 				}
 
@@ -260,42 +306,27 @@ public class Deserialize {
 					newProject.projectName = unescaped;
 					debug("set projectName = '" + unescaped + "'");
 				}
+
 				case "projectDescription" -> {
 					String unescaped = unescapeString(command[1]);
 					newProject.projectDescription = unescaped;
 					debug("set projectDescription = '" + unescaped + "'");
 				}
 
-				case "default Batiment" -> {
+				case "last viewRootElement" -> {
 					try {
-						int batimentId = Integer.parseInt(command[1]);
-						BObject propObject = newProject.objects.get(batimentId);
-						if (propObject instanceof Batiment batiment) {
-							// TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-							debug("default Batiment read: " + batiment);
-						} else if (propObject == null) {
-							errorIdNone("Batiment", batimentId);
+						int drawableId = Integer.parseInt(command[1]);
+						BObject drawableObject = newProject.objects.get(drawableId);
+						if (drawableObject instanceof Drawable drawable) {
+							debug("default viewRootElement read: " + drawable);
+							newProject.firstViewRootElement = drawable;
+						} else if (drawableObject == null) {
+							errorIdNone("Drawable", drawableId);
 						} else {
-							errorIdWrongType("Batiment", batimentId);
+							errorIdWrongType("Drawable", drawableId);
 						}
 					} catch (NumberFormatException e) {
-						errorParse(line, e.getMessage());
-					}
-				}
-				case "default Niveau" -> {
-					try {
-						int niveauId = Integer.parseInt(command[1]);
-						BObject propObject = newProject.objects.get(niveauId);
-						if (propObject instanceof Niveau niveau) {
-							// TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-							debug("default Niveau read: " + niveau);
-						} else if (propObject == null) {
-							errorIdNone("Niveau", niveauId);
-						} else {
-							errorIdWrongType("Niveau", niveauId);
-						}
-					} catch (NumberFormatException e) {
-						errorParse(line, e.getMessage());
+						errorParse(line, e);
 					}
 				}
 
@@ -339,7 +370,7 @@ public class Deserialize {
 					objects.put(pseudoObject.getPoint());
 					debug("read pseudo object " + pseudoObject);
 				} catch (NumberFormatException e) {
-					errorParse(line, e.getMessage());
+					errorParse(line, e);
 				}
 			} else {
 				errorSyntax(line);
@@ -382,7 +413,7 @@ public class Deserialize {
 					objects.put(object);
 					debug("read " + object);
 				} catch (NumberFormatException e) {
-					errorParse(line, e.getMessage());
+					errorParse(line, e);
 				}
 			} else {
 				errorSyntax(line);
@@ -427,7 +458,7 @@ public class Deserialize {
 					objects.put(object);
 					debug("read " + object);
 				} catch (NumberFormatException e) {
-					errorParse(line, e.getMessage());
+					errorParse(line, e);
 				}
 			} else {
 				errorSyntax(line);
@@ -471,7 +502,7 @@ public class Deserialize {
 					objects.put(object);
 					debug("read " + object);
 				} catch (NumberFormatException e) {
-					errorParse(line, e.getMessage());
+					errorParse(line, e);
 				}
 			} else {
 				errorSyntax(line);
@@ -525,7 +556,7 @@ public class Deserialize {
 						errorIdWrongType("TypeOuvertureNiveau", trId);
 					}
 				} catch (NumberFormatException e) {
-					errorParse(line, e.getMessage());
+					errorParse(line, e);
 				}
 			} else {
 				errorSyntax(line);
@@ -564,8 +595,8 @@ public class Deserialize {
 					int toId = Integer.parseInt(splitted[1]);
 					BObject propObject = objects.get(toId);
 					if (propObject instanceof TypeOuvertureMur to) {
-						double p1l = Integer.parseInt(splitted[2]);
-						double p1h = Integer.parseInt(splitted[3]);
+						double p1l = Double.parseDouble(splitted[2]);
+						double p1h = Double.parseDouble(splitted[3]);
 
 						OuvertureMur object = new OuvertureMur(id, to, p1l, p1h);
 						ouvertureMurs.add(object);
@@ -577,7 +608,7 @@ public class Deserialize {
 						errorIdWrongType("TypeOuvertureNiveau", toId);
 					}
 				} catch (NumberFormatException e) {
-					errorParse(line, e.getMessage());
+					errorParse(line, e);
 				}
 			} else {
 				errorSyntax(line);
@@ -683,7 +714,7 @@ public class Deserialize {
 						debug("read " + object);
 					}
 				} catch (NumberFormatException e) {
-					errorParse(line, e.getMessage());
+					errorParse(line, e);
 				}
 			} else {
 				errorSyntax(line);
@@ -728,7 +759,7 @@ public class Deserialize {
 					objects.put(object);
 					debug("read " + object);
 				} catch (NumberFormatException e) {
-					errorParse(line, e.getMessage());
+					errorParse(line, e);
 				}
 			} else {
 				errorSyntax(line);
@@ -782,7 +813,7 @@ public class Deserialize {
 						errorIdWrongType("TypeOuvertureNiveau", trId);
 					}
 				} catch (NumberFormatException e) {
-					errorParse(line, e.getMessage());
+					errorParse(line, e);
 				}
 			} else {
 				errorSyntax(line);
@@ -834,7 +865,7 @@ public class Deserialize {
 						errorIdWrongType("TypeOuvertureNiveau", toId);
 					}
 				} catch (NumberFormatException e) {
-					errorParse(line, e.getMessage());
+					errorParse(line, e);
 				}
 			} else {
 				errorSyntax(line);
@@ -898,7 +929,7 @@ public class Deserialize {
 					objects.put(object);
 					debug("read " + object);
 				} catch (NumberFormatException e) {
-					errorParse(line, e.getMessage());
+					errorParse(line, e);
 				}
 			} else {
 				errorSyntax(line);
@@ -971,7 +1002,7 @@ public class Deserialize {
 												errorIdWrongType("Point", pointId);
 											}
 										} catch (NumberFormatException e) {
-											errorParse(line, e.getMessage());
+											errorParse(line, e);
 										}
 									}
 								} else {
@@ -999,7 +1030,7 @@ public class Deserialize {
 												errorIdWrongType("Mur", murId);
 											}
 										} catch (NumberFormatException e) {
-											errorParse(line, e.getMessage());
+											errorParse(line, e);
 										}
 									}
 								} else {
@@ -1075,11 +1106,11 @@ public class Deserialize {
 
 				try {
 					TypeAppart object = new TypeAppart(id, unescapeString(splitted[1]), unescapeString(splitted[2]));
-					typeApparts.add(id, object);
+					typeApparts.add(object);
 					objects.put(object);
 					debug("read " + object);
 				} catch (NumberFormatException e) {
-					errorParse(line, e.getMessage());
+					errorParse(line, e);
 				}
 			} else {
 				errorSyntax(line);
@@ -1148,7 +1179,7 @@ public class Deserialize {
 														errorIdWrongType("Piece", pieceId);
 													}
 												} catch (NumberFormatException e) {
-													errorParse(line, e.getMessage());
+													errorParse(line, e);
 												}
 											}
 										} else {
@@ -1174,7 +1205,7 @@ public class Deserialize {
 
 					config.tui.popWhere();
 				} catch (NumberFormatException e) {
-					errorParse(line, e.getMessage());
+					errorParse(line, e);
 				}
 			} else {
 				errorSyntax(line);
@@ -1244,7 +1275,7 @@ public class Deserialize {
 													errorIdWrongType("Appart", appartId);
 												}
 											} catch (NumberFormatException e) {
-												errorParse(line, e.getMessage());
+												errorParse(line, e);
 											}
 										}
 									} else {
@@ -1272,7 +1303,7 @@ public class Deserialize {
 													errorIdWrongType("Piece", pieceId);
 												}
 											} catch (NumberFormatException e) {
-												errorParse(line, e.getMessage());
+												errorParse(line, e);
 											}
 										}
 									} else {
@@ -1300,7 +1331,7 @@ public class Deserialize {
 													errorIdWrongType("Drawable", orpheanId);
 												}
 											} catch (NumberFormatException e) {
-												errorParse(line, e.getMessage());
+												errorParse(line, e);
 											}
 										}
 									} else {
@@ -1320,7 +1351,7 @@ public class Deserialize {
 					objects.put(object);
 					debug("read " + object);
 				} catch (NumberFormatException e) {
-					errorParse(line, e.getMessage());
+					errorParse(line, e);
 				}
 			} else {
 				errorSyntax(line);
@@ -1361,7 +1392,7 @@ public class Deserialize {
 					objects.put(object);
 					debug("read " + object);
 				} catch (NumberFormatException e) {
-					errorParse(line, e.getMessage());
+					errorParse(line, e);
 				}
 			} else {
 				errorSyntax(line);
@@ -1431,7 +1462,7 @@ public class Deserialize {
 														errorIdWrongType("Appart", appartId);
 													}
 												} catch (NumberFormatException e) {
-													errorParse(line, e.getMessage());
+													errorParse(line, e);
 												}
 											}
 										} else {
@@ -1459,7 +1490,7 @@ public class Deserialize {
 														errorIdWrongType("Niveau", niveauId);
 													}
 												} catch (NumberFormatException e) {
-													errorParse(line, e.getMessage());
+													errorParse(line, e);
 												}
 											}
 										} else {
@@ -1485,7 +1516,7 @@ public class Deserialize {
 
 					config.tui.popWhere();
 				} catch (NumberFormatException e) {
-					errorParse(line, e.getMessage());
+					errorParse(line, e);
 				}
 			} else {
 				errorSyntax(line);

@@ -30,40 +30,54 @@ public class Controller {
 		FileChooser fileChooser = new FileChooser();
 		File f = fileChooser.showOpenDialog(config.getMainStage());
 		if (f != null) {
-			try {
-				Deserialize deserializer = new Deserialize(config);
-				Project newProject = deserializer.deserializeFile(f);
-				if (config.tui.getErrCounter() > 0) {
-					config.tui.error("deserialization failed");
-					config.tui.clearErrCounter();
-				} else {
-					config.project = newProject;
+			Deserialize.Result result = new Deserialize(config).deserializeFile(f);
+			switch (result.status) {
+				case SUCCESS -> {
+					config.project = result.project;
 					config.tui.log("successfully loaded the project!");
-					if (! config.project.objects.niveaux.isEmpty()) {
-						// toute l'efficacité de java en une ligne pour avoir le premier niveau :
-						Niveau currentNiveau = config.project.objects.niveaux.values().iterator().next();
-						state.viewRootElement = currentNiveau;
-						config.tui.debug("set the currentNiveau to " + currentNiveau.toString());
-					}
+
+					// TODOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+					state.viewRootElement = result.project.firstViewRootElement;
+
 					config.getMainWindow().getCanvasContainer().moveView(Direction.FIT); // implies a redraw
 				}
 
-			} catch (FileNotFoundException ex) {
-				Alert alert = new Alert(AlertType.ERROR);
-				alert.setTitle("Fichier introuvable");
-				alert.setHeaderText("Le fichier de sauvegarde n'existe pas !");
-				alert.setContentText(ex.getLocalizedMessage());
+				case FILE_NOT_FOUND -> {
+					Alert alert = new Alert(AlertType.ERROR);
+					alert.setTitle("Fichier introuvable");
+					alert.setHeaderText("Le fichier indéqué n'existe pas !");
+					alert.setContentText(f.toString());
 
-				alert.showAndWait();
-			} catch (Exception ex) {
-				Alert alert = new Alert(AlertType.ERROR);
-				alert.setTitle("Erreur de lecture");
-				alert.setHeaderText("Une erreur est survenue lors de la lecture du fichier");
-				alert.setContentText(ex.getMessage() + "\n\n" + ex.getLocalizedMessage());
-				config.tui.debug("debugging an error:");
-				ex.printStackTrace(System.out);
+					alert.showAndWait();
+				}
 
-				alert.showAndWait();
+				case PARSE_ERROR -> {
+					Alert alert = new Alert(AlertType.ERROR);
+					alert.setTitle("Erreur de lecture");
+					alert.setHeaderText("Le fichier de sauvegarde spécifié est erroné !");
+
+					String errorMessages = "Le fichier n'a pas pu être lu pour les raisons suivantes :";
+					for (int i = 0; i < result.messages.length; i++) {
+						errorMessages += "\n" + (i+1) + ") " + result.messages[i];
+					}
+					alert.setContentText(errorMessages);
+
+					alert.showAndWait();
+				}
+
+				case UNEXPECTED_ERROR -> {
+					Alert alert = new Alert(AlertType.ERROR);
+					alert.setTitle("Erreur inattendue");
+					alert.setHeaderText("Une erreur inattendue est survennue");
+					alert.setContentText(result.exception.getMessage());
+
+					alert.showAndWait();
+				}
+			}
+
+			if (config.tui.getErrCounter() > 0) {
+				config.tui.error("deserialization failed");
+				config.tui.clearErrCounter();
 			}
 		}
 
@@ -92,31 +106,31 @@ public class Controller {
 	public void canvasClicked(MouseEvent event) {
 		config.tui.log("controller: a click occurred in the canvasContainer at (" + event.getX() + ":" + event.getY() + ")");
 		switch (state.actionState) {
-			case State.ActionState.CREATE_MUR_1 -> {
-				Drawable closestObject = config.getMainWindow().getCanvasContainer().getClosestLinked(event.getX(), event.getY());
-//				Point firstPoint;
-				if (closestObject instanceof Point closestPoint) {
-					firstPoint = closestPoint;
-				} else {
-					firstPoint = config.project.objects.createPoint(event.getX(), event.getY(), (Niveau) state.viewRootElement);
-				}
-				config.tui.debug("controller: click/createMur/1: firstPoint = " + firstPoint);
-				state.actionState = State.ActionState.CREATE_MUR_2;
-			}
-			case State.ActionState.CREATE_MUR_2 -> {
-				Drawable closestObject = config.getMainWindow().getCanvasContainer().getClosestLinked(event.getX(), event.getY());
-				Point endPoint;
-				if (closestObject instanceof Point closestPoint) {
-					endPoint = closestPoint;
-				} else {
-					endPoint = config.project.objects.createPoint(event.getX(), event.getY(), (Niveau) state.viewRootElement);
-				}
-				config.tui.debug("controller: click/createMur/2: endPoint = " + endPoint);
-				Mur mur = config.project.objects.createMur(firstPoint, endPoint, ((Niveau)state.viewRootElement).getHauteur(), null);
-				state.viewSelectedElements.clear();
-				state.viewSelectedElements.add(mur);
-				state.actionState = State.ActionState.DEFAULT;
-			}
+//			case State.ActionState.CREATE_MUR_1 -> {
+//				Drawable closestObject = config.getMainWindow().getCanvasContainer().getClosestLinked(event.getX(), event.getY());
+////				Point firstPoint;
+//				if (closestObject instanceof Point closestPoint) {
+//					firstPoint = closestPoint;
+//				} else {
+//					firstPoint = config.project.objects.createPoint(event.getX(), event.getY(), (Niveau) state.viewRootElement);
+//				}
+//				config.tui.debug("controller: click/createMur/1: firstPoint = " + firstPoint);
+//				state.actionState = State.ActionState.CREATE_MUR_2;
+//			}
+//			case State.ActionState.CREATE_MUR_2 -> {
+//				Drawable closestObject = config.getMainWindow().getCanvasContainer().getClosestLinked(event.getX(), event.getY());
+//				Point endPoint;
+//				if (closestObject instanceof Point closestPoint) {
+//					endPoint = closestPoint;
+//				} else {
+//					endPoint = config.project.objects.createPoint(event.getX(), event.getY(), (Niveau) state.viewRootElement);
+//				}
+//				config.tui.debug("controller: click/createMur/2: endPoint = " + endPoint);
+//				Mur mur = config.project.objects.createMur(firstPoint, endPoint, ((Niveau)state.viewRootElement).getHauteur(), null);
+//				state.viewSelectedElements.clear();
+//				state.viewSelectedElements.add(mur);
+//				state.actionState = State.ActionState.DEFAULT;
+//			}
 
 			default -> {
 				Drawable closestObject = config.getMainWindow().getCanvasContainer().getClosestLinked(event.getX(), event.getY());

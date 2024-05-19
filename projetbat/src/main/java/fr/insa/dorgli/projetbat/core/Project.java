@@ -1,5 +1,6 @@
 package fr.insa.dorgli.projetbat.core;
 
+import fr.insa.dorgli.projetbat.objects.Drawable;
 import fr.insa.dorgli.projetbat.objects.Objects;
 
 public class Project {
@@ -8,4 +9,6 @@ public class Project {
 	public String projectName = new String();
 	public String projectDescription = new String();
 	public String savefilePath = new String();
+
+	public Drawable firstViewRootElement;
 }

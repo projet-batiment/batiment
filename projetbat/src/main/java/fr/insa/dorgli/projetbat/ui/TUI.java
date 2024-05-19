@@ -51,6 +51,10 @@ public class TUI {
 	public void popWhere() {
 		where.removeLast();
 	}
+	public <T> T popWhere(T thing) {
+		where.removeLast();
+		return thing;
+	}
 
 	public ArrayList<String> getWhere() {
 		return where;

@@ -200,37 +200,37 @@ public class OutilsTop extends MenuBar {
 			config.tui.log("clicked: focused to root");
 		});
 
-		////////////// TODO!!!!!!!!!!!!!!!! ne marche pas: initialisé à vide
-		Menu menuNiveaux = new Menu("Niveau...");
-		for (Niveau niveau: config.project.objects.niveaux.values()) {
-			String niveauNom = niveau.getNom();
-			if (niveauNom.length() > 18) {
-				niveauNom = niveauNom.substring(0, 15) + "...";
-			}
-			MenuItem niveauButton = new MenuItem(niveauNom);
-			niveauButton.setOnAction((ActionEvent eh) -> {
-				config.tui.debug("clicked: focus niveau " + niveau);
-				config.controller.state.viewRootElement = niveau;
-				config.getMainWindow().getCanvasContainer().redraw();
-			});
-			menuNiveaux.getItems().add(niveauButton);
-		}
-
-		////////////// TODO!!!!!!!!!!!!!!!! ne marche pas: initialisé à vide
-		Menu menuBatiments = new Menu("Batiment...");
-		for (Batiment batiment: config.project.objects.batiments.values()) {
-			String batimentNom = batiment.getNom();
-			if (batimentNom.length() > 18) {
-				batimentNom = batimentNom.substring(0, 15) + "...";
-			}
-			MenuItem batimentButton = new MenuItem(batimentNom);
-			batimentButton.setOnAction((ActionEvent eh) -> {
-				config.tui.debug("clicked: focus batiment " + batiment);
-				config.controller.state.viewRootElement = batiment;
-				config.getMainWindow().getCanvasContainer().redraw();
-			});
-			menuBatiments.getItems().add(batimentButton);
-		}
+//		////////////// TODO!!!!!!!!!!!!!!!! ne marche pas: initialisé à vide
+//		Menu menuNiveaux = new Menu("Niveau...");
+//		for (Niveau niveau: config.project.objects.niveaux.values()) {
+//			String niveauNom = niveau.getNom();
+//			if (niveauNom.length() > 18) {
+//				niveauNom = niveauNom.substring(0, 15) + "...";
+//			}
+//			MenuItem niveauButton = new MenuItem(niveauNom);
+//			niveauButton.setOnAction((ActionEvent eh) -> {
+//				config.tui.debug("clicked: focus niveau " + niveau);
+//				config.controller.state.viewRootElement = niveau;
+//				config.getMainWindow().getCanvasContainer().redraw();
+//			});
+//			menuNiveaux.getItems().add(niveauButton);
+//		}
+//
+//		////////////// TODO!!!!!!!!!!!!!!!! ne marche pas: initialisé à vide
+//		Menu menuBatiments = new Menu("Batiment...");
+//		for (Batiment batiment: config.project.objects.batiments.values()) {
+//			String batimentNom = batiment.getNom();
+//			if (batimentNom.length() > 18) {
+//				batimentNom = batimentNom.substring(0, 15) + "...";
+//			}
+//			MenuItem batimentButton = new MenuItem(batimentNom);
+//			batimentButton.setOnAction((ActionEvent eh) -> {
+//				config.tui.debug("clicked: focus batiment " + batiment);
+//				config.controller.state.viewRootElement = batiment;
+//				config.getMainWindow().getCanvasContainer().redraw();
+//			});
+//			menuBatiments.getItems().add(batimentButton);
+//		}
 
 		menuEditer = new Menu("Actions", null,
 			new Menu("Créer...", null,
@@ -253,9 +253,9 @@ public class OutilsTop extends MenuBar {
 				buttonNiveauEdit
 			),
 			new Menu("Afficher...", null,
-				buttonFocusedToRoot,
-				menuNiveaux,
-				menuBatiments
+				buttonFocusedToRoot
+//				menuNiveaux,
+//				menuBatiments
 			),
 			buttonDeleteFocused
 		);
