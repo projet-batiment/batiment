@@ -124,11 +124,15 @@ public class Controller {
 						case 0 -> {
 							newMur.setPointDebut(point);
 
-							config.project.objects.put(newMur);
-							config.tui.debug("added mur to the objects: " + newMur.toStringShort());
+							Point endPoint = new Point();
+							endPoint.getPoint().setLocation(point.getPoint());
+							config.project.objects.put(endPoint);
+							newMur.setPointFin(endPoint);
 
-							state.viewSelectedElements.clear();
-							state.viewSelectedElements.add(newMur);
+							config.project.objects.put(newMur);
+							config.tui.debug("added the new mur and its points to the objects: " + newMur.toStringShort());
+
+							state.setSelectedElement(newMur);
 						}
 						case 1 -> {
 							newMur.setPointFin(point);
@@ -150,19 +154,26 @@ public class Controller {
 				config.tui.popWhere();
 			}
 
+			case MULTI_SELECT -> {
+				Drawable closestObject = config.getMainWindow().getCanvasContainer().getClosestLinked();
+				if (closestObject != null) {
+					config.tui.log("controller: adding object " + closestObject.toStringShort() + " to selection now");
+					state.addSelectedElement(closestObject);
+					config.getMainWindow().getCanvasContainer().redraw();
+				}
+			}
+
 			default -> {
 				Drawable closestObject = config.getMainWindow().getCanvasContainer().getClosestLinked();
 				if (closestObject == null) {
 					config.tui.log("controller: no object to be focused");
-					state.viewSelectedElements.clear();
+					state.clearSelectedElement();
 					config.getMainWindow().getCanvasContainer().redraw();
 				} else {
-					config.tui.log("controller: focusing object " + closestObject.getId() + " now: " + closestObject.toString());
-					state.viewSelectedElements.clear();
-					state.viewSelectedElements.add(closestObject);
+					config.tui.log("controller: selecting object " + closestObject.toStringShort()+ " now");
+					state.setSelectedElement(closestObject);
 					config.getMainWindow().getCanvasContainer().redraw();
 				}
-				config.getMainWindow().getSidePaneContainer().useObject(closestObject);
 			}
 		}
 	}
@@ -211,7 +222,11 @@ public class Controller {
 		alert.showAndWait();
 	}
 
-	public void createMur() {
+	public void menuButtonCreateMur() {
 		state.setActionState(State.ActionState.CREATE_MUR);
+	}
+
+	public void menuButtonMultiSelect(boolean multiselect) {
+		state.setActionState(multiselect ? State.ActionState.MULTI_SELECT : State.ActionState.DEFAULT);
 	}
 }

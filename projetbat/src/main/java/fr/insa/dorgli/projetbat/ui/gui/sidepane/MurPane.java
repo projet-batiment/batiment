@@ -3,7 +3,6 @@ package fr.insa.dorgli.projetbat.ui.gui.sidepane;
 import fr.insa.dorgli.projetbat.core.Config;
 import fr.insa.dorgli.projetbat.objects.Mur;
 import fr.insa.dorgli.projetbat.objects.TypeMur;
-import java.util.Arrays;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
@@ -19,6 +18,7 @@ import javafx.util.Callback;
 
 public class MurPane extends ParentSidePane {
 	Mur mur;
+	Config config;
 
 	private class Editor extends VBox {
 		Config config;
@@ -178,11 +178,17 @@ public class MurPane extends ParentSidePane {
 		}
 	}
 
-	public MurPane(Config config, Mur mur) {
-		this.mur = mur;
-
+	@Override
+	public final void update() {
 		super.editorTab.setContent(new Editor(config));
 		super.childrenTab.setContent(new Children());
+	}
+
+	public MurPane(Config config, Mur mur) {
+		this.mur = mur;
+		this.config = config;
+
+		update();
 	}
 }
 

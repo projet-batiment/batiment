@@ -13,6 +13,7 @@ import javafx.scene.layout.VBox;
 
 public class PointPane extends SidePane {
 	Point point;
+	Config config;
 
 	private class Editor extends VBox {
 		TextField x;
@@ -66,9 +67,15 @@ public class PointPane extends SidePane {
 		}
 	}
 
+	@Override
+	public final void update() {
+		super.editorTab.setContent(new Editor(config));
+	}
+
 	public PointPane(Config config, Point point) {
+		this.config = config;
 		this.point = point;
 
-		super.editorTab.setContent(new Editor(config));
+		update();
 	}
 }

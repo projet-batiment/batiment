@@ -2,11 +2,7 @@ package fr.insa.dorgli.projetbat.ui.gui;
 
 import fr.insa.dorgli.projetbat.core.Config;
 import fr.insa.dorgli.projetbat.core.Controller;
-import fr.insa.dorgli.projetbat.objects.Batiment;
-import fr.insa.dorgli.projetbat.objects.Mur;
-import fr.insa.dorgli.projetbat.objects.Niveau;
 import fr.insa.dorgli.projetbat.ui.TUI;
-import javafx.event.ActionEvent;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -23,13 +19,14 @@ public class OutilsTop extends MenuBar {
 	private final MenuItem buttonSaveFile;
 	private final MenuItem buttonSaveAs;
 
-	// créer
-	private final Menu menuEditer;
+	// action
+	private final Menu action;
 
 	private final MenuItem buttonBatimentEdit;
 	private final MenuItem buttonNiveauEdit;
 	private final MenuItem buttonProjectEdit;
-	private final MenuItem buttonDeleteFocused;
+	private final MenuItem buttonDeleteSelection;
+	private final CheckMenuItem buttonMultiSelect;
 	private final MenuItem buttonFocusedToRoot;
 
 	private final MenuItem buttonBatimentCreer;
@@ -115,7 +112,9 @@ public class OutilsTop extends MenuBar {
 			buttonSaveAs
 		);
 
-		///// Menu Éditer
+		///// Menu Actions
+
+		/// Sous-menu créer
 
 		buttonBatimentCreer = new MenuItem("Batiment");
 		buttonBatimentCreer.setOnAction(event -> {
@@ -140,7 +139,7 @@ public class OutilsTop extends MenuBar {
 		buttonMurCreer = new MenuItem("Mur");
 		buttonMurCreer.setOnAction(event -> {
 			config.tui.log("clicked: create: new Mur");
-			config.controller.createMur();
+			config.controller.menuButtonCreateMur();
 		});
 
 		separatorCreer = new SeparatorMenuItem();
@@ -175,6 +174,8 @@ public class OutilsTop extends MenuBar {
 			config.tui.log("clicked: create: new TypeOuvertureMur");
 		});
 
+		/// Sous-menu éditer
+
 		buttonProjectEdit = new MenuItem("Projet");
 		buttonProjectEdit.setOnAction(event -> {
 			config.tui.log("clicked: edit current project");
@@ -190,9 +191,16 @@ public class OutilsTop extends MenuBar {
 			config.tui.log("clicked: edit current Niveau");
 		});
 
-		buttonDeleteFocused = new MenuItem("Supprimer la sélection");
-		buttonDeleteFocused.setOnAction(event -> {
-			config.tui.log("clicked: delete focused");
+		buttonMultiSelect = new CheckMenuItem("Sélections plusieurs objets");
+		buttonMultiSelect.setSelected(false);
+		buttonMultiSelect.setOnAction(event -> {
+			config.tui.log("clicked: multi select");
+			config.controller.menuButtonMultiSelect(buttonMultiSelect.isSelected());
+		});
+
+		buttonDeleteSelection = new MenuItem("Supprimer la sélection");
+		buttonDeleteSelection.setOnAction(event -> {
+			config.tui.log("clicked: delete selection");
 		});
 
 		buttonFocusedToRoot = new MenuItem("L'objet sélectionné");
@@ -232,7 +240,7 @@ public class OutilsTop extends MenuBar {
 //			menuBatiments.getItems().add(batimentButton);
 //		}
 
-		menuEditer = new Menu("Actions", null,
+		action = new Menu("Actions", null,
 			new Menu("Créer...", null,
 				buttonBatimentCreer,
 				buttonNiveauCreer,
@@ -257,7 +265,8 @@ public class OutilsTop extends MenuBar {
 //				menuNiveaux,
 //				menuBatiments
 			),
-			buttonDeleteFocused
+			buttonMultiSelect,
+			buttonDeleteSelection
 		);
 
 		///// Menu Devis
@@ -463,7 +472,7 @@ public class OutilsTop extends MenuBar {
 		///// MenuBar
 
 		super.getMenus().addAll(menuFichier,
-			menuEditer,
+			action,
 			menuDevis,
 			menuAfficher,
 			menuOptions,

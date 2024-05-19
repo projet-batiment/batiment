@@ -17,6 +17,7 @@ import javafx.scene.layout.VBox;
 
 public class PiecePane extends ParentSidePane {
 	Piece piece;
+	Config config;
 
 	private class Editor extends VBox {
 		TextField name;
@@ -108,10 +109,16 @@ public class PiecePane extends ParentSidePane {
 		}
 	}
 
-	public PiecePane(Config config, Piece piece) {
-		this.piece = piece;
-
+	@Override
+	public final void update() {
 		super.editorTab.setContent(new Editor(config));
 		super.childrenTab.setContent(new Children());
+	}
+
+	public PiecePane(Config config, Piece piece) {
+		this.piece = piece;
+		this.config = config;
+
+		update();
 	}
 }

@@ -77,7 +77,7 @@ public class DrawingContext {
 //		} else {
 			config.tui.debug("DrawingContext/draw: drawing object " + object.toStringShort());
 			drawnObjects.add(object);
-			object.draw(this, config.controller.state.viewSelectedElements.contains(object));
+			object.draw(this, config.controller.state.isSelectedElement(object));
 //		}
 	}
 

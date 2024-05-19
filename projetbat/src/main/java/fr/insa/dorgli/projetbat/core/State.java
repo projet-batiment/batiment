@@ -7,6 +7,7 @@ import java.util.HashSet;
 public class State {
 	public enum ActionState {
 		DEFAULT, // none
+		MULTI_SELECT,
 
 		CREATE_MUR,
 	}
@@ -17,7 +18,7 @@ public class State {
 	public Niveau currentNiveau;
 
 	public Drawable viewRootElement;
-	public HashSet<Drawable> viewSelectedElements;
+	private final HashSet<BObject> viewSelectedElements;
 	private ActionState actionState;
 
 	private Creator creator;
@@ -49,13 +50,41 @@ public class State {
 				actionState = ActionState.CREATE_MUR;
 				config.tui.debug("createMur: initialised mur creation");
 			}
+
+			case MULTI_SELECT, DEFAULT
+				-> actionState = newState;
+
 			default -> {
+				config.tui.error("unknown state: " + newState + ": fallback to DEFAULT");
 				actionState = ActionState.DEFAULT;
-				config.tui.debug("reset to DEFAULT");
 			}
 		}
 
 		config.tui.popWhere();
+	}
+
+	public HashSet<BObject> getSelectedElements() {
+		return viewSelectedElements;
+	}
+	public boolean isSelectedElement(BObject elm) {
+		return viewSelectedElements.contains(elm);
+	}
+	public void addSelectedElement(BObject elm) {
+		viewSelectedElements.add(elm);
+		config.getMainWindow().getSidePaneContainer().update();
+	}
+	public void removeSelectedElement(BObject elm) {
+		viewSelectedElements.remove(elm);
+		config.getMainWindow().getSidePaneContainer().update();
+	}
+	public void setSelectedElement(BObject elm) {
+		clearSelectedElement();
+		viewSelectedElements.add(elm);
+		config.getMainWindow().getSidePaneContainer().update();
+	}
+	public void clearSelectedElement() {
+		viewSelectedElements.clear();
+		config.getMainWindow().getSidePaneContainer().update();
 	}
 
 	public Creator getCreator() {
@@ -63,11 +92,8 @@ public class State {
 	}
 
 	public void endCreation() {
-		endCreation(ActionState.DEFAULT);
-	}
-	public void endCreation(ActionState newState) {
 		this.creator = null;
-		config.tui.debug("endCreation: cleared creator, setting actionState " + newState);
-		setActionState(newState);
+		setActionState(ActionState.DEFAULT);
+		config.tui.debug("state/endCreation: cleared creator, set actionState to DEFAULT");
 	}
 }
