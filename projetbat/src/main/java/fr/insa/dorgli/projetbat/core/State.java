@@ -1,6 +1,6 @@
 package fr.insa.dorgli.projetbat.core;
 
-import fr.insa.dorgli.projetbat.objects.BObject;
+import fr.insa.dorgli.projetbat.objects.Drawable;
 import java.util.HashSet;
 
 public class State {
@@ -12,8 +12,8 @@ public class State {
 		CREATE_MUR_2,
 	}
 
-	public BObject viewRootElement;
-	public HashSet<BObject> viewSelectedElements;
+	public Drawable viewRootElement;
+	public HashSet<Drawable> viewSelectedElements;
 	public ActionState actionState;
 
 	public State() {

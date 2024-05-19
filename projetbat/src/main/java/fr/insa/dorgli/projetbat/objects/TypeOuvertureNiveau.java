@@ -2,22 +2,23 @@ package fr.insa.dorgli.projetbat.objects;
 
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 
-public class TypeOuvertureNiveau extends BObject {
+public class TypeOuvertureNiveau extends Type {
 	// j'ai pris le parti d'utiliser "largeur" et "hauteur" pour mieux distinguer
 	//   les deux directions (largeur et longueurs peuvent prêter à confusion)
 	// Si on ne change plus les TypeOuvertureNiveau ni les TypeOuvertureMur,
 	//   alors on pourrait même les rassembler en une seule classe puisqu'ils ont les même propriétés
 	/// TODO!!! (utile ici ?) implement java.awt.Area -> interset the revetements' surfaces with the ouvertures' surfaces
-	private String nom;
-	private String description;
 	private double hauteur;
 	private double largeur;
 	public double prixOuverture;
 
+	public TypeOuvertureNiveau() {
+		this.hauteur = 0;
+		this.largeur = 0;
+		this.prixOuverture = 0;
+	}
 	public TypeOuvertureNiveau(int id, String nom, String description, double hauteur, double largeur, double prixOuverture) {
-		super(id);
-		this.nom = nom;
-		this.description = description;
+		super(id, nom, description);
 		this.hauteur = hauteur;
 		this.largeur = largeur;
 		this.prixOuverture = prixOuverture;
@@ -47,22 +48,6 @@ public class TypeOuvertureNiveau extends BObject {
 		this.hauteur = hauteur;
 	}
 
-	public String getNom() {
-		return nom;
-	}
-
-	public void setNom(String nom) {
-		this.nom = nom;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
 	@Override
 	public String toString(int depth, boolean indentFirst) {
 		return new StructuredToString.OfBObject(depth, this, indentFirst)
@@ -74,6 +59,7 @@ public class TypeOuvertureNiveau extends BObject {
         	    .getValue();
 	}
 
+	@Override
 	public String serialize(Objects objects) {
 		return String.join(",",
 		    String.valueOf(super.getId()),

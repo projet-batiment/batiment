@@ -80,7 +80,6 @@ public class CanvasContainer extends Pane {
 		drawnPoints = new HashSet<>();
 
 		drawingContext = new DrawingContext(config, this);
-		drawingContext.setSelectedObject(currentNiveau); // TODO!! TMP !!
 
 		zoomFactor = Math.sqrt(2);
 		moveFactor = 20;

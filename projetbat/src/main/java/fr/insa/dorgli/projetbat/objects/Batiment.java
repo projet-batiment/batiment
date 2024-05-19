@@ -11,6 +11,12 @@ public class Batiment extends Drawable implements HasPrice {
 	private ArrayList<Niveau> niveaux;
 	private ArrayList<Appart> apparts;
 
+	public Batiment() {
+		nom = new String();
+		description = new String();
+		niveaux = new ArrayList<>();
+		apparts = new ArrayList<>();
+	}
 	public Batiment(int id, String nom, String description, TypeBatiment typeBatiment, ArrayList<Niveau> niveaux, ArrayList<Appart> apparts) {
 		super(id);
 		this.nom = nom;
@@ -77,13 +83,20 @@ public class Batiment extends Drawable implements HasPrice {
 	}
 
 	@Override
+	public boolean ready() {
+		return (
+			typeBatiment != null
+		);
+	}
+
+	@Override
 	public String toString(int depth, boolean indentFirst) {
 		return new StructuredToString.OfBObject(depth, this, indentFirst)
 		    .textField("nom", nom)
 		    .textField("description", description)
 		    .field("typeBatiment", typeBatiment.toString(depth + 1))
 		    .fieldShortCollection("apparts", (ArrayList<BObject>) ((ArrayList<?>) apparts))
-		    .field("niveaux", (ArrayList<BObject>) ((ArrayList<?>) niveaux))
+		    .fieldShortCollection("niveaux", (ArrayList<BObject>) ((ArrayList<?>) niveaux))
         	    .getValue();
 	}
 

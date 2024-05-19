@@ -8,6 +8,7 @@ public abstract class DrawablePath extends Drawable {
 	public DrawablePath(int id) {
 		super(id);
 	}
+	public DrawablePath() { }
 
 	public Path2D.Double getPathCanvas() {
 		return pathCanvas;

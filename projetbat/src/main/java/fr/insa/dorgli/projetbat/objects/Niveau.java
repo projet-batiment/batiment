@@ -10,16 +10,23 @@ public class Niveau extends Drawable {
 	private double hauteur;
 	private ArrayList<Piece> pieces;
 	private ArrayList<Appart> apparts;
-	private ArrayList<Mur> orpheanMurs;
+	private ArrayList<Drawable> orpheans;
 
-	public Niveau(int id, String nom, String description, double hauteur, ArrayList<Piece> pieces, ArrayList<Appart> apparts, ArrayList<Mur> orpheanMurs) {
+	public Niveau() {
+		nom = new String();
+		description = new String();
+		pieces = new ArrayList<>();
+		apparts = new ArrayList<>();
+		orpheans = new ArrayList<>();
+	}
+	public Niveau(int id, String nom, String description, double hauteur, ArrayList<Piece> pieces, ArrayList<Appart> apparts, ArrayList<Drawable> orpheans) {
 		super(id);
 		this.nom = nom;
 		this.description = description;
 		this.hauteur = hauteur;
 		this.pieces = pieces;
 		this.apparts = apparts;
-		this.orpheanMurs = orpheanMurs;
+		this.orpheans = orpheans;
 	}
 
 	public String getNom() {
@@ -62,12 +69,12 @@ public class Niveau extends Drawable {
 		this.apparts = apparts;
 	}
 
-	public ArrayList<Mur> getOrpheanMurs() {
-		return orpheanMurs;
+	public ArrayList<Drawable> getOrpheanMurs() {
+		return orpheans;
 	}
 
-	public void setOrpheanMurs(ArrayList<Mur> orpheanMurs) {
-		this.orpheanMurs = orpheanMurs;
+	public void setOrpheanMurs(ArrayList<Drawable> orpheans) {
+		this.orpheans = orpheans;
 	}
 
 	@Override
@@ -79,8 +86,8 @@ public class Niveau extends Drawable {
 		for (Piece piece: pieces) {
 			dcx.draw(piece);
 		}
-		dcx.tui().debug("drawing " + orpheanMurs.size() + " orpheanMurs objects");
-		for (Mur orphean: orpheanMurs) {
+		dcx.tui().debug("drawing " + orpheans.size() + " orpheanMurs objects");
+		for (Drawable orphean: orpheans) {
 			dcx.draw(orphean);
 		}
 
@@ -97,6 +104,11 @@ public class Niveau extends Drawable {
 	}
 
 	@Override
+	public boolean ready() {
+		return true;
+	}
+
+	@Override
 	public String toString(int depth, boolean indentFirst) {
 		return new StructuredToString.OfBObject(depth, this, indentFirst)
 		    .textField("nom", nom)
@@ -104,7 +116,7 @@ public class Niveau extends Drawable {
 		    .field("hauteur", String.valueOf(hauteur))
 		    .fieldShortCollection("pieces", (ArrayList<BObject>) ((ArrayList<?>) pieces))
 		    .fieldShortCollection("apparts", (ArrayList<BObject>) ((ArrayList<?>) apparts))
-		    .fieldShortCollection("orpheanMurs", (ArrayList<BObject>) ((ArrayList<?>) orpheanMurs))
+		    .fieldShortCollection("orpheans", (ArrayList<BObject>) ((ArrayList<?>) orpheans))
         	    .getValue();
 	}
 
@@ -132,13 +144,13 @@ public class Niveau extends Drawable {
 			}
 			out += String.join(",", appartIds) + "\n";
 		}
-		if (!orpheanMurs.isEmpty()) {
-			out += "PROP:orpheanMurs\n";
-			String[] orpheanMurIds = new String[orpheanMurs.size()];
-			for (int i = 0; i < orpheanMurIds.length; i++) {
-				orpheanMurIds[i] = String.valueOf(orpheanMurs.get(i).getId());
+		if (!orpheans.isEmpty()) {
+			out += "PROP:orpheans\n";
+			String[] orpheanIds = new String[orpheans.size()];
+			for (int i = 0; i < orpheanIds.length; i++) {
+				orpheanIds[i] = String.valueOf(orpheans.get(i).getId());
 			}
-			out += String.join(",", orpheanMurIds) + "\n";
+			out += String.join(",", orpheanIds) + "\n";
 		}
 
 		return out + "EOS:Entry";

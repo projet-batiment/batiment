@@ -18,8 +18,8 @@ public class DrawingContext {
 	private CanvasContainer cc;
 
 	private HashSet<Drawable> drawnObjects;
-	private Drawable rootObject; // l'objet principal lde la vue actuelle
-	private Drawable selectedObject; // l'objet sélectionné avec un clic / menu
+//	private Drawable rootObject; // l'objet principal lde la vue actuelle
+//	private Drawable selectedObject; // l'objet sélectionné avec un clic / menu
 
 	public DrawingContext(Config config, CanvasContainer cc) {
 		this.config = config;
@@ -37,15 +37,15 @@ public class DrawingContext {
 		config.tui.diveWhere("DrawingContext/redraw");
 
 		reset();
-		if (rootObject == null) {
+		if (config.controller.state.viewRootElement == null) {
 			// TODO!!! amnesic debug
 			config.tui.debug("no rootObjects");
 		} else {
 			config.tui.begin();
 
 			// TODO!! toStringShort
-			config.tui.debug("drawing from root object " + rootObject.toString());
-			draw(rootObject);
+			config.tui.debug("drawing from root object " + config.controller.state.viewRootElement.toString());
+			draw(config.controller.state.viewRootElement);
 
 			config.tui.ended();
 		}
@@ -63,7 +63,7 @@ public class DrawingContext {
 //		} else {
 			config.tui.debug("DrawingContext/draw: drawing object " + object.toStringShort());
 			drawnObjects.add(object);
-			object.draw(this, object == selectedObject);
+			object.draw(this, config.controller.state.viewSelectedElements.contains(object));
 //		}
 	}
 
@@ -101,23 +101,6 @@ public class DrawingContext {
 	}
 
 	///// getters & setters
-
-	public Drawable getRootObject() {
-		return rootObject;
-	}
-
-	public void setRootObject(Drawable rootObject) {
-		this.rootObject = rootObject;
-	}
-
-	public Drawable getSelectedObject() {
-		return selectedObject;
-	}
-
-	public void setSelectedObject(Drawable selectedObject) {
-		this.selectedObject = selectedObject;
-		cc.redraw();
-	}
 
 	public Config getConfig() {
 		return config;

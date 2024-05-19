@@ -14,8 +14,10 @@ public class Mur extends DrawableLine implements HasPrice {
 	private ArrayList<RevetementMur> revetements2;
 	private ArrayList<OuvertureMur> ouvertures;
 
-	public Mur(int id, Point pointDebut, Point pointFin, double hauteur, TypeMur typeMur) throws IllegalArgumentException {
-		this(id, pointDebut, pointFin, hauteur, typeMur, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+	public Mur() {
+		revetements1 = new ArrayList<>();
+		revetements2 = new ArrayList<>();
+		ouvertures = new ArrayList<>();
 	}
 	public Mur(int id, Point pointDebut, Point pointFin, double hauteur, TypeMur typeMur, ArrayList<RevetementMur> revetements1,
 			ArrayList<RevetementMur> revetements2, ArrayList<OuvertureMur> ouvertures) throws IllegalArgumentException {
@@ -108,6 +110,15 @@ public class Mur extends DrawableLine implements HasPrice {
 		} else {
 			dcx.drawLine(this, pointDebut, pointFin, 10, Color.DIMGRAY);
 		}
+	}
+
+	@Override
+	public boolean ready() {
+		return (
+			pointDebut != null
+			&& pointFin != null
+			&& typeMur != null
+		);
 	}
 
 	@Override

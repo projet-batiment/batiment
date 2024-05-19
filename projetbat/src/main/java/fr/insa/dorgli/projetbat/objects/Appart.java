@@ -10,6 +10,11 @@ public class Appart extends BObject {
 	private ArrayList<Piece> pieces;
 	private TypeAppart typeAppart;
 
+	public Appart() {
+		nom = new String();
+		description = new String();
+		pieces = new ArrayList<>();
+	}
 	public Appart(int id, String nom, String description, ArrayList<Piece> pieces, TypeAppart typeAppart) {
 		super(id);
 		this.nom = nom;
@@ -53,6 +58,13 @@ public class Appart extends BObject {
 	public double calculerPrix() {
 		// TODO ??
 		return 0;
+	}
+
+	@Override
+	public boolean ready() {
+		return (
+			typeAppart != null
+		);
 	}
 
 	@Override

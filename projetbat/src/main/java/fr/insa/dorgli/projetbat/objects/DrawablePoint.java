@@ -8,6 +8,7 @@ public abstract class DrawablePoint extends Drawable {
 	public DrawablePoint(int id) {
 		super(id);
 	}
+	public DrawablePoint() { }
 
 	public Point2D.Double getPointCanvas() {
 		return pointCanvas;

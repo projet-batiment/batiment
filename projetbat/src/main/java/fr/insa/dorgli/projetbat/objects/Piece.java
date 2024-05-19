@@ -13,6 +13,12 @@ public class Piece extends DrawablePath implements HasPrice {
 	private PlafondSol plafond;
 	private PlafondSol sol;
 
+	public Piece() {
+		nom = new String();
+		description = new String();
+		points = new ArrayList<>();
+		murs = new ArrayList<>();
+	}
 	public Piece(int id, String nom, String description, ArrayList<Point> points, ArrayList<Mur> murs, PlafondSol plafond, PlafondSol sol) {
 		super(id);
 		this.nom = nom;
@@ -112,6 +118,14 @@ public class Piece extends DrawablePath implements HasPrice {
 		}
 
 		dcx.tui().popWhere();
+	}
+
+	@Override
+	public boolean ready() {
+		return (
+			plafond != null
+			&& sol != null
+		);
 	}
 
 	@Override

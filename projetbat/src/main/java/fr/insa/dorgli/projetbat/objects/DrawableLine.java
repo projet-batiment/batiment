@@ -8,6 +8,7 @@ public abstract class DrawableLine extends Drawable {
 	public DrawableLine(int id) {
 		super(id);
 	}
+	public DrawableLine() { }
 
 	public Line2D.Double getLineCanvas() {
 		return lineCanvas;

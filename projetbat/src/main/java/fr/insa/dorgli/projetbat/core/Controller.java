@@ -42,7 +42,7 @@ public class Controller {
 					if (! config.project.objects.niveaux.isEmpty()) {
 						// toute l'efficacité de java en une ligne pour avoir le premier niveau :
 						Niveau currentNiveau = config.project.objects.niveaux.values().iterator().next();
-						config.getMainWindow().getCanvasContainer().getDrawingContext().setRootObject(currentNiveau);
+						state.viewRootElement = currentNiveau;
 						config.tui.debug("set the currentNiveau to " + currentNiveau.toString());
 					}
 					config.getMainWindow().getCanvasContainer().moveView(Direction.FIT); // implies a redraw
@@ -113,7 +113,8 @@ public class Controller {
 				}
 				config.tui.debug("controller: click/createMur/2: endPoint = " + endPoint);
 				Mur mur = config.project.objects.createMur(firstPoint, endPoint, ((Niveau)state.viewRootElement).getHauteur(), null);
-				config.getMainWindow().getSidePaneContainer().useObject(mur);
+				state.viewSelectedElements.clear();
+				state.viewSelectedElements.add(mur);
 				state.actionState = State.ActionState.DEFAULT;
 			}
 
@@ -121,10 +122,13 @@ public class Controller {
 				Drawable closestObject = config.getMainWindow().getCanvasContainer().getClosestLinked(event.getX(), event.getY());
 				if (closestObject == null) {
 					config.tui.log("controller: no object to be focused");
-					config.getMainWindow().getCanvasContainer().getDrawingContext().setSelectedObject(null); // implies redraw
+					state.viewRootElement = null;
+					config.getMainWindow().getCanvasContainer().getDrawingContext().redraw();
 				} else {
 					config.tui.log("controller: focusing object " + closestObject.getId() + " now: " + closestObject.toString());
-					config.getMainWindow().getCanvasContainer().getDrawingContext().setSelectedObject(closestObject); // implies redraw
+					state.viewSelectedElements.clear();
+					state.viewSelectedElements.add(closestObject);
+					config.getMainWindow().getCanvasContainer().getDrawingContext().redraw();
 				}
 				config.getMainWindow().getSidePaneContainer().useObject(closestObject);
 			}

@@ -2,36 +2,21 @@ package fr.insa.dorgli.projetbat.objects;
 
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 
-public class TypeOuvertureMur extends BObject {
-	private String nom;
-	private String description;
+public class TypeOuvertureMur extends Type {
 	private double hauteur;
 	private double largeur;
 	private double prixOuverture;
 
+	public TypeOuvertureMur() {
+		this.hauteur = 0;
+		this.largeur = 0;
+		this.prixOuverture = 0;
+	}
 	public TypeOuvertureMur(int id, String nom, String description, double hauteur, double largeur, double prixOuverture) {
-		super(id);
-		this.nom = nom;
-		this.description = description;
+		super(id, nom, description);
 		this.hauteur = hauteur;
 		this.largeur = largeur;
 		this.prixOuverture = prixOuverture;
-	}
-
-	public String getNom() {
-		return nom;
-	}
-
-	public void setNom(String nom) {
-		this.nom = nom;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
 	}
 
 	public double getPrixOuverture() {
@@ -69,6 +54,7 @@ public class TypeOuvertureMur extends BObject {
         	    .getValue();
 	}
 
+	@Override
 	public String serialize(Objects objects) {
 		return String.join(",",
 		    String.valueOf(super.getId()),

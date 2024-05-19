@@ -11,6 +11,12 @@ public class RevetementPlafondSol extends Drawable implements HasPrice {
 	double pos2L;
 	double pos2H;
 
+	public RevetementPlafondSol() {
+		pos1L = 0;
+		pos1H = 0;
+		pos2L = 0;
+		pos2H = 0;
+	}
 	public RevetementPlafondSol(int id, TypeRevetement typeRevetement, double pos1L, double pos1H, double pos2L, double pos2H) {
 		super(id);
 		this.typeRevetement = typeRevetement;
@@ -85,6 +91,13 @@ public class RevetementPlafondSol extends Drawable implements HasPrice {
 	public double calculerPrix() {
 		// TODO: besoin de la surface !
 		return 0;
+	}
+
+	@Override
+	public boolean ready() {
+		return (
+			typeRevetement != null
+		);
 	}
 
 	@Override

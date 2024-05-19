@@ -1154,7 +1154,7 @@ public class Deserialize {
 					// lire les Pieces, Apparts et orpheanMurs
 					ArrayList<Piece> pieces = new ArrayList<>();
 					ArrayList<Appart> apparts = new ArrayList<>();
-					ArrayList<Mur> orpheanMurs = new ArrayList<>();
+					ArrayList<Drawable> orpheans = new ArrayList<>();
 					config.tui.diveWhere("props");
 					for (
 						SmartReader.ReadResult propResult = sreader.readLine();
@@ -1216,20 +1216,20 @@ public class Deserialize {
 									error("LINE expected but received " + result.getState() + " when reading pieces for Appart");
 								}
 							}
-							case "orpheanMurs" -> {
-								SmartReader.ReadResult orpheanMursResult = sreader.readLine();
-								if (orpheanMursResult.getState() == SmartReader.ReadState.LINE) {
-									String text = orpheanMursResult.getText();
+							case "orpheans" -> {
+								SmartReader.ReadResult orpheansResult = sreader.readLine();
+								if (orpheansResult.getState() == SmartReader.ReadState.LINE) {
+									String text = orpheansResult.getText();
 									if (text.matches(REGEX_INT + "(," + REGEX_INT + ")*")) {
-										String[] orpheanMursIds = text.split(",");
-										for (String each: orpheanMursIds) {
+										String[] orpheansIds = text.split(",");
+										for (String each: orpheansIds) {
 											try {
-												int orpheanMurId = Integer.parseInt(each);
-												Mur orpheanMur = objects.murs.get(orpheanMurId);
-												if (orpheanMur == null) {
-													errorIdNone("Piece", orpheanMurId);
+												int orpheanId = Integer.parseInt(each);
+												Mur orphean = objects.get(orpheanId);
+												if (orphean == null) {
+													errorIdNone("Piece", orpheanId);
 												} else {
-													orpheanMurs.add(orpheanMur);
+													orpheans.add(orphean);
 												}
 											} catch (NumberFormatException e) {
 												errorParse(line, e.getMessage());
@@ -1247,7 +1247,7 @@ public class Deserialize {
 					}
 					config.tui.popWhere();
 
-					Niveau object = new Niveau(id, unescapeString(splitted[1]), unescapeString(splitted[2]), hauteur, pieces, apparts, orpheanMurs);
+					Niveau object = new Niveau(id, unescapeString(splitted[1]), unescapeString(splitted[2]), hauteur, pieces, apparts, orpheans);
 					niveaux.put(id, object);
 					debug("read " + object);
 				} catch (NumberFormatException e) {

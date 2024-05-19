@@ -201,7 +201,6 @@ public class OutilsTop extends MenuBar {
 		});
 
 		////////////// TODO!!!!!!!!!!!!!!!! ne marche pas: initialisé à vide
-		////////////// TODO!!!!!!!!!!!!!!!! utiliser rootElement dans State
 		Menu menuNiveaux = new Menu("Niveau...");
 		for (Niveau niveau: config.project.objects.niveaux.values()) {
 			String niveauNom = niveau.getNom();
@@ -211,13 +210,13 @@ public class OutilsTop extends MenuBar {
 			MenuItem niveauButton = new MenuItem(niveauNom);
 			niveauButton.setOnAction((ActionEvent eh) -> {
 				config.tui.debug("clicked: focus niveau " + niveau);
-				config.getMainWindow().getCanvasContainer().getDrawingContext().setRootObject(niveau);
+				config.controller.state.viewRootElement = niveau;
+				config.getMainWindow().getCanvasContainer().redraw();
 			});
 			menuNiveaux.getItems().add(niveauButton);
 		}
 
 		////////////// TODO!!!!!!!!!!!!!!!! ne marche pas: initialisé à vide
-		////////////// TODO!!!!!!!!!!!!!!!! utiliser rootElement dans State
 		Menu menuBatiments = new Menu("Batiment...");
 		for (Batiment batiment: config.project.objects.batiments.values()) {
 			String batimentNom = batiment.getNom();
@@ -227,7 +226,8 @@ public class OutilsTop extends MenuBar {
 			MenuItem batimentButton = new MenuItem(batimentNom);
 			batimentButton.setOnAction((ActionEvent eh) -> {
 				config.tui.debug("clicked: focus batiment " + batiment);
-				config.getMainWindow().getCanvasContainer().getDrawingContext().setRootObject(batiment);
+				config.controller.state.viewRootElement = batiment;
+				config.getMainWindow().getCanvasContainer().redraw();
 			});
 			menuBatiments.getItems().add(batimentButton);
 		}

@@ -9,8 +9,8 @@ public class Point extends DrawablePoint {
 	private final Point2D.Double point;
 	private Niveau niveau;
 
-	public Point(int id, double x, double y) {
-		this(id, x, y, null);
+	public Point(double x, double y) {
+		this.point = new Point2D.Double(x, y);
 	}
 
 	public Point(int id, double x, double y, Niveau niveau) {
@@ -56,6 +56,13 @@ public class Point extends DrawablePoint {
 		} else {
 			dcx.drawPoint(this, 7.5, Color.LIGHTSKYBLUE, false);
 		}
+	}
+
+	@Override
+	public boolean ready() {
+		return (
+			niveau != null
+		);
 	}
 
 	@Override

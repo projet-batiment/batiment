@@ -2,34 +2,18 @@ package fr.insa.dorgli.projetbat.objects;
 
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 
-public class TypeMur extends BObject  {
-	private String nom;
-	private String description;
+public class TypeMur extends Type  {
 	private double epaisseur;
 	private double prixUnitaire;
 
+	public TypeMur() {
+		this.epaisseur = 0;
+		this.prixUnitaire = 0;
+	}
 	public TypeMur(int id, String nom, String description, double epaisseur, double prixUnitaire) {
-		super(id);
-		this.nom = nom;
-		this.description = description;
+		super(id, nom, description);
 		this.epaisseur = epaisseur;
 		this.prixUnitaire = prixUnitaire;
-	}
-
-	public String getNom() {
-		return nom;
-	}
-
-	public void setNom(String nom) {
-		this.nom = nom;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
 	}
 
 	public double getEpaisseur() {
@@ -58,6 +42,7 @@ public class TypeMur extends BObject  {
         	    .getValue();
 	}
 
+	@Override
 	public String serialize(Objects objects) {
 		return String.join(",",
 		    String.valueOf(super.getId()),

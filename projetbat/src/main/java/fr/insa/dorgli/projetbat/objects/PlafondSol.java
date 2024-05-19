@@ -8,6 +8,10 @@ public class PlafondSol extends Drawable implements HasPrice {
 	private ArrayList<RevetementPlafondSol> revetements;
 	private ArrayList<OuvertureNiveaux> ouvertures;
 
+	public PlafondSol() {
+		revetements = new ArrayList<>();
+		ouvertures = new ArrayList<>();
+	}
 	public PlafondSol(int id, ArrayList<RevetementPlafondSol> revetements, ArrayList<OuvertureNiveaux> ouvertures) {
 		super(id);
 		this.revetements = revetements;
@@ -56,6 +60,11 @@ public class PlafondSol extends Drawable implements HasPrice {
 	@Override
 	public void draw(DrawingContext ctxt, boolean isFocused) {
 		ctxt.tui().error("plafondSol.draw: cannot draw plafondSol");
+	}
+
+	@Override
+	public boolean ready() {
+		return true;
 	}
 
 	@Override

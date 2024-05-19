@@ -8,6 +8,10 @@ public class OuvertureMur extends Drawable {
 	double posL;
 	double posH;
 
+	public OuvertureMur() {
+		posL = 0;
+		posH = 0;
+	}
 	public OuvertureMur(int id, TypeOuvertureMur typeOuverture, double posL, double posH) {
 		super(id);
 		this.typeOuverture = typeOuverture;
@@ -37,6 +41,13 @@ public class OuvertureMur extends Drawable {
 
 	public void setPosH(double posH) {
 		this.posH = posH;
+	}
+
+	@Override
+	public boolean ready() {
+		return (
+			typeOuverture != null
+		);
 	}
 
 	@Override

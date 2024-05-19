@@ -11,4 +11,5 @@ public abstract class Drawable extends BObject {
 	public Drawable(int id) {
 		super(id);
 	}
+	public Drawable() { }
 }

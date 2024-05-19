@@ -2,32 +2,15 @@ package fr.insa.dorgli.projetbat.objects;
 
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 
-public class TypeRevetement extends BObject {
-	private String nom;
-	private String description;
+public class TypeRevetement extends Type {
 	private double prixUnitaire;
 
+	public TypeRevetement() {
+		this.prixUnitaire = 0;
+	}
 	public TypeRevetement(int id, String nom, String description, double prixUnitaire) {
-		super(id);
-		this.nom = nom;
-		this.description = description;
+		super(id, nom, description);
 		this.prixUnitaire = prixUnitaire;
-	}
-
-	public String getNom() {
-		return nom;
-	}
-
-	public void setNom(String nom) {
-		this.nom = nom;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
 	}
 
 	public double getPrixUnitaire() {
@@ -47,6 +30,7 @@ public class TypeRevetement extends BObject {
         	    .getValue();
 	}
 
+	@Override
 	public String serialize(Objects objects) {
 		return String.join(",",
 		    String.valueOf(super.getId()),

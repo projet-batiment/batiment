@@ -8,26 +8,28 @@ import java.util.Collection;
 
 public class Objects {
 	// liste des objets
-	public HashMap<Integer, Batiment> batiments = new HashMap<>();
-	public HashMap<Integer, Niveau> niveaux = new HashMap<>();
-	public HashMap<Integer, Appart> apparts = new HashMap<>();
-	public HashMap<Integer, Piece> pieces = new HashMap<>();
-	public HashMap<Integer, Mur> murs = new HashMap<>();
-	public HashMap<Integer, PlafondSol> plafondsSols = new HashMap<>();
-	public HashMap<Integer, Point> points = new HashMap<>();
+	private HashMap<Integer, Batiment> batiments = new HashMap<>();
+	private HashMap<Integer, Niveau> niveaux = new HashMap<>();
+	private HashMap<Integer, Appart> apparts = new HashMap<>();
+	private HashMap<Integer, Piece> pieces = new HashMap<>();
+	private HashMap<Integer, Mur> murs = new HashMap<>();
+	private HashMap<Integer, PlafondSol> plafondsSols = new HashMap<>();
+	private HashMap<Integer, Point> points = new HashMap<>();
 
-	public HashMap<Integer, OuvertureMur> ouverturesMur = new HashMap<>();
-	public HashMap<Integer, OuvertureNiveaux> ouverturesNiveaux = new HashMap<>();
+	private HashMap<Integer, OuvertureMur> ouverturesMur = new HashMap<>();
+	private HashMap<Integer, OuvertureNiveaux> ouverturesNiveaux = new HashMap<>();
 
-	public HashMap<Integer, RevetementMur> revetementsMur = new HashMap<>();
-	public HashMap<Integer, RevetementPlafondSol> revetementsPlafondSol = new HashMap<>();
+	private HashMap<Integer, RevetementMur> revetementsMur = new HashMap<>();
+	private HashMap<Integer, RevetementPlafondSol> revetementsPlafondSol = new HashMap<>();
 
-	public HashMap<Integer, TypeMur> typesMur = new HashMap<>();
-	public HashMap<Integer, TypeOuvertureMur> typesOuverturesMur = new HashMap<>();
-	public HashMap<Integer, TypeOuvertureNiveau> typesOuverturesNiveau = new HashMap<>();
-	public HashMap<Integer, TypeRevetement> typesRevetement = new HashMap<>();
-	public HashMap<Integer, TypeAppart> typesAppart = new HashMap<>();
-	public HashMap<Integer, TypeBatiment> typesBatiment = new HashMap<>();
+	private HashMap<Integer, TypeMur> typesMur = new HashMap<>();
+	private HashMap<Integer, TypeOuvertureMur> typesOuverturesMur = new HashMap<>();
+	private HashMap<Integer, TypeOuvertureNiveau> typesOuverturesNiveau = new HashMap<>();
+	private HashMap<Integer, TypeRevetement> typesRevetement = new HashMap<>();
+	private HashMap<Integer, TypeAppart> typesAppart = new HashMap<>();
+	private HashMap<Integer, TypeBatiment> typesBatiment = new HashMap<>();
+
+	private HashMap<Integer, BObject> all = new HashMap<>();
 
 //	public void drawAll(CanvasContainer canvasContainer) {
 ////		System.out.println("INF: draw/objects: murs (" + murs.size() + "): " + murs.toString());
@@ -119,6 +121,29 @@ public class Objects {
 
 	///// create objects (with ID & into matching HashMap)
 
+	/**
+	 * @param object
+	 * @return the id given to the object, or -1 if the id is already held by another object 
+	 */
+	public int add(BObject object) {
+		if (object.getId() <= 0) {
+			object.setId(generateId());
+		}
+
+		if (all.get(object.getId()) == null) {
+			all.put(object.getId(), object);
+			return object.getId();
+		} else {
+			return -1;
+		}
+	}
+
+	public BObject get(int id) {
+		return all.get(id);
+	}
+
+	/////
+
 	public Point createPoint(double x, double y, Niveau niveau) {
 		int id = generateId();
 		Point point = new Point(id, x, y, niveau);
@@ -131,13 +156,6 @@ public class Objects {
 		Appart appart = new Appart(id, nom, description, pieces, typeAppart);
 		apparts.put(id, appart);
 		return appart;
-	}
-
-	public Mur createMur(Point pointDebut, Point pointFin, double hauteur, TypeMur typeMur) {
-		int id = generateId();
-		Mur mur = new Mur(id, pointDebut, pointFin, hauteur, typeMur);
-		murs.put(id, mur);
-		return mur;
 	}
 
 	public Mur createMur(Point pointDebut, Point pointFin, double hauteur, TypeMur typeMur,
@@ -156,9 +174,9 @@ public class Objects {
 		return batiment;
 	}
 
-	public Niveau createNiveau(String nom, String description, double hauteur, ArrayList<Piece> pieces, ArrayList<Appart> apparts, ArrayList<Mur> orpheanMurs) {
+	public Niveau createNiveau(String nom, String description, double hauteur, ArrayList<Piece> pieces, ArrayList<Appart> apparts, ArrayList<Drawable> orpheans) {
 		int id = generateId();
-		Niveau niveau = new Niveau(id, nom, description, hauteur, pieces, apparts, orpheanMurs);
+		Niveau niveau = new Niveau(id, nom, description, hauteur, pieces, apparts, orpheans);
 		niveaux.put(id, niveau);
 		return niveau;
 	}
@@ -245,68 +263,6 @@ public class Objects {
 		TypeRevetement typeRevetement = new TypeRevetement(id, nom, description, prixUnitaire);
 		typesRevetement.put(id, typeRevetement);
 		return typeRevetement;
-	}
-
-	///// get object according to ID, return null (HashMap.get) if not found
-
-	public Mur getMurById(int id) {
-		return murs.get(id);
-	}
-
-	public Piece getPieceById(int id) {
-		return pieces.get(id);
-	}
-
-	public Appart getAppartById(int id) {
-		return apparts.get(id);
-	}
-
-	public Batiment getBatimentById(int id) {
-		return batiments.get(id);
-	}
-
-	public Niveau getNiveauById(int id) {
-		return niveaux.get(id);
-	}
-
-	public OuvertureMur getOuvertureMurById(int id) {
-		return ouverturesMur.get(id);
-	}
-
-	public OuvertureNiveaux getOuvertureNiveauById(int id) {
-		return ouverturesNiveaux.get(id);
-	}
-
-	public RevetementMur getRevetementMurById(int id) {
-		return revetementsMur.get(id);
-	}
-
-	public PlafondSol getSolPlafondById(int id) {
-		return plafondsSols.get(id);
-	}
-
-	public TypeMur getTypeMurById(int id) {
-		return typesMur.get(id);
-	}
-
-	public Point getPointById(int id) {
-		return points.get(id);
-	}
-
-	public TypeOuvertureNiveau getTypeOuvertureNiveauById(int id) {
-		return typesOuverturesNiveau.get(id);
-	}
-
-	public TypeOuvertureMur getTypeOuvertureMurById(int id) {
-		return typesOuverturesMur.get(id);
-	}
-
-	public TypeRevetement getTypeRevetementById(int id) {
-		return typesRevetement.get(id);
-	}
-
-	public RevetementPlafondSol getRevetementPlafondSolById(int id) {
-		return revetementsPlafondSol.get(id);
 	}
 
 	///// toString custom implementation
