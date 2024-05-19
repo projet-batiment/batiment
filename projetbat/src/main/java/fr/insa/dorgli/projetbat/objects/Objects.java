@@ -29,7 +29,7 @@ public class Objects {
 	private HashMap<Integer, TypeAppart> typesAppart = new HashMap<>();
 	private HashMap<Integer, TypeBatiment> typesBatiment = new HashMap<>();
 
-	private HashMap<Integer, BObject> all = new HashMap<>();
+	private final HashMap<Integer, BObject> all = new HashMap<>();
 
 //	public void drawAll(CanvasContainer canvasContainer) {
 ////		System.out.println("INF: draw/objects: murs (" + murs.size() + "): " + murs.toString());
@@ -140,6 +140,10 @@ public class Objects {
 
 	public BObject get(int id) {
 		return all.get(id);
+	}
+
+	public HashMap<Integer, BObject> getAll() {
+		return all;
 	}
 
 	/////
