@@ -19,7 +19,6 @@ public class Deserialize {
 	// 
 	// - unescapeString et escapeString : pour permettre des \n, des virgules dans la sauvegarde
 	// - fonctions d'erreur
-	// - une méthode générique
 	//
 	// - une classe PseudoPoint pour lire temporairement les points et ensuite leur attribuer un réel niveau
 	// 
@@ -92,32 +91,13 @@ public class Deserialize {
 		error("mauvaise syntaxe: '" + text + "'");
 	}
 	private void errorIdNone(String typeName, int objectId) {
-		error("l'ID " + objectId + " n'existe pas en tant que " + typeName );
+		error("l'ID " + objectId + " n'existe pas (" + typeName  + ")");
 	}
 	private void errorIdAgain(int objectId) {
 		error("ID déjà pris ou incorrect: ID " + objectId);
 	}
-
-	// Méthode obscure, générique de type T, pour à la fois :
-	// 1) convertir le HashMap newMap en un ArrayList, qui est renvoyé à la fin
-	// 2) vérifier que les keys du newMap (ie les ID des objets) ne sont pas déjà occupés dans le Hashmap olderMap,
-	//    qui contient la liste des objets du type T déjà créés/lus
-	// 3) ajouter les paires (id + objet) du newMap au olderMap
-	// Cette méthode est utile pour lire les objets qui nécessaitent des objets internes (mur, pièce, plafond, sol, etc), car dans ce
-	// cas de figure, on utilise directement les objets sous forme de ArrayList après les avoir lus au lieu de renvoyer un bête HashMap
-	private <T> ArrayList<T> manageHashMapToArrayList(HashMap<Integer, T> newMap, HashMap<Integer, T> olderMap) {
-		config.tui.diveWhere("manageHashMapToArray");
-		ArrayList<T> out = new ArrayList<>();
-		for (Integer key: newMap.keySet()) {
-			if (olderMap.containsKey(key)) {
-				errorIdAgain(key);
-			} else {
-				out.add(newMap.get(key));
-				olderMap.put(key, newMap.get(key));
-			}
-		}
-		config.tui.popWhere();
-		return out;
+	private void errorIdWrongType(String typeName, int objectId) {
+		error("l'ID " + objectId + " est occupé par un objet qui n'est PAS de type " + typeName);
 	}
 
 	private class PseudoPoint {
@@ -125,7 +105,7 @@ public class Deserialize {
 		int niveauId;
 
 		public PseudoPoint(int id, double x, double y, int niveauId) {
-			this.point = new Point(id, x, y);
+			this.point = new Point(id, x, y, null);
 			this.niveauId = niveauId;
 		}
 
@@ -133,12 +113,16 @@ public class Deserialize {
 			return point;
 		}
 
- 		public void setNiveau(HashMap<Integer, Niveau> niveaux) {
-			if (niveaux.containsKey(niveauId)) {
-				point.setNiveau(niveaux.get(niveauId));
+ 		public void setNiveau(Objects objects) {
+			BObject propObject = objects.get(niveauId);
+			if (propObject instanceof Niveau niveau) {
+				point.setNiveau(niveau);
 				debug("pseudoPoint: set niveau of point " + point.toString());
+			} else if (propObject == null) {
+				errorIdNone("Niveau", niveauId);
 			} else {
-				error("le point " + point.toStringShort() + " pointe un niveau inexistant (id " + niveauId + ")");
+				debug("le point " + point.toStringShort() + " pointe un niveau inexistant (id " + niveauId + ")");
+				errorIdWrongType("Niveau", niveauId);
 			}
 		}
 
@@ -183,18 +167,18 @@ public class Deserialize {
 						debug("reading objects section " + TUI.blue("'" + objectsKind + "'") + "...");
 
 						switch (objectsKind) {
-							case "Batiment" ->		newProject.objects.batiments = batimentsFromString(newProject.objects);
-							case "Point" -> 		newProject.objects.points = pointsFromString(pseudoPoints);
-							case "TypeRevetement" -> 	newProject.objects.typesRevetement = typeRevetementsFromString();
-							case "TypeOuvertureMur" -> 	newProject.objects.typesOuverturesMur = typeOuvertureMursFromString();
-							case "TypeOuvertureNiveau" -> 	newProject.objects.typesOuverturesNiveau = typeOuvertureNiveauxFromString();
-							case "TypeMur" -> 		newProject.objects.typesMur = typeMursFromString();
-							case "TypeAppart" -> 		newProject.objects.typesAppart = typeAppartsFromString();
-							case "TypeBatiment" -> 		newProject.objects.typesBatiment = typeBatimentsFromString();
-							case "Mur" -> 			newProject.objects.murs = mursFromString(newProject.objects);
-							case "Piece" ->			newProject.objects.pieces = piecesFromString(newProject.objects);
-							case "Appart" ->		newProject.objects.apparts = appartsFromString(newProject.objects);
-							case "Niveau" ->		newProject.objects.niveaux = niveauxFromString(newProject.objects);
+							case "Batiment" ->		batimentsFromString(newProject.objects);
+							case "Point" -> 		pseudoPoints = pointsFromString(newProject.objects);
+							case "TypeRevetement" -> 	typeRevetementsFromString(newProject.objects);
+							case "TypeOuvertureMur" -> 	typeOuvertureMursFromString(newProject.objects);
+							case "TypeOuvertureNiveau" -> 	typeOuvertureNiveauxFromString(newProject.objects);
+							case "TypeMur" -> 		typeMursFromString(newProject.objects);
+							case "TypeAppart" -> 		typeAppartsFromString(newProject.objects);
+							case "TypeBatiment" -> 		typeBatimentsFromString(newProject.objects);
+							case "Mur" -> 			mursFromString(newProject.objects);
+							case "Piece" ->			piecesFromString(newProject.objects);
+							case "Appart" ->		appartsFromString(newProject.objects);
+							case "Niveau" ->		niveauxFromString(newProject.objects);
 							//case "PlafondSol" -> 		newProject.objects.plafondsSols = plafondSolsFromString(newProject.objects);
 							default -> error("section d'objects inconnue: '" + objectsKind + "'");
 						}
@@ -223,7 +207,7 @@ public class Deserialize {
 			}
 
 			for (PseudoPoint p: pseudoPoints) {
-				p.setNiveau(newProject.objects.niveaux);
+				p.setNiveau(newProject.objects);
 			}
 
 		} catch (IOException e) {
@@ -259,10 +243,10 @@ public class Deserialize {
 				case "version" -> {
 					try {
 						int savefileVersion = Integer.parseInt(command[1]);
-						if (savefileVersion < config.minimumSavefileVersion) {
-							error("savefile is too old (v" + savefileVersion + " < min " + config.minimumSavefileVersion + ")");
-						} else if (savefileVersion > config.maximumSavefileVersion) {
-							error("savefile is too recent (v" + savefileVersion + " > max " + config.maximumSavefileVersion + ")");
+						if (savefileVersion < Config.minimumSavefileVersion) {
+							error("savefile is too old (v" + savefileVersion + " < min " + Config.minimumSavefileVersion + ")");
+						} else if (savefileVersion > Config.maximumSavefileVersion) {
+							error("savefile is too recent (v" + savefileVersion + " > max " + Config.maximumSavefileVersion + ")");
 						} else {
 							debug("savefile is of correct version " + savefileVersion);
 						}
@@ -285,11 +269,14 @@ public class Deserialize {
 				case "default Batiment" -> {
 					try {
 						int batimentId = Integer.parseInt(command[1]);
-						Batiment batiment = newProject.objects.batiments.get(batimentId);
-						if (batiment == null) {
+						BObject propObject = newProject.objects.get(batimentId);
+						if (propObject instanceof Batiment batiment) {
+							// TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+							debug("default Batiment read: " + batiment);
+						} else if (propObject == null) {
 							errorIdNone("Batiment", batimentId);
 						} else {
-							debug("default Batiment read: " + batimentId);
+							errorIdWrongType("Batiment", batimentId);
 						}
 					} catch (NumberFormatException e) {
 						errorParse(line, e.getMessage());
@@ -298,11 +285,14 @@ public class Deserialize {
 				case "default Niveau" -> {
 					try {
 						int niveauId = Integer.parseInt(command[1]);
-						Niveau niveau = newProject.objects.niveaux.get(niveauId);
-						if (niveau == null) {
+						BObject propObject = newProject.objects.get(niveauId);
+						if (propObject instanceof Niveau niveau) {
+							// TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+							debug("default Niveau read: " + niveau);
+						} else if (propObject == null) {
 							errorIdNone("Niveau", niveauId);
 						} else {
-							debug("default Niveau read: " + niveauId);
+							errorIdWrongType("Niveau", niveauId);
 						}
 					} catch (NumberFormatException e) {
 						errorParse(line, e.getMessage());
@@ -317,10 +307,10 @@ public class Deserialize {
 	}
 
 	/// Point
-	private HashMap<Integer, Point> pointsFromString(ArrayList<PseudoPoint> pseudoPoints) throws IOException {
+	private ArrayList<PseudoPoint> pointsFromString(Objects objects) throws IOException {
 		config.tui.diveWhere("Points");
 		config.tui.begin();
-		HashMap<Integer, Point> points = new HashMap<>();
+		ArrayList<PseudoPoint> pseudoPoints = new ArrayList<>();
 
 		final String regex = String.join(",", REGEX_INT, REGEX_DOUBLE, REGEX_DOUBLE, REGEX_INT);
 		debug("regex: '" + regex + "'");
@@ -335,7 +325,7 @@ public class Deserialize {
 
 				int id = Integer.parseInt(splitted[0]);
 
-				if (points.keySet().contains(id)) {
+				if (objects.get(id) != null) {
 					errorIdAgain(id);
 				}
 
@@ -345,8 +335,8 @@ public class Deserialize {
 					int niveauId = Integer.parseInt(splitted[3]);
 
 					PseudoPoint pseudoObject = new PseudoPoint(id, x, y, niveauId);
-					points.put(id, pseudoObject.getPoint());
 					pseudoPoints.add(pseudoObject);
+					objects.put(pseudoObject.getPoint());
 					debug("read pseudo object " + pseudoObject);
 				} catch (NumberFormatException e) {
 					errorParse(line, e.getMessage());
@@ -358,14 +348,14 @@ public class Deserialize {
 
 		config.tui.ended();
 		config.tui.popWhere();
-		return points;
+		return pseudoPoints;
 	}
 
 	/// TypeRevetement
-	private HashMap<Integer, TypeRevetement> typeRevetementsFromString() throws IOException {
+	private ArrayList<TypeRevetement> typeRevetementsFromString(Objects objects) throws IOException {
 		config.tui.diveWhere("TypeRevetements");
 		config.tui.begin();
-		HashMap<Integer, TypeRevetement> typeRevetements = new HashMap<>();
+		ArrayList<TypeRevetement> typeRevetements = new ArrayList<>();
 
 		final String regex = String.join(",", REGEX_INT, REGEX_STRING, REGEX_STRING, REGEX_DOUBLE);
 		debug("regex: '" + regex + "'");
@@ -380,7 +370,7 @@ public class Deserialize {
 
 				int id = Integer.parseInt(splitted[0]);
 
-				if (typeRevetements.keySet().contains(id)) {
+				if (objects.get(id) != null) {
 					errorIdAgain(id);
 				}
 
@@ -388,7 +378,8 @@ public class Deserialize {
 					double prixUnitaire = Double.parseDouble(splitted[3]);
 
 					TypeRevetement object = new TypeRevetement(id, unescapeString(splitted[1]), unescapeString(splitted[2]), prixUnitaire);
-					typeRevetements.put(id, object);
+					typeRevetements.add(object);
+					objects.put(object);
 					debug("read " + object);
 				} catch (NumberFormatException e) {
 					errorParse(line, e.getMessage());
@@ -404,10 +395,10 @@ public class Deserialize {
 	}
 
 	/// TypeOuvertureMur
-	private HashMap<Integer, TypeOuvertureMur> typeOuvertureMursFromString() throws IOException {
+	private ArrayList<TypeOuvertureMur> typeOuvertureMursFromString(Objects objects) throws IOException {
 		config.tui.diveWhere("TypeOuvertureMurs");
 		config.tui.begin();
-		HashMap<Integer, TypeOuvertureMur> typeOuvertureMurs = new HashMap<>();
+		ArrayList<TypeOuvertureMur> typeOuvertureMurs = new ArrayList<>();
 
 		final String regex = String.join(",", REGEX_INT, REGEX_STRING, REGEX_STRING, REGEX_DOUBLE, REGEX_DOUBLE, REGEX_DOUBLE);
 		debug("regex: '" + regex + "'");
@@ -422,7 +413,7 @@ public class Deserialize {
 
 				int id = Integer.parseInt(splitted[0]);
 
-				if (typeOuvertureMurs.keySet().contains(id)) {
+				if (objects.get(id) != null) {
 					errorIdAgain(id);
 				}
 
@@ -432,7 +423,8 @@ public class Deserialize {
 					double prixUnitaire = Double.parseDouble(splitted[5]);
 
 					TypeOuvertureMur object = new TypeOuvertureMur(id, unescapeString(splitted[1]), unescapeString(splitted[2]), hauteur, largeur, prixUnitaire);
-					typeOuvertureMurs.put(id, object);
+					typeOuvertureMurs.add(object);
+					objects.put(object);
 					debug("read " + object);
 				} catch (NumberFormatException e) {
 					errorParse(line, e.getMessage());
@@ -448,10 +440,10 @@ public class Deserialize {
 	}
 
 	/// TypeMur
-	private HashMap<Integer, TypeMur> typeMursFromString() throws IOException {
+	private ArrayList<TypeMur> typeMursFromString(Objects objects) throws IOException {
 		config.tui.diveWhere("TypeMurs");
 		config.tui.begin();
-		HashMap<Integer, TypeMur> typeMurs = new HashMap<>();
+		ArrayList<TypeMur> typeMurs = new ArrayList<>();
 
 		final String regex = String.join(",", REGEX_INT, REGEX_STRING, REGEX_STRING, REGEX_DOUBLE, REGEX_DOUBLE);
 		debug("regex: '" + regex + "'");
@@ -466,7 +458,7 @@ public class Deserialize {
 
 				int id = Integer.parseInt(splitted[0]);
 
-				if (typeMurs.keySet().contains(id)) {
+				if (objects.get(id) != null) {
 					errorIdAgain(id);
 				}
 
@@ -475,7 +467,8 @@ public class Deserialize {
 					double prixU = Double.parseDouble(splitted[4]);
 
 					TypeMur object = new TypeMur(id, unescapeString(splitted[1]), unescapeString(splitted[2]), epaisseur, prixU);
-					typeMurs.put(id, object);
+					typeMurs.add(object);
+					objects.put(object);
 					debug("read " + object);
 				} catch (NumberFormatException e) {
 					errorParse(line, e.getMessage());
@@ -491,10 +484,10 @@ public class Deserialize {
 	}
 
 	/// RevetementMur
-	private HashMap<Integer, RevetementMur> revetementMursFromString(HashMap<Integer, TypeRevetement> typeRevetements) throws IOException {
+	private ArrayList<RevetementMur> revetementMursFromString(Objects objects) throws IOException {
 		config.tui.diveWhere("RevetementMurs");
 		config.tui.begin();
-		HashMap<Integer, RevetementMur> revetementMurs = new HashMap<>();
+		ArrayList<RevetementMur> revetementMurs = new ArrayList<>();
 
 			final String regex = String.join(",", REGEX_INT, REGEX_INT, REGEX_DOUBLE, REGEX_DOUBLE, REGEX_DOUBLE, REGEX_DOUBLE);
 			debug("regex: '" + regex + "'");
@@ -509,20 +502,28 @@ public class Deserialize {
 
 				int id = Integer.parseInt(splitted[0]);
 
-				if (revetementMurs.keySet().contains(id)) {
+				if (objects.get(id) != null) {
 					errorIdAgain(id);
 				}
 
 				try {
-					TypeRevetement tr = typeRevetements.get(Integer.valueOf(splitted[1]));
-					double p1l = Double.parseDouble(splitted[2]);
-					double p1h = Double.parseDouble(splitted[3]);
-					double p2l = Double.parseDouble(splitted[4]);
-					double p2h = Double.parseDouble(splitted[5]);
+					int trId = Integer.parseInt(splitted[1]);
+					BObject propObject = objects.get(trId);
+					if (propObject instanceof TypeRevetement tr) {
+						double p1l = Double.parseDouble(splitted[2]);
+						double p1h = Double.parseDouble(splitted[3]);
+						double p2l = Double.parseDouble(splitted[4]);
+						double p2h = Double.parseDouble(splitted[5]);
 
-					RevetementMur object = new RevetementMur(id, tr, p1l, p1h, p2l, p2h);
-					revetementMurs.put(id, object);
-					debug("read " + object);
+						RevetementMur object = new RevetementMur(id, tr, p1l, p1h, p2l, p2h);
+						revetementMurs.add(object);
+						objects.put(object);
+						debug("read " + object);
+					} else if (propObject == null) {
+						errorIdNone("TypeOuvertureNiveau", trId);
+					} else {
+						errorIdWrongType("TypeOuvertureNiveau", trId);
+					}
 				} catch (NumberFormatException e) {
 					errorParse(line, e.getMessage());
 				}
@@ -537,10 +538,10 @@ public class Deserialize {
 	}
 
 	/// OuvertureMur
-	private HashMap<Integer, OuvertureMur> ouvertureMursFromString(HashMap<Integer, TypeOuvertureMur> typeOuvertureMurs) throws IOException {
+	private ArrayList<OuvertureMur> ouvertureMursFromString(Objects objects) throws IOException {
 		config.tui.diveWhere("OuvertureMurs");
 		config.tui.begin();
-		HashMap<Integer, OuvertureMur> ouvertureMurs = new HashMap<>();
+		ArrayList<OuvertureMur> ouvertureMurs = new ArrayList<>();
 
 		final String regex = String.join(",", REGEX_INT, REGEX_INT, REGEX_DOUBLE, REGEX_DOUBLE);
 		debug("regex: '" + regex + "'");
@@ -555,18 +556,26 @@ public class Deserialize {
 
 				int id = Integer.parseInt(splitted[0]);
 
-				if (ouvertureMurs.keySet().contains(id)) {
+				if (objects.get(id) != null) {
 					errorIdAgain(id);
 				}
 
 				try {
-					TypeOuvertureMur tr = typeOuvertureMurs.get(Integer.valueOf(splitted[1]));
-					double p1l = Double.parseDouble(splitted[2]);
-					double p1h = Double.parseDouble(splitted[3]);
+					int toId = Integer.parseInt(splitted[1]);
+					BObject propObject = objects.get(toId);
+					if (propObject instanceof TypeOuvertureMur to) {
+						double p1l = Integer.parseInt(splitted[2]);
+						double p1h = Integer.parseInt(splitted[3]);
 
-					OuvertureMur object = new OuvertureMur(id, tr, p1l, p1h);
-					ouvertureMurs.put(id, object);
-					debug("read " + object);
+						OuvertureMur object = new OuvertureMur(id, to, p1l, p1h);
+						ouvertureMurs.add(object);
+						objects.put(object);
+						debug("read " + object);
+					} else if (propObject == null) {
+						errorIdNone("TypeOuvertureNiveau", toId);
+					} else {
+						errorIdWrongType("TypeOuvertureNiveau", toId);
+					}
 				} catch (NumberFormatException e) {
 					errorParse(line, e.getMessage());
 				}
@@ -581,10 +590,10 @@ public class Deserialize {
 	}
 
 	/// Mur
-	private HashMap<Integer, Mur> mursFromString (Objects objects) throws IOException {
+	private ArrayList<Mur> mursFromString (Objects objects) throws IOException {
 		config.tui.diveWhere("Murs");
 		config.tui.begin();
-		HashMap<Integer, Mur> murs = new HashMap<>();
+		ArrayList<Mur> murs = new ArrayList<>();
 
 		final String regex = String.join(",", REGEX_INT, REGEX_INT, REGEX_INT, REGEX_DOUBLE, REGEX_INT);
 		debug("regex: '" + regex + "'");
@@ -599,53 +608,80 @@ public class Deserialize {
 
 				int id = Integer.parseInt(splitted[0]);
 
-				if (murs.keySet().contains(id)) {
+				if (objects.get(id) != null) {
 					errorIdAgain(id);
 				}
 
 				try {
 					// lire les propriétés directes du mur
-					Point p1 = objects.points.get(Integer.valueOf(splitted[1]));
-					Point p2 = objects.points.get(Integer.valueOf(splitted[2]));
+					Point p1 = null;
+					Point p2 = null;
 					double hauteur = Double.parseDouble(splitted[3]);
-					TypeMur typeMur = objects.typesMur.get(Integer.valueOf(splitted[4]));
+					TypeMur tm = null;
 
-					// lire les RevetementMur des 2 côtés et les OuvertureMur
-					HashMap<Integer, RevetementMur> r1;
-					ArrayList<RevetementMur> r1_list = new ArrayList<>();
-					HashMap<Integer, RevetementMur> r2;
-					ArrayList<RevetementMur> r2_list = new ArrayList<>();
-					HashMap<Integer, OuvertureMur> o;
-					ArrayList<OuvertureMur> o_list = new ArrayList<>();
-					config.tui.diveWhere("props");
-					for (
-						SmartReader.ReadResult propResult = sreader.readLine();
-						propResult.getState() == SmartReader.ReadState.LINE;
-						propResult = sreader.readLine()
-					) {
-						String propType = propResult.getText().replaceFirst("PROP:", "");
-						debug("reading mur prop '" + TUI.blue(propType) + "'");
-						switch (propType) {
-							case "RevetementMur:1" -> {
-								r1 = revetementMursFromString(objects.typesRevetement);
-								r1_list = manageHashMapToArrayList(r1, objects.revetementsMur);
-							}
-							case "RevetementMur:2" -> {
-								r2 = revetementMursFromString(objects.typesRevetement);
-								r2_list = manageHashMapToArrayList(r2, objects.revetementsMur);
-							}
-							case "OuvertureMur" -> {
-								o = ouvertureMursFromString(objects.typesOuverturesMur);
-								o_list = manageHashMapToArrayList(o, objects.ouverturesMur);
-							}
-							default -> error("propriété du mur inconnue: '" + propResult.getText() + "'");
-						}
+					int point1Id = Integer.parseInt(splitted[1]);
+					BObject point1Object = objects.get(point1Id);
+					if (point1Object instanceof Point point) {
+						p1 = point;
+					} else if (point1Object == null) {
+						errorIdNone("Point", point1Id);
+					} else {
+						errorIdWrongType("Point", point1Id);
 					}
-					config.tui.popWhere();
 
-					Mur object = new Mur(id, p1, p2, hauteur, typeMur, r1_list, r2_list, o_list);
-					murs.put(id, object);
-					debug("read " + object);
+					int point2Id = Integer.parseInt(splitted[2]);
+					BObject point2Object = objects.get(point2Id);
+					if (point2Object instanceof Point point) {
+						p2 = point;
+					} else if (point2Object == null) {
+						errorIdNone("Point", point2Id);
+					} else {
+						errorIdWrongType("Point", point2Id);
+					}
+
+					int tmId = Integer.parseInt(splitted[4]);
+					BObject tmObject = objects.get(tmId);
+					if (tmObject instanceof TypeMur typeMur) {
+						tm = typeMur;
+					} else if (tmObject == null) {
+						errorIdNone("Point", tmId);
+					} else {
+						errorIdWrongType("Point", tmId);
+					}
+
+					if (p1 != null && p2 != null && tm != null) {
+						// lire les RevetementMur des 2 côtés et les OuvertureMur
+						ArrayList<RevetementMur> r1_list = new ArrayList<>();
+						ArrayList<RevetementMur> r2_list = new ArrayList<>();
+						ArrayList<OuvertureMur> o_list = new ArrayList<>();
+						config.tui.diveWhere("props");
+						for (
+							SmartReader.ReadResult propResult = sreader.readLine();
+							propResult.getState() == SmartReader.ReadState.LINE;
+							propResult = sreader.readLine()
+						) {
+							String propType = propResult.getText().replaceFirst("PROP:", "");
+							debug("reading mur prop '" + TUI.blue(propType) + "'");
+							switch (propType) {
+								case "RevetementMur:1" -> {
+									r1_list = revetementMursFromString(objects);
+								}
+								case "RevetementMur:2" -> {
+									r2_list = revetementMursFromString(objects);
+								}
+								case "OuvertureMur" -> {
+									o_list = ouvertureMursFromString(objects);
+								}
+								default -> error("propriété du mur inconnue: '" + propResult.getText() + "'");
+							}
+						}
+						config.tui.popWhere();
+
+						Mur object = new Mur(id, p1, p2, hauteur, tm, r1_list, r2_list, o_list);
+						murs.add(object);
+						objects.put(object);
+						debug("read " + object);
+					}
 				} catch (NumberFormatException e) {
 					errorParse(line, e.getMessage());
 				}
@@ -660,10 +696,10 @@ public class Deserialize {
 	}
 
 	/// TypeOuvertureNiveau
-	private HashMap<Integer, TypeOuvertureNiveau> typeOuvertureNiveauxFromString() throws IOException {
+	private ArrayList<TypeOuvertureNiveau> typeOuvertureNiveauxFromString(Objects objects) throws IOException {
 		config.tui.diveWhere("TypeOuvertureNiveaux");
 		config.tui.begin();
-		HashMap<Integer, TypeOuvertureNiveau> typeOuvertureNiveaux = new HashMap<>();
+		ArrayList<TypeOuvertureNiveau> typeOuvertureNiveaux = new ArrayList<>();
 
 		final String regex = String.join(",", REGEX_INT, REGEX_STRING, REGEX_STRING, REGEX_DOUBLE, REGEX_DOUBLE, REGEX_DOUBLE);
 		debug("regex: '" + regex + "'");
@@ -678,7 +714,7 @@ public class Deserialize {
 
 				int id = Integer.parseInt(splitted[0]);
 
-				if (typeOuvertureNiveaux.keySet().contains(id)) {
+				if (objects.get(id) != null) {
 					errorIdAgain(id);
 				}
 
@@ -688,7 +724,8 @@ public class Deserialize {
 					double prixUnitaire = Double.parseDouble(splitted[5]);
 
 					TypeOuvertureNiveau object = new TypeOuvertureNiveau(id, unescapeString(splitted[1]), unescapeString(splitted[2]), hauteur, largeur, prixUnitaire);
-					typeOuvertureNiveaux.put(id, object);
+					typeOuvertureNiveaux.add(object);
+					objects.put(object);
 					debug("read " + object);
 				} catch (NumberFormatException e) {
 					errorParse(line, e.getMessage());
@@ -704,10 +741,10 @@ public class Deserialize {
 	}
 
 	/// RevetementPlafondSol
-	private HashMap<Integer, RevetementPlafondSol> revetementPlafondSolsFromString(HashMap<Integer, TypeRevetement> typeRevetements) throws IOException {
+	private ArrayList<RevetementPlafondSol> revetementPlafondSolsFromString(Objects objects) throws IOException {
 		config.tui.diveWhere("RevetementPlafondSols");
 		config.tui.begin();
-		HashMap<Integer, RevetementPlafondSol> revetementPlafondSols = new HashMap<>();
+		ArrayList<RevetementPlafondSol> revetementPlafondSols = new ArrayList<>();
 
 		final String regex = String.join(",", REGEX_INT, REGEX_INT, REGEX_DOUBLE, REGEX_DOUBLE, REGEX_DOUBLE, REGEX_DOUBLE);
 		debug("regex: '" + regex + "'");
@@ -722,20 +759,28 @@ public class Deserialize {
 
 				int id = Integer.parseInt(splitted[0]);
 
-				if (revetementPlafondSols.keySet().contains(id)) {
+				if (objects.get(id) != null) {
 					errorIdAgain(id);
 				}
 
 				try {
-					TypeRevetement tr = typeRevetements.get(Integer.valueOf(splitted[1]));
-					double p1l = Double.parseDouble(splitted[2]);
-					double p1h = Double.parseDouble(splitted[3]);
-					double p2l = Double.parseDouble(splitted[4]);
-					double p2h = Double.parseDouble(splitted[5]);
+					int trId = Integer.parseInt(splitted[1]);
+					BObject propObject = objects.get(trId);
+					if (propObject instanceof TypeRevetement tr) {
+						double p1l = Double.parseDouble(splitted[2]);
+						double p1h = Double.parseDouble(splitted[3]);
+						double p2l = Double.parseDouble(splitted[4]);
+						double p2h = Double.parseDouble(splitted[5]);
 
-					RevetementPlafondSol object = new RevetementPlafondSol(id, tr, p1l, p1h, p2l, p2h);
-					revetementPlafondSols.put(id, object);
-					debug("read " + object);
+						RevetementPlafondSol object = new RevetementPlafondSol(id, tr, p1l, p1h, p2l, p2h);
+						revetementPlafondSols.add(object);
+						objects.put(object);
+						debug("read " + object);
+					} else if (propObject == null) {
+						errorIdNone("TypeOuvertureNiveau", trId);
+					} else {
+						errorIdWrongType("TypeOuvertureNiveau", trId);
+					}
 				} catch (NumberFormatException e) {
 					errorParse(line, e.getMessage());
 				}
@@ -750,10 +795,10 @@ public class Deserialize {
 	}
 
 	/// OuvertureNiveaux
-	private HashMap<Integer, OuvertureNiveaux> ouvertureNiveauxFromString(HashMap<Integer, TypeOuvertureNiveau> typeOuvertureNiveaux) throws IOException {
+	private ArrayList<OuvertureNiveaux> ouvertureNiveauxFromString(Objects objects) throws IOException {
 		config.tui.diveWhere("OuvertureNiveaux");
 		config.tui.begin();
-		HashMap<Integer, OuvertureNiveaux> ouvertureNiveaux = new HashMap<>();
+		ArrayList<OuvertureNiveaux> ouvertureNiveaux = new ArrayList<>();
 
 		final String regex = String.join(",", REGEX_INT, REGEX_INT, REGEX_INT, REGEX_INT);
 		debug("regex: '" + regex + "'");
@@ -768,18 +813,26 @@ public class Deserialize {
 
 				int id = Integer.parseInt(splitted[0]);
 
-				if (ouvertureNiveaux.keySet().contains(id)) {
+				if (objects.get(id) != null) {
 					errorIdAgain(id);
 				}
 
 				try {
-					TypeOuvertureNiveau tr = typeOuvertureNiveaux.get(Integer.valueOf(splitted[1]));
-					int p1l = Integer.parseInt(splitted[2]);
-					int p1h = Integer.parseInt(splitted[3]);
+					int toId = Integer.parseInt(splitted[1]);
+					BObject propObject = objects.get(toId);
+					if (propObject instanceof TypeOuvertureNiveau to) {
+						double p1l = Double.parseDouble(splitted[2]);
+						double p1h = Double.parseDouble(splitted[3]);
 
-					OuvertureNiveaux object = new OuvertureNiveaux(id, tr, p1l, p1h);
-					ouvertureNiveaux.put(id, object);
-					debug("read " + object);
+						OuvertureNiveaux object = new OuvertureNiveaux(id, to, p1l, p1h);
+						ouvertureNiveaux.add(object);
+						objects.put(object);
+						debug("read " + object);
+					} else if (propObject == null) {
+						errorIdNone("TypeOuvertureNiveau", toId);
+					} else {
+						errorIdWrongType("TypeOuvertureNiveau", toId);
+					}
 				} catch (NumberFormatException e) {
 					errorParse(line, e.getMessage());
 				}
@@ -794,10 +847,10 @@ public class Deserialize {
 	}
 
 	/// PlafondSol
-	private HashMap<Integer, PlafondSol> plafondSolsFromString (Objects objects) throws IOException {
+	private ArrayList<PlafondSol> plafondSolsFromString (Objects objects) throws IOException {
 		config.tui.diveWhere("PlafondSols");
 		config.tui.begin();
-		HashMap<Integer, PlafondSol> plafondSols = new HashMap<>();
+		ArrayList<PlafondSol> plafondSols = new ArrayList<>();
 
 		final String regex = String.join(",", REGEX_INT);
 		debug("regex: '" + regex + "'");
@@ -813,14 +866,12 @@ public class Deserialize {
 				try {
 					int id = Integer.parseInt(splitted[0]);
 
-					if (plafondSols.keySet().contains(id)) {
+					if (objects.get(id) != null) {
 						errorIdAgain(id);
 					}
 
 					// lire les RevetementPlafondSol et les OuvertureNiveaux
-					HashMap<Integer, RevetementPlafondSol> r;
 					ArrayList<RevetementPlafondSol> r_list = new ArrayList<>();
-					HashMap<Integer, OuvertureNiveaux> o;
 					ArrayList<OuvertureNiveaux> o_list = new ArrayList<>();
 					config.tui.diveWhere("props");
 					for (
@@ -832,12 +883,10 @@ public class Deserialize {
 						debug("reading plafondSol prop '" + TUI.blue(propType) + "'");
 						switch (propType) {
 							case "RevetementPlafondSol" -> {
-								r = revetementPlafondSolsFromString(objects.typesRevetement);
-								r_list = manageHashMapToArrayList(r, objects.revetementsPlafondSol);
+								r_list = revetementPlafondSolsFromString(objects);
 							}
 							case "OuvertureNiveaux" -> {
-								o = ouvertureNiveauxFromString(objects.typesOuverturesNiveau);
-								o_list = manageHashMapToArrayList(o, objects.ouverturesNiveaux);
+								o_list = ouvertureNiveauxFromString(objects);
 							}
 							default -> error("propriété du plafondSol inconnue: '" + propResult.getText() + "'");
 						}
@@ -845,7 +894,8 @@ public class Deserialize {
 					config.tui.popWhere();
 
 					PlafondSol object = new PlafondSol(id, r_list, o_list);
-					plafondSols.put(id, object);
+					plafondSols.add(object);
+					objects.put(object);
 					debug("read " + object);
 				} catch (NumberFormatException e) {
 					errorParse(line, e.getMessage());
@@ -861,10 +911,10 @@ public class Deserialize {
 	}
 
 	/// Piece
-	private HashMap<Integer, Piece> piecesFromString (Objects objects) throws IOException {
+	private ArrayList<Piece> piecesFromString (Objects objects) throws IOException {
 		config.tui.diveWhere("Pieces");
 		config.tui.begin();
-		HashMap<Integer, Piece> pieces = new HashMap<>();
+		ArrayList<Piece> pieces = new ArrayList<>();
 
 		final String regex = String.join(",", REGEX_INT, REGEX_STRING, REGEX_STRING);
 		debug("regex: '" + regex + "'");
@@ -879,7 +929,7 @@ public class Deserialize {
 
 				int id = Integer.parseInt(splitted[0]);
 
-				if (pieces.keySet().contains(id)) {
+				if (objects.get(id) != null) {
 					errorIdAgain(id);
 				}
 
@@ -887,9 +937,7 @@ public class Deserialize {
 				ArrayList<Point> points = new ArrayList<>();
 				ArrayList<Mur> murs = new ArrayList<>();
 
-				HashMap<Integer, PlafondSol> plafonds;
 				ArrayList<PlafondSol> plafonds_list;
-				HashMap<Integer, PlafondSol> sols;
 				ArrayList<PlafondSol> sols_list;
 
 				// TODO: plusieurs plafonds/sols
@@ -914,11 +962,13 @@ public class Deserialize {
 									for (String each: pointsIds) {
 										try {
 											int pointId = Integer.parseInt(each);
-											Point point = objects.points.get(pointId);
-											if (point == null) {
+											BObject propObject = objects.get(pointId);
+											if (propObject instanceof Point point) {
+												points.add(point);
+											} else if (propObject == null) {
 												errorIdNone("Point", pointId);
 											} else {
-												points.add(point);
+												errorIdWrongType("Point", pointId);
 											}
 										} catch (NumberFormatException e) {
 											errorParse(line, e.getMessage());
@@ -940,11 +990,13 @@ public class Deserialize {
 									for (String each: mursIds) {
 										try {
 											int murId = Integer.parseInt(each);
-											Mur mur = objects.murs.get(murId);
-											if (mur == null) {
+											BObject propObject = objects.get(murId);
+											if (propObject instanceof Mur mur) {
+												murs.add(mur);
+											} else if (propObject == null) {
 												errorIdNone("Mur", murId);
 											} else {
-												murs.add(mur);
+												errorIdWrongType("Mur", murId);
 											}
 										} catch (NumberFormatException e) {
 											errorParse(line, e.getMessage());
@@ -958,8 +1010,7 @@ public class Deserialize {
 							}
 						}
 						case "plafond" -> {
-							plafonds = plafondSolsFromString(objects);
-							plafonds_list = manageHashMapToArrayList(plafonds, objects.plafondsSols);
+							plafonds_list = plafondSolsFromString(objects);
 
 							// TODO: plusieurs plafonds/sols
 							if (!plafonds_list.isEmpty()) {
@@ -970,8 +1021,7 @@ public class Deserialize {
 							}
 						}
 						case "sol" -> {
-							sols = plafondSolsFromString(objects);
-							sols_list = manageHashMapToArrayList(sols, objects.plafondsSols);
+							sols_list = plafondSolsFromString(objects);
 
 							// TODO: plusieurs plafonds/sols
 							if (!sols_list.isEmpty()) {
@@ -987,7 +1037,8 @@ public class Deserialize {
 				config.tui.popWhere();
 
 				Piece object = new Piece(id, unescapeString(splitted[1]), unescapeString(splitted[2]), points, murs, plafond, sol);
-				pieces.put(id, object);
+				pieces.add(object);
+				objects.put(object);
 				debug("read " + object);
 			} else {
 				errorSyntax(line);
@@ -1000,10 +1051,10 @@ public class Deserialize {
 	}
 
 	/// TypeAppart
-	private HashMap<Integer, TypeAppart> typeAppartsFromString() throws IOException {
+	private ArrayList<TypeAppart> typeAppartsFromString(Objects objects) throws IOException {
 		config.tui.diveWhere("TypeApparts");
 		config.tui.begin();
-		HashMap<Integer, TypeAppart> typeApparts = new HashMap<>();
+		ArrayList<TypeAppart> typeApparts = new ArrayList<>();
 
 		final String regex = String.join(",", REGEX_INT, REGEX_STRING, REGEX_STRING);
 		debug("regex: '" + regex + "'");
@@ -1018,13 +1069,14 @@ public class Deserialize {
 
 				int id = Integer.parseInt(splitted[0]);
 
-				if (typeApparts.keySet().contains(id)) {
+				if (objects.get(id) != null) {
 					errorIdAgain(id);
 				}
 
 				try {
 					TypeAppart object = new TypeAppart(id, unescapeString(splitted[1]), unescapeString(splitted[2]));
-					typeApparts.put(id, object);
+					typeApparts.add(id, object);
+					objects.put(object);
 					debug("read " + object);
 				} catch (NumberFormatException e) {
 					errorParse(line, e.getMessage());
@@ -1040,10 +1092,10 @@ public class Deserialize {
 	}
 
 	/// Appart
-	private HashMap<Integer, Appart> appartsFromString (Objects objects) throws IOException {
+	private ArrayList<Appart> appartsFromString (Objects objects) throws IOException {
 		config.tui.diveWhere("Apparts");
 		config.tui.begin();
-		HashMap<Integer, Appart> apparts = new HashMap<>();
+		ArrayList<Appart> apparts = new ArrayList<>();
 
 		final String regex = String.join(",", REGEX_INT, REGEX_STRING, REGEX_STRING, REGEX_INT);
 		debug("regex: '" + regex + "'");
@@ -1058,59 +1110,69 @@ public class Deserialize {
 
 				int id = Integer.parseInt(splitted[0]);
 
-				if (apparts.keySet().contains(id)) {
+				if (objects.get(id) != null) {
 					errorIdAgain(id);
 				}
 
 				try {
 					// lire les propriétés directes du appart
-					TypeAppart ta = objects.typesAppart.get(Integer.valueOf(splitted[3]));
-
-					// lire les Pieces
-					ArrayList<Piece> pieces = new ArrayList<>();
-					config.tui.diveWhere("props");
-					for (
-						SmartReader.ReadResult propResult = sreader.readLine();
-						propResult.getState() == SmartReader.ReadState.LINE;
-						propResult = sreader.readLine()
-					) {
-						String propType = propResult.getText().replaceFirst("PROP:", "");
-						debug("reading appart prop '" + TUI.blue(propType) + "'");
-						switch (propType) {
-							case "pieces" -> {
-								SmartReader.ReadResult piecesResult = sreader.readLine();
-								if (piecesResult.getState() == SmartReader.ReadState.LINE) {
-									String text = piecesResult.getText();
-									if (text.matches(REGEX_INT + "(," + REGEX_INT + ")*")) {
-										String[] piecesIds = text.split(",");
-										for (String each: piecesIds) {
-											try {
-												int pieceId = Integer.parseInt(each);
-												Piece piece = objects.pieces.get(pieceId);
-												if (piece == null) {
-													errorIdNone("Piece", pieceId);
-												} else {
-													pieces.add(piece);
+					int taId = Integer.parseInt(splitted[3]);
+					BObject taObject = objects.get(taId);
+					if (taObject instanceof TypeAppart ta) {
+						// lire les Pieces
+						ArrayList<Piece> pieces = new ArrayList<>();
+						config.tui.diveWhere("props");
+						for (
+							SmartReader.ReadResult propResult = sreader.readLine();
+							propResult.getState() == SmartReader.ReadState.LINE;
+							propResult = sreader.readLine()
+						) {
+							String propType = propResult.getText().replaceFirst("PROP:", "");
+							debug("reading appart prop '" + TUI.blue(propType) + "'");
+							switch (propType) {
+								case "pieces" -> {
+									SmartReader.ReadResult piecesResult = sreader.readLine();
+									if (piecesResult.getState() == SmartReader.ReadState.LINE) {
+										String text = piecesResult.getText();
+										if (text.matches(REGEX_INT + "(," + REGEX_INT + ")*")) {
+											String[] piecesIds = text.split(",");
+											for (String each: piecesIds) {
+												try {
+													int pieceId = Integer.parseInt(each);
+													BObject propObject = objects.get(pieceId);
+													if (propObject instanceof Piece piece) {
+														pieces.add(piece);
+													} else if (propObject == null) {
+														errorIdNone("Piece", pieceId);
+													} else {
+														errorIdWrongType("Piece", pieceId);
+													}
+												} catch (NumberFormatException e) {
+													errorParse(line, e.getMessage());
 												}
-											} catch (NumberFormatException e) {
-												errorParse(line, e.getMessage());
 											}
+										} else {
+											errorSyntax(text);
 										}
 									} else {
-										errorSyntax(text);
+										error("LINE expected but received " + result.getState() + " when reading pieces for Appart");
 									}
-								} else {
-									error("LINE expected but received " + result.getState() + " when reading pieces for Appart");
 								}
+								default -> error("propriété du appart inconnue: '" + propResult.getText() + "'");
 							}
-							default -> error("propriété du appart inconnue: '" + propResult.getText() + "'");
 						}
-					}
-					config.tui.popWhere();
 
-					Appart object = new Appart(id, unescapeString(splitted[1]), unescapeString(splitted[2]), pieces, ta);
-					apparts.put(id, object);
-					debug("read " + object);
+						Appart object = new Appart(id, unescapeString(splitted[1]), unescapeString(splitted[2]), pieces, ta);
+						apparts.add(object);
+						objects.put(object);
+						debug("read " + object);
+					} else if (taObject == null) {
+						errorIdNone("TypeAppart", taId);
+					} else {
+						errorIdWrongType("TypeAppart", taId);
+					}
+
+					config.tui.popWhere();
 				} catch (NumberFormatException e) {
 					errorParse(line, e.getMessage());
 				}
@@ -1125,10 +1187,10 @@ public class Deserialize {
 	}
 
 	/// Niveau
-	private HashMap<Integer, Niveau> niveauxFromString (Objects objects) throws IOException {
+	private ArrayList<Niveau> niveauxFromString (Objects objects) throws IOException {
 		config.tui.diveWhere("Niveaux");
 		config.tui.begin();
-		HashMap<Integer, Niveau> niveaux = new HashMap<>();
+		ArrayList<Niveau> niveaux = new ArrayList<>();
 
 		final String regex = String.join(",", REGEX_INT, REGEX_STRING, REGEX_STRING, REGEX_DOUBLE);
 		debug("regex: '" + regex + "'");
@@ -1143,7 +1205,7 @@ public class Deserialize {
 
 				int id = Integer.parseInt(splitted[0]);
 
-				if (niveaux.keySet().contains(id)) {
+				if (objects.get(id) != null) {
 					errorIdAgain(id);
 				}
 
@@ -1173,11 +1235,13 @@ public class Deserialize {
 										for (String each: appartsIds) {
 											try {
 												int appartId = Integer.parseInt(each);
-												Appart appart = objects.apparts.get(appartId);
-												if (appart == null) {
+												BObject propObject = objects.get(appartId);
+												if (propObject instanceof Appart appart) {
+													apparts.add(appart);
+												} else if (propObject == null) {
 													errorIdNone("Appart", appartId);
 												} else {
-													apparts.add(appart);
+													errorIdWrongType("Appart", appartId);
 												}
 											} catch (NumberFormatException e) {
 												errorParse(line, e.getMessage());
@@ -1199,11 +1263,13 @@ public class Deserialize {
 										for (String each: piecesIds) {
 											try {
 												int pieceId = Integer.parseInt(each);
-												Piece piece = objects.pieces.get(pieceId);
-												if (piece == null) {
+												BObject propObject = objects.get(pieceId);
+												if (propObject instanceof Piece piece) {
+													pieces.add(piece);
+												} else if (propObject == null) {
 													errorIdNone("Piece", pieceId);
 												} else {
-													pieces.add(piece);
+													errorIdWrongType("Piece", pieceId);
 												}
 											} catch (NumberFormatException e) {
 												errorParse(line, e.getMessage());
@@ -1225,11 +1291,13 @@ public class Deserialize {
 										for (String each: orpheansIds) {
 											try {
 												int orpheanId = Integer.parseInt(each);
-												Mur orphean = objects.get(orpheanId);
-												if (orphean == null) {
-													errorIdNone("Piece", orpheanId);
-												} else {
+												BObject propObject = objects.get(orpheanId);
+												if (propObject instanceof Drawable orphean) {
 													orpheans.add(orphean);
+												} else if (propObject == null) {
+													errorIdNone("Drawable", orpheanId);
+												} else {
+													errorIdWrongType("Drawable", orpheanId);
 												}
 											} catch (NumberFormatException e) {
 												errorParse(line, e.getMessage());
@@ -1248,7 +1316,8 @@ public class Deserialize {
 					config.tui.popWhere();
 
 					Niveau object = new Niveau(id, unescapeString(splitted[1]), unescapeString(splitted[2]), hauteur, pieces, apparts, orpheans);
-					niveaux.put(id, object);
+					niveaux.add(object);
+					objects.put(object);
 					debug("read " + object);
 				} catch (NumberFormatException e) {
 					errorParse(line, e.getMessage());
@@ -1264,10 +1333,10 @@ public class Deserialize {
 	}
 
 	/// TypeBatiment
-	private HashMap<Integer, TypeBatiment> typeBatimentsFromString() throws IOException {
+	private ArrayList<TypeBatiment> typeBatimentsFromString(Objects objects) throws IOException {
 		config.tui.diveWhere("TypeBatiments");
 		config.tui.begin();
-		HashMap<Integer, TypeBatiment> typeBatiments = new HashMap<>();
+		ArrayList<TypeBatiment> typeBatiments = new ArrayList<>();
 
 		final String regex = String.join(",", REGEX_INT, REGEX_STRING, REGEX_STRING);
 		debug("regex: '" + regex + "'");
@@ -1282,13 +1351,14 @@ public class Deserialize {
 
 				int id = Integer.parseInt(splitted[0]);
 
-				if (typeBatiments.keySet().contains(id)) {
+				if (objects.get(id) != null) {
 					errorIdAgain(id);
 				}
 
 				try {
 					TypeBatiment object = new TypeBatiment(id, unescapeString(splitted[1]), unescapeString(splitted[2]));
-					typeBatiments.put(id, object);
+					typeBatiments.add(object);
+					objects.put(object);
 					debug("read " + object);
 				} catch (NumberFormatException e) {
 					errorParse(line, e.getMessage());
@@ -1304,10 +1374,10 @@ public class Deserialize {
 	}
 
 	/// Batiment
-	private HashMap<Integer, Batiment> batimentsFromString (Objects objects) throws IOException {
+	private ArrayList<Batiment> batimentsFromString (Objects objects) throws IOException {
 		config.tui.diveWhere("Batiments");
 		config.tui.begin();
-		HashMap<Integer, Batiment> batiments = new HashMap<>();
+		ArrayList<Batiment> batiments = new ArrayList<>();
 
 		final String regex = String.join(",", REGEX_INT, REGEX_STRING, REGEX_STRING, REGEX_STRING); // TODO: typeBatiment (VALUE->id)
 		debug("regex: '" + regex + "'");
@@ -1322,85 +1392,98 @@ public class Deserialize {
 
 				int id = Integer.parseInt(splitted[0]);
 
-				if (batiments.keySet().contains(id)) {
+				if (objects.get(id) != null) {
 					errorIdAgain(id);
 				}
 
 				try {
 					// lire les propriétés directes du batiment
-					TypeBatiment tb = objects.typesBatiment.get(Integer.valueOf(splitted[3]));
+					int tbId = Integer.parseInt(splitted[3]);
+					BObject tbObject = objects.get(tbId);
+					if (tbObject instanceof TypeBatiment tb) {
 
-					ArrayList<Appart> apparts = new ArrayList<>();
-					ArrayList<Niveau> niveaux = new ArrayList<>();
-					config.tui.diveWhere("props");
-					for (
-						SmartReader.ReadResult propResult = sreader.readLine();
-						propResult.getState() == SmartReader.ReadState.LINE;
-						propResult = sreader.readLine()
-					) {
-						String propType = propResult.getText().replaceFirst("PROP:", "");
-						debug("reading batiment prop '" + TUI.blue(propType) + "'");
-						switch (propType) {
-							case "apparts" -> {
-								SmartReader.ReadResult appartsResult = sreader.readLine();
-								if (appartsResult.getState() == SmartReader.ReadState.LINE) {
-									String text = appartsResult.getText();
-									if (text.matches(REGEX_INT + "(," + REGEX_INT + ")*")) {
-										String[] appartsIds = text.split(",");
-										for (String each: appartsIds) {
-											try {
-												int appartId = Integer.parseInt(each);
-												Appart appart = objects.apparts.get(appartId);
-												if (appart == null) {
-													errorIdNone("Appart", appartId);
-												} else {
-													apparts.add(appart);
+						ArrayList<Appart> apparts = new ArrayList<>();
+						ArrayList<Niveau> niveaux = new ArrayList<>();
+						config.tui.diveWhere("props");
+						for (
+							SmartReader.ReadResult propResult = sreader.readLine();
+							propResult.getState() == SmartReader.ReadState.LINE;
+							propResult = sreader.readLine()
+						) {
+							String propType = propResult.getText().replaceFirst("PROP:", "");
+							debug("reading batiment prop '" + TUI.blue(propType) + "'");
+							switch (propType) {
+								case "apparts" -> {
+									SmartReader.ReadResult appartsResult = sreader.readLine();
+									if (appartsResult.getState() == SmartReader.ReadState.LINE) {
+										String text = appartsResult.getText();
+										if (text.matches(REGEX_INT + "(," + REGEX_INT + ")*")) {
+											String[] appartsIds = text.split(",");
+											for (String each: appartsIds) {
+												try {
+													int appartId = Integer.parseInt(each);
+													BObject propObject = objects.get(appartId);
+													if (propObject instanceof Appart appart) {
+														apparts.add(appart);
+													} else if (propObject == null) {
+														errorIdNone("Appart", appartId);
+													} else {
+														errorIdWrongType("Appart", appartId);
+													}
+												} catch (NumberFormatException e) {
+													errorParse(line, e.getMessage());
 												}
-											} catch (NumberFormatException e) {
-												errorParse(line, e.getMessage());
 											}
+										} else {
+											errorSyntax(text);
 										}
 									} else {
-										errorSyntax(text);
+										error("LINE expected but received " + result.getState() + " when reading apparts for Batiment");
 									}
-								} else {
-									error("LINE expected but received " + result.getState() + " when reading apparts for Batiment");
 								}
-							}
-							case "niveaux" -> {
-								SmartReader.ReadResult niveauxResult = sreader.readLine();
-								if (niveauxResult.getState() == SmartReader.ReadState.LINE) {
-									String text = niveauxResult.getText();
-									if (text.matches(REGEX_INT + "(," + REGEX_INT + ")*")) {
-										String[] niveauxIds = text.split(",");
-										for (String each: niveauxIds) {
-											try {
-												int niveauId = Integer.parseInt(each);
-												Niveau niveau = objects.niveaux.get(niveauId);
-												if (niveau == null) {
-													errorIdNone("Niveau", niveauId);
-												} else {
-													niveaux.add(niveau);
+								case "niveaux" -> {
+									SmartReader.ReadResult niveauxResult = sreader.readLine();
+									if (niveauxResult.getState() == SmartReader.ReadState.LINE) {
+										String text = niveauxResult.getText();
+										if (text.matches(REGEX_INT + "(," + REGEX_INT + ")*")) {
+											String[] niveauxIds = text.split(",");
+											for (String each: niveauxIds) {
+												try {
+													int niveauId = Integer.parseInt(each);
+													BObject propObject = objects.get(niveauId);
+													if (propObject instanceof Niveau niveau) {
+														niveaux.add(niveau);
+													} else if (propObject == null) {
+														errorIdNone("Niveau", niveauId);
+													} else {
+														errorIdWrongType("Niveau", niveauId);
+													}
+												} catch (NumberFormatException e) {
+													errorParse(line, e.getMessage());
 												}
-											} catch (NumberFormatException e) {
-												errorParse(line, e.getMessage());
 											}
+										} else {
+											errorSyntax(text);
 										}
 									} else {
-										errorSyntax(text);
+										error("LINE expected but received " + result.getState() + " when reading niveaux for Batiment");
 									}
-								} else {
-									error("LINE expected but received " + result.getState() + " when reading niveaux for Batiment");
 								}
+								default -> error("propriété du batiment inconnue: '" + propResult.getText() + "'");
 							}
-							default -> error("propriété du batiment inconnue: '" + propResult.getText() + "'");
 						}
-					}
-					config.tui.popWhere();
 
-					Batiment object = new Batiment(id, unescapeString(splitted[1]), unescapeString(splitted[2]), tb, niveaux, apparts);
-					batiments.put(id, object);
-					debug("read " + object);
+						Batiment object = new Batiment(id, unescapeString(splitted[1]), unescapeString(splitted[2]), tb, niveaux, apparts);
+						batiments.add(object);
+						objects.put(object);
+						debug("read " + object);
+					} else if (tbObject == null) {
+						errorIdNone("TypeBatiment", tbId);
+					} else {
+						errorIdWrongType("TypeBatiment", tbId);
+					}
+
+					config.tui.popWhere();
 				} catch (NumberFormatException e) {
 					errorParse(line, e.getMessage());
 				}

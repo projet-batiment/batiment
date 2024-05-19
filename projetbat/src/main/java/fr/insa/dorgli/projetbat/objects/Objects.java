@@ -125,7 +125,7 @@ public class Objects {
 	 * @param object
 	 * @return the id given to the object, or -1 if the id is already held by another object 
 	 */
-	public int add(BObject object) {
+	public int put(BObject object) {
 		if (object.getId() <= 0) {
 			object.setId(generateId());
 		}
