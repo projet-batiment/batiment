@@ -9,8 +9,8 @@ public class Point extends DrawablePoint {
 	private final Point2D.Double point;
 	private Niveau niveau;
 
-	public Point(double x, double y) {
-		this.point = new Point2D.Double(x, y);
+	public Point() {
+		this.point = new Point2D.Double();
 	}
 
 	public Point(int id, double x, double y, Niveau niveau) {

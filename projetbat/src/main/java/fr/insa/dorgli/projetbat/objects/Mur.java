@@ -38,11 +38,19 @@ public class Mur extends DrawableLine implements HasPrice {
 	}
 
 	public Point getPointDebut() {
-		return this.pointDebut;
+		return pointDebut;
+	}
+
+	public void setPointDebut(Point pointDebut) {
+		this.pointDebut = pointDebut;
 	}
 
 	public Point getPointFin() {
-		return this.pointFin;
+		return pointFin;
+	}
+
+	public void setPointFin(Point pointFin) {
+		this.pointFin = pointFin;
 	}
 
 	public double getHauteur() {

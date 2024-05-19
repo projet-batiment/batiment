@@ -4,8 +4,8 @@ import fr.insa.dorgli.projetbat.objects.Deserialize;
 import fr.insa.dorgli.projetbat.ui.gui.Direction;
 import fr.insa.dorgli.projetbat.objects.*;
 import fr.insa.dorgli.projetbat.ui.TUI;
+import java.awt.geom.Point2D;
 import java.io.File;
-import java.io.FileNotFoundException;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -19,7 +19,7 @@ public class Controller {
 
 	public Controller(Config config) {
 		this.config = config;
-		this.state = new State();
+		this.state = new State(config);
 	}
 
 	public void openFile(ActionEvent event) {
@@ -102,49 +102,75 @@ public class Controller {
 		config.getMainWindow().getCanvasContainer().moveView(direction);
 	}
 
-	Point firstPoint; // TODO!!! TMP!!!
-	public void canvasClicked(MouseEvent event) {
-		config.tui.log("controller: a click occurred in the canvasContainer at (" + event.getX() + ":" + event.getY() + ")");
-		switch (state.actionState) {
-//			case State.ActionState.CREATE_MUR_1 -> {
-//				Drawable closestObject = config.getMainWindow().getCanvasContainer().getClosestLinked(event.getX(), event.getY());
-////				Point firstPoint;
-//				if (closestObject instanceof Point closestPoint) {
-//					firstPoint = closestPoint;
-//				} else {
-//					firstPoint = config.project.objects.createPoint(event.getX(), event.getY(), (Niveau) state.viewRootElement);
-//				}
-//				config.tui.debug("controller: click/createMur/1: firstPoint = " + firstPoint);
-//				state.actionState = State.ActionState.CREATE_MUR_2;
-//			}
-//			case State.ActionState.CREATE_MUR_2 -> {
-//				Drawable closestObject = config.getMainWindow().getCanvasContainer().getClosestLinked(event.getX(), event.getY());
-//				Point endPoint;
-//				if (closestObject instanceof Point closestPoint) {
-//					endPoint = closestPoint;
-//				} else {
-//					endPoint = config.project.objects.createPoint(event.getX(), event.getY(), (Niveau) state.viewRootElement);
-//				}
-//				config.tui.debug("controller: click/createMur/2: endPoint = " + endPoint);
-//				Mur mur = config.project.objects.createMur(firstPoint, endPoint, ((Niveau)state.viewRootElement).getHauteur(), null);
-//				state.viewSelectedElements.clear();
-//				state.viewSelectedElements.add(mur);
-//				state.actionState = State.ActionState.DEFAULT;
-//			}
+	public void canvasMouseClicked(MouseEvent event, Point2D.Double mousePositionData) {
+		config.tui.log("controller: a click occurred in the canvasContainer at (" + mousePositionData.getX() + ":" + mousePositionData.getY() + ")");
+		switch (state.getActionState()) {
+			case CREATE_MUR -> {
+				Mur newMur = (Mur)state.getCreator().object;
+				config.tui.diveWhere("controller: click/createMur/" + state.getCreator().step);
+
+				if (state.viewRootElement instanceof Niveau currentNiveau) {
+					Point point;
+					Drawable closestObject = config.getMainWindow().getCanvasContainer().getClosestLinked();
+					if (closestObject instanceof Point closestPoint) {
+						point = closestPoint;
+					} else {
+						point = config.project.objects.createPoint(mousePositionData.getX(), mousePositionData.getY(), currentNiveau);
+						config.project.objects.put(point);
+					}
+					config.tui.log("point is " + point);
+
+					switch(state.getCreator().next()) {
+						case 0 -> {
+							newMur.setPointDebut(point);
+
+							config.project.objects.put(newMur);
+							config.tui.debug("added mur to the objects: " + newMur.toStringShort());
+
+							state.viewSelectedElements.clear();
+							state.viewSelectedElements.add(newMur);
+						}
+						case 1 -> {
+							newMur.setPointFin(point);
+							config.tui.debug("created mur: " + newMur);
+
+							currentNiveau.getOrpheans().add(newMur);
+							config.tui.debug("created mur is set as orphean of " + currentNiveau);
+
+							state.endCreation();
+							config.getMainWindow().getCanvasContainer().redraw();
+						}
+					}
+				} else {
+					config.tui.error("unknown viewRootElement type: expecting Niveau, got "
+					    + (state.viewRootElement == null ? "(null)" : state.viewRootElement.toStringShort() )
+					);
+				}
+
+				config.tui.popWhere();
+			}
 
 			default -> {
-				Drawable closestObject = config.getMainWindow().getCanvasContainer().getClosestLinked(event.getX(), event.getY());
+				Drawable closestObject = config.getMainWindow().getCanvasContainer().getClosestLinked();
 				if (closestObject == null) {
 					config.tui.log("controller: no object to be focused");
-					state.viewRootElement = null;
-					config.getMainWindow().getCanvasContainer().getDrawingContext().redraw();
+					state.viewSelectedElements.clear();
+					config.getMainWindow().getCanvasContainer().redraw();
 				} else {
 					config.tui.log("controller: focusing object " + closestObject.getId() + " now: " + closestObject.toString());
 					state.viewSelectedElements.clear();
 					state.viewSelectedElements.add(closestObject);
-					config.getMainWindow().getCanvasContainer().getDrawingContext().redraw();
+					config.getMainWindow().getCanvasContainer().redraw();
 				}
 				config.getMainWindow().getSidePaneContainer().useObject(closestObject);
+			}
+		}
+	}
+
+	public void canvasMouseMoved(MouseEvent eh, Point2D.Double mousePositionData) {
+		switch (state.getActionState()) {
+			case State.ActionState.CREATE_MUR -> {
+				if (state.getCreator().step == 1) config.getMainWindow().getCanvasContainer().redraw();
 			}
 		}
 	}
@@ -186,6 +212,6 @@ public class Controller {
 	}
 
 	public void createMur() {
-		state.actionState = State.ActionState.CREATE_MUR_1;
+		state.setActionState(State.ActionState.CREATE_MUR);
 	}
 }

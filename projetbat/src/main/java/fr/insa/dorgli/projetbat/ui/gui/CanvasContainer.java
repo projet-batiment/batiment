@@ -37,10 +37,14 @@ public class CanvasContainer extends Pane {
 	private final double moveFactor;
 	private double scaledMoveFactor;
 	private boolean isFitted;
+	private final Point2D.Double mousePosition;
 
 	private boolean disableDrawing = true;
 
 	private final int pointRadius = 5;
+
+	// 1 mètre DATA <=> 100 points CANVAS
+	private final int dataToCanvasRate = 100;
 
 	public CanvasContainer(Config config, MainWindow mainWindow) {
 		this.config = config;
@@ -65,11 +69,13 @@ public class CanvasContainer extends Pane {
 				redraw();
 		});
 
+		mousePosition = new Point2D.Double();
 		canvas.setOnMouseClicked(eh -> {
-			mainWindow.getController().canvasClicked(eh);
+			mainWindow.getController().canvasMouseClicked(eh, getMousePositionData());
 		});
 		canvas.setOnMouseMoved(eh -> {
-			//mainWindow.getController().canvasClicked(eh);
+			mousePosition.setLocation(eh.getX(), eh.getY());
+			mainWindow.getController().canvasMouseMoved(eh, getMousePositionData());
 		});
 
  		ctxt = canvas.getGraphicsContext2D();
@@ -92,6 +98,7 @@ public class CanvasContainer extends Pane {
 
 	//////////////// scaling stuff
 
+	// convertit de DISTANCES (pas coordonnées !!) CANVAS en VIEW
 	// Renvoie dans les dimensions du canvas l'équivalent d'une dimension dans "la vue" (d'unité arbitraire, à zoom=1)
 	private double scaleToView(double incoming) {
 		return scaleToView(ctxt.getTransform(), incoming);
@@ -101,6 +108,8 @@ public class CanvasContainer extends Pane {
 		// Comme le zoom est orthonormal, mxx=myy=mzz, donc on choisit mxx arbitrairement
 		return incoming / affine.getMxx();
 	}
+
+	// convertit de DISTANCES (pas coordonnées !!) VIEW en CANVAS
 	private double scaleFromView(double incoming) {
 		// Mxx est un coef de la matrice de transformation du canvas, donc en partie de son zoom
 		// Comme le zoom est orthonormal, mxx=myy=mzz, donc on choisit mxx arbitrairement
@@ -115,10 +124,14 @@ public class CanvasContainer extends Pane {
 		config.tui.debug("canvasContainer/scaleMoveFactor: new: " + moveFactor + " scaled -> " + scaledMoveFactor);
 	}
 
-	// convertit les distances de la partie "structure" en distances sur le canvas
-	// actuellement (première norme) : (double) 1 mètre <=> (double) 100 pointsCanvas
+	// convertit de coordonnées DATA en CANVAS
 	public double dataToCanvasUnit(double dataUnit) {
-		return 100 * dataUnit;
+		return dataUnit * dataToCanvasRate;
+	}
+
+	// convertit de coordonnées DATA en CANVAS
+	public double canvasToDataUnit(double dataUnit) {
+		return dataUnit / dataToCanvasRate;
 	}
 
 	//////////////// zoom and movement stuff
@@ -254,18 +267,21 @@ public class CanvasContainer extends Pane {
 
 	//////////////// linking stuff
 
-	public Drawable getClosestLinked(double clickX, double clickY) {
-		return getClosestLinked(clickX, clickY, scaleToView(15));
+	public Drawable getClosestLinked() {
+		return getClosestLinked(mousePosition.getX(), mousePosition.getY());
 	}
 
+	public Drawable getClosestLinked(double clickX, double clickY) {
+		return getClosestLinked(clickX, clickY, 15);
+	}
+
+	// coordinates and distances in CANVAS standards
 	public Drawable getClosestLinked(double clickX, double clickY, double closestMaxDistance) {
-		config.tui.log("canvasContainer/getClosestLinked: x: " + scaleToView(clickX) + ", " + scaleToView(ctxt.getTransform().getTx()));
-		config.tui.log("canvasContainer/getClosestLinked: y: " + scaleToView(clickY) + ", " + scaleToView(ctxt.getTransform().getTy()));
 		clickX = scaleToView(clickX - ctxt.getTransform().getTx());
 		clickY = scaleToView(clickY - ctxt.getTransform().getTy());
 		config.tui.log("canvasContainer/getClosestLinked: scaled and translated coordinates: (" + clickX + ":" + clickY + ")");
 
-		double closestDistance = closestMaxDistance;
+		double closestDistance = scaleToView(closestMaxDistance);
 		double currentDistance;
 
 		// on cherche parmi les points
@@ -330,27 +346,17 @@ public class CanvasContainer extends Pane {
 
 	/**
 	 * @param linkedObject
-	 * @param point point with coordinates in DATA standards, the coordinates are then converted into CANVAS standards
-	 * @param color
-	 * @param important
-	 */
-//	public void drawPoint(DrawablePoint linkedObject, Point2D.Double point, double radius, Color color, boolean important) {
-//		drawPoint(linkedObject, point, true, color, important);
-//	}
-	/**
-	 * @param linkedObject
 	 * @param point
-//	 * @param convert wether to convert coordinates from DATA into CANVAS or not
+	 * @param radius
 	 * @param color
 	 * @param important
 	 */
 	public void drawPoint(DrawablePoint linkedObject, Point2D.Double point, double radius, Color color, boolean important) {
-//	public void drawPoint(DrawablePoint linkedObject, Point2D.Double point, boolean convert, Color color, boolean important) {
 		config.tui.diveWhere("canvasContainer/drawPoint");
 
 		Point2D.Double pointCanvas;
 //		if (convert) {
-//			// convertir les coordonnées DATA -> CANVAS
+//			// convertir les coordonnées VIEW -> CANVAS
 			pointCanvas = new Point2D.Double(dataToCanvasUnit(point.getX()), dataToCanvasUnit(point.getY()));
 //		} else {
 //			// copier le point puisqu'il est déjà en coordonnées CANVAS
@@ -379,7 +385,7 @@ public class CanvasContainer extends Pane {
 	/**
 	 * @param linkedObject Drawable object to be attached to this line
 	 * @param lineData the line to draw with coordinates in DATA standards
-	 * @param width width of the line in DATA standards
+	 * @param width width of the line in CANVAS standards
 	 * @param color
 	 */
 	public void drawLine(DrawableLine linkedObject, Line2D.Double lineData, double width, Color color) {
@@ -542,14 +548,15 @@ public class CanvasContainer extends Pane {
 		config.tui.begin();
 		config.tui.debug("graphicsContext.transform (affine): " + canvas.getGraphicsContext2D().getTransform().toString());
 
-		Affine affine = ctxt.getTransform();
-		double ourMinX = scaleToView(- affine.getTx());
-		double ourMinY = scaleToView(- affine.getTy());
-		double ourMaxX = scaleToView(super.getWidth() - affine.getTx());
-		double ourMaxY = scaleToView(super.getHeight() - affine.getTy());
-
+		// set up a white background:
+		double margin = 5;
 		ctxt.setFill(Color.WHITE);
-		ctxt.fillRect(ourMinX - 2, ourMinY - 2, ourMaxX + 4, ourMaxY + 4);
+		ctxt.fillRect(
+		    scaleToView(- ctxt.getTransform().getTx() - margin),
+		    scaleToView(- ctxt.getTransform().getTy() - margin),
+		    scaleToView(super.getWidth() + 2*margin),
+		    scaleToView(super.getHeight() + 2*margin)
+		);
 
 		if (config.tui.logLevelGreaterOrEqual(TUI.LogLevel.DEBUG) && ! disableDrawing) {
 			Color c = Color.TEAL;
@@ -579,5 +586,25 @@ public class CanvasContainer extends Pane {
 	private void setIsFitted(boolean value) {
 		isFitted = value;
 		config.getMainWindow().setButtonZoomZeroSelected(value);
+	}
+
+	/**
+	 * @return mouse position in CANVAS coordinates standards
+	 */
+	public Point2D.Double getMousePositionCanvas() {
+		return new Point2D.Double(
+			scaleToView(mousePosition.getX() - ctxt.getTransform().getTx()),
+			scaleToView(mousePosition.getY() - ctxt.getTransform().getTy())
+		);
+	}
+
+	/**
+	 * @return mouse position in DATA coordinates standards
+	 */
+	public Point2D.Double getMousePositionData() {
+		return new Point2D.Double(
+		    canvasToDataUnit(getMousePositionCanvas().getX()),
+		    canvasToDataUnit(getMousePositionCanvas().getY())
+		);
 	}
 }

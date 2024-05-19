@@ -69,11 +69,11 @@ public class Niveau extends Drawable {
 		this.apparts = apparts;
 	}
 
-	public ArrayList<Drawable> getOrpheanMurs() {
+	public ArrayList<Drawable> getOrpheans() {
 		return orpheans;
 	}
 
-	public void setOrpheanMurs(ArrayList<Drawable> orpheans) {
+	public void setOrpheans(ArrayList<Drawable> orpheans) {
 		this.orpheans = orpheans;
 	}
 

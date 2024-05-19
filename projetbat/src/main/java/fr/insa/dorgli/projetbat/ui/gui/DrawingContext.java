@@ -1,12 +1,9 @@
 package fr.insa.dorgli.projetbat.ui.gui;
 
 import fr.insa.dorgli.projetbat.core.Config;
+import fr.insa.dorgli.projetbat.core.State;
 import fr.insa.dorgli.projetbat.ui.TUI;
-import fr.insa.dorgli.projetbat.objects.Drawable;
-import fr.insa.dorgli.projetbat.objects.DrawableLine;
-import fr.insa.dorgli.projetbat.objects.DrawablePath;
-import fr.insa.dorgli.projetbat.objects.DrawablePoint;
-import fr.insa.dorgli.projetbat.objects.Point;
+import fr.insa.dorgli.projetbat.objects.*;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.util.HashSet;
@@ -48,6 +45,23 @@ public class DrawingContext {
 			draw(config.controller.state.viewRootElement);
 
 			config.tui.ended();
+		}
+
+		State state = config.controller.state;
+		if (state.getActionState() == State.ActionState.CREATE_MUR) {
+			if (state.getCreator().step == 1) {
+				Point2D.Double mousePosition = cc.getMousePositionData();
+				Point mousePositionObject = new Point();
+				mousePositionObject.setX(mousePosition.getX());
+				mousePositionObject.setY(mousePosition.getY());
+
+				Mur placeholderMur = new Mur();
+				placeholderMur.setPointDebut( ((Mur) state.getCreator().object).getPointDebut() );
+				placeholderMur.setPointFin(mousePositionObject);
+
+				placeholderMur.draw(this, true);
+				config.tui.debug("state == CREATE_MUR(1): drawing placeholder mur " + placeholderMur);
+			}
 		}
 
 		config.tui.popWhere();
