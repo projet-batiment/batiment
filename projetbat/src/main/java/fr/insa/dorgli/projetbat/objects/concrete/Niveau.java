@@ -1,5 +1,6 @@
 package fr.insa.dorgli.projetbat.objects.concrete;
 
+import fr.insa.dorgli.projetbat.objects.Objects;
 import fr.insa.dorgli.projetbat.utils.FancyToStrings;
 import fr.insa.dorgli.projetbat.objects.Deserialize;
 import fr.insa.dorgli.projetbat.ui.gui.DrawingContext;

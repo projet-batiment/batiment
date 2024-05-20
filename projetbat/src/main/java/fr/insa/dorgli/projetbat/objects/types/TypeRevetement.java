@@ -1,7 +1,7 @@
 package fr.insa.dorgli.projetbat.objects.types;
 
 import fr.insa.dorgli.projetbat.objects.Deserialize;
-import fr.insa.dorgli.projetbat.objects.concrete.Objects;
+import fr.insa.dorgli.projetbat.objects.Objects;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 
 public class TypeRevetement extends Type {

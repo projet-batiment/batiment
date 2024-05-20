@@ -1,5 +1,6 @@
 package fr.insa.dorgli.projetbat.objects.concrete;
 
+import fr.insa.dorgli.projetbat.objects.Objects;
 import fr.insa.dorgli.projetbat.objects.types.TypeOuvertureMur;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 import fr.insa.dorgli.projetbat.ui.gui.DrawingContext;

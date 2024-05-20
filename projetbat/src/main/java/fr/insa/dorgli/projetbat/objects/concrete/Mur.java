@@ -1,5 +1,7 @@
 package fr.insa.dorgli.projetbat.objects.concrete;
 
+import fr.insa.dorgli.projetbat.objects.HasPrice;
+import fr.insa.dorgli.projetbat.objects.Objects;
 import fr.insa.dorgli.projetbat.utils.FancyToStrings;
 import fr.insa.dorgli.projetbat.objects.types.TypeMur;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;

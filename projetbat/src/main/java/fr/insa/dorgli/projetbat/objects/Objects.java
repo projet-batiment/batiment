@@ -1,6 +1,18 @@
-package fr.insa.dorgli.projetbat.objects.concrete;
+package fr.insa.dorgli.projetbat.objects;
 
 import fr.insa.dorgli.projetbat.objects.BObject;
+import fr.insa.dorgli.projetbat.objects.concrete.Appart;
+import fr.insa.dorgli.projetbat.objects.concrete.Batiment;
+import fr.insa.dorgli.projetbat.objects.concrete.Drawable;
+import fr.insa.dorgli.projetbat.objects.concrete.Mur;
+import fr.insa.dorgli.projetbat.objects.concrete.Niveau;
+import fr.insa.dorgli.projetbat.objects.concrete.OuvertureMur;
+import fr.insa.dorgli.projetbat.objects.concrete.OuvertureNiveaux;
+import fr.insa.dorgli.projetbat.objects.concrete.Piece;
+import fr.insa.dorgli.projetbat.objects.concrete.PlafondSol;
+import fr.insa.dorgli.projetbat.objects.concrete.Point;
+import fr.insa.dorgli.projetbat.objects.concrete.RevetementMur;
+import fr.insa.dorgli.projetbat.objects.concrete.RevetementPlafondSol;
 import fr.insa.dorgli.projetbat.utils.FancyToStrings;
 import fr.insa.dorgli.projetbat.objects.types.TypeMur;
 import fr.insa.dorgli.projetbat.objects.types.TypeAppart;

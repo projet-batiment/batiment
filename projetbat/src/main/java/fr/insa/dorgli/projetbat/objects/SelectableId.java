@@ -1,6 +1,5 @@
 package fr.insa.dorgli.projetbat.objects;
 
-import fr.insa.dorgli.projetbat.objects.concrete.Objects;
 import fr.insa.dorgli.projetbat.utils.FancyToStrings;
 
 public abstract class SelectableId extends FancyToStrings {

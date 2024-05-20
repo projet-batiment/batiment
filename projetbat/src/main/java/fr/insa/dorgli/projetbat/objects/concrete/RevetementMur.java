@@ -1,5 +1,7 @@
 package fr.insa.dorgli.projetbat.objects.concrete;
 
+import fr.insa.dorgli.projetbat.objects.HasPrice;
+import fr.insa.dorgli.projetbat.objects.Objects;
 import fr.insa.dorgli.projetbat.objects.types.TypeRevetement;
 import fr.insa.dorgli.projetbat.ui.gui.DrawingContext;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;

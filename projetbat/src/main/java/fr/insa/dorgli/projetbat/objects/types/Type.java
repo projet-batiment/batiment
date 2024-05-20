@@ -2,10 +2,11 @@ package fr.insa.dorgli.projetbat.objects.types;
 
 import fr.insa.dorgli.projetbat.objects.BObject;
 import fr.insa.dorgli.projetbat.objects.Deserialize;
-import fr.insa.dorgli.projetbat.objects.concrete.Objects;
+import fr.insa.dorgli.projetbat.objects.NameDesc;
+import fr.insa.dorgli.projetbat.objects.Objects;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 
-public abstract class Type extends BObject {
+public abstract class Type extends BObject implements NameDesc {
 	protected String nom;
 	protected String description;
 
@@ -19,18 +20,22 @@ public abstract class Type extends BObject {
 		this.description = description;
 	}
 
+	@Override
 	public final String getNom() {
 		return nom;
 	}
 
+	@Override
 	public final void setNom(String nom) {
 		this.nom = nom;
 	}
 
+	@Override
 	public final String getDescription() {
 		return description;
 	}
 
+	@Override
 	public final void setDescription(String description) {
 		this.description = description;
 	}
@@ -48,6 +53,7 @@ public abstract class Type extends BObject {
         	    .getValue();
 	}
 
+	@Override
 	public String serialize(Objects objects) {
 		return String.join(",",
 		    String.valueOf(super.getId()),

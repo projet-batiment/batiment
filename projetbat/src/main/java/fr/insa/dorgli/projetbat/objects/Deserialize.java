@@ -2,7 +2,6 @@ package fr.insa.dorgli.projetbat.objects;
 
 import fr.insa.dorgli.projetbat.objects.concrete.Piece;
 import fr.insa.dorgli.projetbat.objects.concrete.OuvertureNiveaux;
-import fr.insa.dorgli.projetbat.objects.concrete.Objects;
 import fr.insa.dorgli.projetbat.objects.concrete.PlafondSol;
 import fr.insa.dorgli.projetbat.objects.concrete.Appart;
 import fr.insa.dorgli.projetbat.objects.concrete.RevetementMur;

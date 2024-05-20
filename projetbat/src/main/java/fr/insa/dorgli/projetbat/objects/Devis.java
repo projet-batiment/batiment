@@ -1,7 +1,5 @@
 package fr.insa.dorgli.projetbat.objects;
 
-import fr.insa.dorgli.projetbat.objects.concrete.HasPrice;
-import fr.insa.dorgli.projetbat.objects.concrete.Objects;
 import fr.insa.dorgli.projetbat.utils.FancyToStrings;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 import java.util.HashSet;
