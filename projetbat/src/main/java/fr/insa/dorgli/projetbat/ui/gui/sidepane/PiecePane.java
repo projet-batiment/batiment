@@ -3,72 +3,39 @@ package fr.insa.dorgli.projetbat.ui.gui.sidepane;
 import fr.insa.dorgli.projetbat.core.Config;
 import fr.insa.dorgli.projetbat.objects.concrete.Mur;
 import fr.insa.dorgli.projetbat.objects.concrete.Piece;
-import javafx.beans.Observable;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
 public class PiecePane extends ParentSidePane {
 	Piece piece;
 	Config config;
 
-	private class Editor extends VBox {
-		TextField name;
-		TextArea description;
+	private class PieceEditor extends NameDescEditor {
+		public PieceEditor(Config config) {
+			super(config, "Piece", piece);
 
-		private void reset() {
-			name.setText(piece.getNom());
-			description.setText(piece.getDescription());
-		}
+			TextField name = new TextField();
+			TextArea description = new TextArea();
 
-		public Editor(Config config) {
-			name = new TextField();
-			description = new TextArea();
-			reset();
-
-			this.widthProperty().addListener((Observable eh) -> {
-				double maxWidth = this.getWidth() - 5;
-				name.setMaxWidth(maxWidth);
-				description.setMaxWidth(maxWidth);
+			super.prependSaveFunction((ActionEvent eh) -> {
+				// TODO!!
 			});
 
-			HBox.setHgrow(name, Priority.ALWAYS);
-			description.setWrapText(true);
-
-			Button save = new Button("Valider");
-			save.setOnAction((ActionEvent eh) -> {
-				piece.setNom(name.getText());
-				piece.setDescription(description.getText());
-
-				config.getMainWindow().getCanvasContainer().redraw();
+			super.prependResetFunction(() -> {
+				name.setText(piece.getNom());
+				description.setText(piece.getDescription());
 			});
 
-			Button cancel = new Button("Annuler");
-			cancel.setOnAction((ActionEvent eh) -> {
-				reset();
-			});
-
-			super.getChildren().addAll(
-				new HBox(
-					new Label("Nom :"),
-					name
-				),
-
-				new VBox(
-					new Label("Description :"),
-					description
-				),
-
-				new HBox(
-					save,
-					cancel
+			super.prependInitFunction((Pane pane) ->
+				pane.getChildren().addAll(
+					new Label("Piece: TODO!!")
 				)
 			);
 		}
@@ -111,7 +78,10 @@ public class PiecePane extends ParentSidePane {
 
 	@Override
 	public final void update() {
-		super.editorTab.setContent(new Editor(config));
+		PieceEditor editThis = new PieceEditor(config);
+		editThis.initialize();
+		super.addTab(editThis);
+
 		super.childrenTab.setContent(new Children());
 	}
 

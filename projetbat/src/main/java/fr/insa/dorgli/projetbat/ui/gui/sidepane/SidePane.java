@@ -4,14 +4,13 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 
 public abstract class SidePane extends TabPane {
-	protected Tab editorTab;
+	public void addTab(Tab newTab) {
+		super.getTabs().add(newTab);
+	}
 
 	public abstract void update();
 
 	public SidePane() {
-		editorTab = new Tab("Éditeur");
-		super.getTabs().add(editorTab);
-
 		super.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
 	}
 }

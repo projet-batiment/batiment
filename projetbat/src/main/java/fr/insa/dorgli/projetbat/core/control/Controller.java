@@ -8,7 +8,7 @@ import fr.insa.dorgli.projetbat.objects.concrete.Point;
 import fr.insa.dorgli.projetbat.objects.Deserialize;
 import fr.insa.dorgli.projetbat.ui.gui.Direction;
 import fr.insa.dorgli.projetbat.objects.*;
-import fr.insa.dorgli.projetbat.objects.concrete.HasPrice;
+import fr.insa.dorgli.projetbat.objects.HasPrice;
 import fr.insa.dorgli.projetbat.ui.TUI;
 import java.awt.geom.Point2D;
 import java.io.File;

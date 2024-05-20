@@ -9,7 +9,6 @@ import fr.insa.dorgli.projetbat.objects.concrete.Point;
 import fr.insa.dorgli.projetbat.core.Config;
 import fr.insa.dorgli.projetbat.core.control.State;
 import fr.insa.dorgli.projetbat.ui.TUI;
-import fr.insa.dorgli.projetbat.objects.*;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.util.HashSet;

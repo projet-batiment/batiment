@@ -61,25 +61,32 @@ public class SidePaneContainer extends Pane {
 		lastSelectedObject = object;
 		lastSelectedList = null;
 
+		config.tui.debug("sidePane: singleObject: is " + (object == null ? "(null)" : object.getClass().getSimpleName()));
+
 		switch (object) {
 			case Devis devis -> {
-				config.tui.debug("useObject: is a Devis");
 				sidePane = new DevisPane(config, devis);
 			}
+
 			case Piece piece -> {
-				config.tui.debug("useObject: is a Piece");
 				sidePane = new PiecePane(config, piece);
 			}
 			case Mur mur -> {
-				config.tui.debug("useObject: is a mur");
 				sidePane = new MurPane(config, mur);
 			}
 			case Point point -> {
-				config.tui.debug("useObject: is a Point");
 				sidePane = new PointPane(config, point);
 			}
-			case null, default -> {
-				config.tui.debug("useObject: sth else...");
+
+			case TypeMur typeMur -> {
+				sidePane = new TypeMurPane(config, typeMur);
+			}
+
+			case null -> {
+				sidePane = new Empty();
+			}
+			default -> {
+				config.tui.warn("sidePane: singleObject: sth else...");
 				sidePane = new Empty();
 			}
 

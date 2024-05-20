@@ -3,8 +3,6 @@ package fr.insa.dorgli.projetbat.objects;
 import fr.insa.dorgli.projetbat.utils.FancyToStrings;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 import java.util.HashSet;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class Devis extends SelectableId implements HasPrice {
 	private String nom;
@@ -28,7 +26,8 @@ public class Devis extends SelectableId implements HasPrice {
 
 	public Devis(String nom, String description, HasPrice studiedObject) throws IllegalArgumentException {
 		HashSet<HasPrice> tmpStudiedObjects = new HashSet<>();
-		studiedObjects.add(studiedObject);
+		System.out.println(studiedObject.toString());
+		tmpStudiedObjects.add(studiedObject);
 
 		// this could potentially fail
 		setStudiedObject(tmpStudiedObjects);

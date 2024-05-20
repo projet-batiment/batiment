@@ -281,7 +281,7 @@ public class CanvasContainer extends Pane {
 		clickY = scaleToView(clickY - ctxt.getTransform().getTy());
 		config.tui.log("canvasContainer/getClosestLinked: scaled and translated coordinates: (" + clickX + ":" + clickY + ")");
 
-		double closestDistance = scaleToView(closestMaxDistance);
+		double closestDistance = closestMaxDistance;
 		double currentDistance;
 
 		// on cherche parmi les points
@@ -452,6 +452,11 @@ public class CanvasContainer extends Pane {
 		// centre du polygone
 		Point2D.Double center = new Point2D.Double(centerX/points.length, centerY/points.length);
 		// trier les points par angle autour du centre
+		//
+		// REMARQUE IMPORTANTE (TODO) !!!!
+		// => les points ne sont pas forcément répartis autour du center
+		// => il faudrait trouver un autre moyen de dessiner les polygones
+		// => surtout que ça fausse les calculs d'aires réellement occupées (calculée < réelle)
 		Arrays.sort(points, new PointPolarCompare(center));
 
 		double[] xlist = new double[points.length];

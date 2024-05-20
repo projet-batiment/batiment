@@ -3,8 +3,8 @@ package fr.insa.dorgli.projetbat.core;
 import fr.insa.dorgli.projetbat.objects.BObject;
 import fr.insa.dorgli.projetbat.objects.concrete.Batiment;
 import fr.insa.dorgli.projetbat.objects.concrete.Drawable;
-import fr.insa.dorgli.projetbat.objects.concrete.HasPrice;
-import fr.insa.dorgli.projetbat.objects.concrete.Objects;
+import fr.insa.dorgli.projetbat.objects.HasPrice;
+import fr.insa.dorgli.projetbat.objects.Objects;
 import fr.insa.dorgli.projetbat.utils.FancyToStrings;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 
