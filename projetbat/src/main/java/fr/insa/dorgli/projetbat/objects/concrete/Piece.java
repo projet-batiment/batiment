@@ -1,7 +1,10 @@
-package fr.insa.dorgli.projetbat.objects;
+package fr.insa.dorgli.projetbat.objects.concrete;
 
+import fr.insa.dorgli.projetbat.utils.FancyToStrings;
+import fr.insa.dorgli.projetbat.objects.Deserialize;
 import fr.insa.dorgli.projetbat.ui.gui.DrawingContext;
 import java.util.ArrayList;
+import java.util.Collection;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 import javafx.scene.paint.Color;
 
@@ -130,11 +133,11 @@ public class Piece extends DrawablePath implements HasPrice {
 
 	@Override
 	public String toString(int depth, boolean indentFirst) {
-		return new StructuredToString.OfBObject(depth, this, indentFirst)
+		return new StructuredToString.OfFancyToStrings(depth, this, indentFirst)
 		    .textField("nom", nom)
 		    .textField("description", description)
-		    .fieldShortCollection("points", (ArrayList<BObject>) ((ArrayList<?>) points))
-		    .fieldShortCollection("murs", (ArrayList<BObject>) ((ArrayList<?>) murs))
+		    .fieldShortCollection("points", (Collection<FancyToStrings>) ((ArrayList<?>) points))
+		    .fieldShortCollection("murs", (Collection<FancyToStrings>) ((ArrayList<?>) murs))
 		    .field("plafond", plafond.toString(depth + 1))
 		    .field("sol", sol.toString(depth + 1))
         	    .getValue();

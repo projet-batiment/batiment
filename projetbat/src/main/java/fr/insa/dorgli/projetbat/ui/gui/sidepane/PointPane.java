@@ -1,7 +1,7 @@
 package fr.insa.dorgli.projetbat.ui.gui.sidepane;
 
 import fr.insa.dorgli.projetbat.core.Config;
-import fr.insa.dorgli.projetbat.objects.Point;
+import fr.insa.dorgli.projetbat.objects.concrete.Point;
 import java.util.Arrays;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;

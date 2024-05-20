@@ -1,7 +1,13 @@
 package fr.insa.dorgli.projetbat.ui.gui;
 
+import fr.insa.dorgli.projetbat.objects.concrete.DrawablePath;
+import fr.insa.dorgli.projetbat.objects.concrete.DrawableLine;
+import fr.insa.dorgli.projetbat.objects.concrete.Mur;
+import fr.insa.dorgli.projetbat.objects.concrete.DrawablePoint;
+import fr.insa.dorgli.projetbat.objects.concrete.Drawable;
+import fr.insa.dorgli.projetbat.objects.concrete.Point;
 import fr.insa.dorgli.projetbat.core.Config;
-import fr.insa.dorgli.projetbat.core.State;
+import fr.insa.dorgli.projetbat.core.control.State;
 import fr.insa.dorgli.projetbat.ui.TUI;
 import fr.insa.dorgli.projetbat.objects.*;
 import java.awt.geom.Line2D;

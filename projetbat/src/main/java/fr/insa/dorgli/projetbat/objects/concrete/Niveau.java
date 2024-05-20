@@ -1,7 +1,10 @@
-package fr.insa.dorgli.projetbat.objects;
+package fr.insa.dorgli.projetbat.objects.concrete;
 
+import fr.insa.dorgli.projetbat.utils.FancyToStrings;
+import fr.insa.dorgli.projetbat.objects.Deserialize;
 import fr.insa.dorgli.projetbat.ui.gui.DrawingContext;
 import java.util.ArrayList;
+import java.util.Collection;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 
 public class Niveau extends Drawable {
@@ -110,13 +113,13 @@ public class Niveau extends Drawable {
 
 	@Override
 	public String toString(int depth, boolean indentFirst) {
-		return new StructuredToString.OfBObject(depth, this, indentFirst)
+		return new StructuredToString.OfFancyToStrings(depth, this, indentFirst)
 		    .textField("nom", nom)
 		    .textField("description", description)
 		    .field("hauteur", String.valueOf(hauteur))
-		    .fieldShortCollection("pieces", (ArrayList<BObject>) ((ArrayList<?>) pieces))
-		    .fieldShortCollection("apparts", (ArrayList<BObject>) ((ArrayList<?>) apparts))
-		    .fieldShortCollection("orpheans", (ArrayList<BObject>) ((ArrayList<?>) orpheans))
+		    .fieldShortCollection("pieces", (Collection<FancyToStrings>) ((ArrayList<?>) pieces))
+		    .fieldShortCollection("apparts", (Collection<FancyToStrings>) ((ArrayList<?>) apparts))
+		    .fieldShortCollection("orpheans", (Collection<FancyToStrings>) ((ArrayList<?>) orpheans))
         	    .getValue();
 	}
 

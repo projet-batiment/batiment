@@ -1,5 +1,6 @@
-package fr.insa.dorgli.projetbat.objects;
+package fr.insa.dorgli.projetbat.objects.concrete;
 
+import fr.insa.dorgli.projetbat.objects.BObject;
 import fr.insa.dorgli.projetbat.ui.gui.DrawingContext;
 
 public abstract class Drawable extends BObject {

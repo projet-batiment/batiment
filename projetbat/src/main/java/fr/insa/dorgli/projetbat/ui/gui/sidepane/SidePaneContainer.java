@@ -1,10 +1,10 @@
 package fr.insa.dorgli.projetbat.ui.gui.sidepane;
 
 import fr.insa.dorgli.projetbat.core.Config;
-import fr.insa.dorgli.projetbat.objects.BObject;
-import fr.insa.dorgli.projetbat.objects.Mur;
-import fr.insa.dorgli.projetbat.objects.Piece;
-import fr.insa.dorgli.projetbat.objects.Point;
+import fr.insa.dorgli.projetbat.objects.Devis;
+import fr.insa.dorgli.projetbat.objects.SelectableId;
+import fr.insa.dorgli.projetbat.objects.concrete.*;
+import fr.insa.dorgli.projetbat.objects.types.*;
 import java.util.HashSet;
 import javafx.scene.layout.Pane;
 
@@ -13,8 +13,8 @@ public class SidePaneContainer extends Pane {
 	SidePane sidePane;
 
  	// on pourrait faire avec qch comme sidePane.getObject mais flemme avec les génériques...
-	private BObject lastSelectedObject;
-	private HashSet<BObject> lastSelectedList;
+	private SelectableId lastSelectedObject;
+	private HashSet<SelectableId> lastSelectedList;
 
 	public SidePaneContainer(Config config) {
 		this.config = config;
@@ -24,7 +24,7 @@ public class SidePaneContainer extends Pane {
 	}
 
 	public final void update() {
-		HashSet<BObject> selectedElements = config.controller.state.getSelectedElements();
+		HashSet<SelectableId> selectedElements = config.controller.state.getSelectedElements();
 
 		if (selectedElements.isEmpty()) {
 			singleObject(null);
@@ -35,24 +35,24 @@ public class SidePaneContainer extends Pane {
 		}
 	}
 
-	private void multipleObjects(HashSet<BObject> objects) {
+	private void multipleObjects(HashSet<SelectableId> objects) {
 		if (objects.equals(lastSelectedList) && lastSelectedObject == null) {
 			sidePane.update();
 			return;
 		}
 
 		lastSelectedObject = null;
-		lastSelectedList = (HashSet<BObject>) objects.clone();
+		lastSelectedList = (HashSet<SelectableId>) objects.clone();
 
 		sidePane = new MultiSidePane(config, objects);
 		sidePane.setMaxWidth(this.getMaxWidth());
 		this.getChildren().setAll(sidePane);
 	}
 
-	private void singleObject(BObject object) {
+	private void singleObject(SelectableId object) {
 		singleObject(object, false);
 	}
-	private void singleObject(BObject object, boolean forceNew) {
+	private void singleObject(SelectableId object, boolean forceNew) {
 		if (!forceNew && object == lastSelectedObject && lastSelectedList == null) {
 			sidePane.update();
 			return;
@@ -62,6 +62,10 @@ public class SidePaneContainer extends Pane {
 		lastSelectedList = null;
 
 		switch (object) {
+			case Devis devis -> {
+				config.tui.debug("useObject: is a Devis");
+				sidePane = new DevisPane(config, devis);
+			}
 			case Piece piece -> {
 				config.tui.debug("useObject: is a Piece");
 				sidePane = new PiecePane(config, piece);

@@ -1,8 +1,8 @@
 package fr.insa.dorgli.projetbat.ui.gui.sidepane;
 
 import fr.insa.dorgli.projetbat.core.Config;
-import fr.insa.dorgli.projetbat.objects.Mur;
-import fr.insa.dorgli.projetbat.objects.TypeMur;
+import fr.insa.dorgli.projetbat.objects.concrete.Mur;
+import fr.insa.dorgli.projetbat.objects.types.TypeMur;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;

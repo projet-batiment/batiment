@@ -1,11 +1,19 @@
-package fr.insa.dorgli.projetbat.core;
+package fr.insa.dorgli.projetbat.core.control;
 
+import fr.insa.dorgli.projetbat.core.Config;
+import fr.insa.dorgli.projetbat.objects.concrete.Mur;
+import fr.insa.dorgli.projetbat.objects.concrete.Niveau;
+import fr.insa.dorgli.projetbat.objects.concrete.Drawable;
+import fr.insa.dorgli.projetbat.objects.concrete.Point;
 import fr.insa.dorgli.projetbat.objects.Deserialize;
 import fr.insa.dorgli.projetbat.ui.gui.Direction;
 import fr.insa.dorgli.projetbat.objects.*;
+import fr.insa.dorgli.projetbat.objects.concrete.HasPrice;
 import fr.insa.dorgli.projetbat.ui.TUI;
 import java.awt.geom.Point2D;
 import java.io.File;
+import java.util.HashSet;
+import java.util.stream.Collectors;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -192,21 +200,18 @@ public class Controller {
 	}
 
 	public void devisTotal() {
-		Alert alert = new Alert(AlertType.ERROR);
-		alert.setTitle("Devis total");
-		alert.setHeaderText("Devis total - " + config.project.projectName);
-		alert.setContentText("Prix calculé : " + "TODO!!!");
-
-		alert.showAndWait();
+		Devis devis = new Devis(config.project);
+		config.tui.log("controller: selecting new devis " + devis.toStringShort() + " now");
+		state.setSelectedElement(devis);
 	}
 
-	public void devisFocused() {
-		Alert alert = new Alert(AlertType.ERROR);
-		alert.setTitle("Devis de l'objet actuel");
-		alert.setHeaderText("Devis de l'objet actuel - " + config.project.projectName);
-		alert.setContentText("Prix calculé : " + "TODO!!!");
+	public void devisSelection() {
+		HashSet<HasPrice> havePrice = (HashSet<HasPrice>) ((HashSet<?>) state.getSelectedElements().stream()
+		    .filter((SelectableId each) -> each instanceof HasPrice).collect(Collectors.toSet()) );
 
-		alert.showAndWait();
+		Devis devis = new Devis(havePrice);
+		config.tui.log("controller: selecting new devis " + devis.toStringShort() + " now");
+		state.setSelectedElement(devis);
 	}
 
 	public void saveDevis() {

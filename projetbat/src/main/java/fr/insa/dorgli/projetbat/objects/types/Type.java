@@ -1,5 +1,8 @@
-package fr.insa.dorgli.projetbat.objects;
+package fr.insa.dorgli.projetbat.objects.types;
 
+import fr.insa.dorgli.projetbat.objects.BObject;
+import fr.insa.dorgli.projetbat.objects.Deserialize;
+import fr.insa.dorgli.projetbat.objects.concrete.Objects;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 
 public abstract class Type extends BObject {
@@ -39,7 +42,7 @@ public abstract class Type extends BObject {
 
 	@Override
 	public String toString(int depth, boolean indentFirst) {
-		return new StructuredToString.OfBObject(depth, this, indentFirst)
+		return new StructuredToString.OfFancyToStrings(depth, this, indentFirst)
 		    .textField("nom", nom)
 		    .textField("description", description)
         	    .getValue();

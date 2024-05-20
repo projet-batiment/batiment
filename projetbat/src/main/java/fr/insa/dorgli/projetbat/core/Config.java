@@ -2,6 +2,7 @@ package fr.insa.dorgli.projetbat.core;
 
 // Config contient une description exhaustive et détaillée de l'état actuel du programme
 
+import fr.insa.dorgli.projetbat.core.control.Controller;
 import fr.insa.dorgli.projetbat.ui.TUI;
 import fr.insa.dorgli.projetbat.ui.gui.MainWindow;
 import javafx.stage.Stage;

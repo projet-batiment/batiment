@@ -1,7 +1,7 @@
 package fr.insa.dorgli.projetbat.ui.gui;
 
 import fr.insa.dorgli.projetbat.core.Config;
-import fr.insa.dorgli.projetbat.core.Controller;
+import fr.insa.dorgli.projetbat.core.control.Controller;
 import fr.insa.dorgli.projetbat.ui.TUI;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Menu;
@@ -45,7 +45,7 @@ public class OutilsTop extends MenuBar {
 	// devis
 	private final Menu menuDevis;
 	private final MenuItem buttonDevisTotal;
-	private final MenuItem buttonDevisFocused;
+	private final MenuItem buttonDevisSelection;
 	private final MenuItem buttonSaveDevisAs;
 
 	// afficher
@@ -277,10 +277,10 @@ public class OutilsTop extends MenuBar {
 			controller.devisTotal();
 		});
 
-		buttonDevisFocused = new MenuItem("Calculer le devis de l'objet actuel");
-		buttonDevisFocused.setOnAction(event -> {
-			config.tui.log("clicked: devis focused");
-			controller.devisFocused();
+		buttonDevisSelection = new MenuItem("Calculer le devis de la sélection");
+		buttonDevisSelection.setOnAction(event -> {
+			config.tui.log("clicked: devis selection");
+			controller.devisSelection();
 		});
 
 		buttonSaveDevisAs = new MenuItem("Enregistrer le devis actuel sous...");
@@ -291,7 +291,7 @@ public class OutilsTop extends MenuBar {
 
 		menuDevis = new Menu("Devis", null,
 			buttonDevisTotal,
-			buttonDevisFocused,
+			buttonDevisSelection,
 			buttonSaveDevisAs
 		);
 

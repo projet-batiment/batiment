@@ -1,5 +1,24 @@
 package fr.insa.dorgli.projetbat.objects;
 
+import fr.insa.dorgli.projetbat.objects.concrete.Piece;
+import fr.insa.dorgli.projetbat.objects.concrete.OuvertureNiveaux;
+import fr.insa.dorgli.projetbat.objects.concrete.Objects;
+import fr.insa.dorgli.projetbat.objects.concrete.PlafondSol;
+import fr.insa.dorgli.projetbat.objects.concrete.Appart;
+import fr.insa.dorgli.projetbat.objects.concrete.RevetementMur;
+import fr.insa.dorgli.projetbat.objects.concrete.Mur;
+import fr.insa.dorgli.projetbat.objects.concrete.Batiment;
+import fr.insa.dorgli.projetbat.objects.concrete.OuvertureMur;
+import fr.insa.dorgli.projetbat.objects.concrete.Niveau;
+import fr.insa.dorgli.projetbat.objects.concrete.RevetementPlafondSol;
+import fr.insa.dorgli.projetbat.objects.concrete.Drawable;
+import fr.insa.dorgli.projetbat.objects.concrete.Point;
+import fr.insa.dorgli.projetbat.objects.types.TypeMur;
+import fr.insa.dorgli.projetbat.objects.types.TypeAppart;
+import fr.insa.dorgli.projetbat.objects.types.TypeOuvertureNiveau;
+import fr.insa.dorgli.projetbat.objects.types.TypeRevetement;
+import fr.insa.dorgli.projetbat.objects.types.TypeOuvertureMur;
+import fr.insa.dorgli.projetbat.objects.types.TypeBatiment;
 import fr.insa.dorgli.projetbat.ui.TUI;
 import fr.insa.dorgli.projetbat.core.Config;
 import fr.insa.dorgli.projetbat.core.Project;
@@ -130,7 +149,7 @@ public class Deserialize {
 
 		@Override
 		public String toString() {
-			return new StructuredToString.OfBObject(getClass().getSimpleName())
+			return new StructuredToString.OfFancyToStrings(getClass().getSimpleName())
 			    .field("niveauId", String.valueOf(niveauId))
 			    .field("point", point.toString(1))
 			    .getValue();

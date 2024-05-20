@@ -1,6 +1,11 @@
-package fr.insa.dorgli.projetbat.core;
+package fr.insa.dorgli.projetbat.core.control;
 
-import fr.insa.dorgli.projetbat.objects.*;
+import fr.insa.dorgli.projetbat.core.Config;
+import fr.insa.dorgli.projetbat.objects.concrete.Mur;
+import fr.insa.dorgli.projetbat.objects.concrete.Batiment;
+import fr.insa.dorgli.projetbat.objects.concrete.Niveau;
+import fr.insa.dorgli.projetbat.objects.concrete.Drawable;
+import fr.insa.dorgli.projetbat.objects.SelectableId;
 
 import java.util.HashSet;
 
@@ -18,7 +23,7 @@ public class State {
 	public Niveau currentNiveau;
 
 	public Drawable viewRootElement;
-	private final HashSet<BObject> viewSelectedElements;
+	private final HashSet<SelectableId> selectedElements;
 	private ActionState actionState;
 
 	private Creator creator;
@@ -30,7 +35,7 @@ public class State {
 		this.currentNiveau = null;
 
 		this.viewRootElement = null;
-		this.viewSelectedElements = new HashSet<>();
+		this.selectedElements = new HashSet<>();
 		this.actionState = ActionState.DEFAULT;
 
 		this.creator = null;
@@ -63,27 +68,27 @@ public class State {
 		config.tui.popWhere();
 	}
 
-	public HashSet<BObject> getSelectedElements() {
-		return viewSelectedElements;
+	public HashSet<SelectableId> getSelectedElements() {
+		return selectedElements;
 	}
-	public boolean isSelectedElement(BObject elm) {
-		return viewSelectedElements.contains(elm);
+	public boolean isSelectedElement(SelectableId elm) {
+		return selectedElements.contains(elm);
 	}
-	public void addSelectedElement(BObject elm) {
-		viewSelectedElements.add(elm);
+	public void addSelectedElement(SelectableId elm) {
+		selectedElements.add(elm);
 		config.getMainWindow().getSidePaneContainer().update();
 	}
-	public void removeSelectedElement(BObject elm) {
-		viewSelectedElements.remove(elm);
+	public void removeSelectedElement(SelectableId elm) {
+		selectedElements.remove(elm);
 		config.getMainWindow().getSidePaneContainer().update();
 	}
-	public void setSelectedElement(BObject elm) {
+	public void setSelectedElement(SelectableId elm) {
 		clearSelectedElement();
-		viewSelectedElements.add(elm);
+		selectedElements.add(elm);
 		config.getMainWindow().getSidePaneContainer().update();
 	}
 	public void clearSelectedElement() {
-		viewSelectedElements.clear();
+		selectedElements.clear();
 		config.getMainWindow().getSidePaneContainer().update();
 	}
 

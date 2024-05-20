@@ -1,7 +1,7 @@
 package fr.insa.dorgli.projetbat.ui.gui;
 
 import fr.insa.dorgli.projetbat.core.Config;
-import fr.insa.dorgli.projetbat.core.Controller;
+import fr.insa.dorgli.projetbat.core.control.Controller;
 import fr.insa.dorgli.projetbat.ui.gui.sidepane.SidePaneContainer;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;

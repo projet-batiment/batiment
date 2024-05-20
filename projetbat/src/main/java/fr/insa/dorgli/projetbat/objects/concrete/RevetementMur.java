@@ -1,5 +1,6 @@
-package fr.insa.dorgli.projetbat.objects;
+package fr.insa.dorgli.projetbat.objects.concrete;
 
+import fr.insa.dorgli.projetbat.objects.types.TypeRevetement;
 import fr.insa.dorgli.projetbat.ui.gui.DrawingContext;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 
@@ -104,7 +105,7 @@ public class RevetementMur extends Drawable implements HasPrice {
 
 	@Override
 	public String toString(int depth, boolean indentFirst) {
-		return new StructuredToString.OfBObject(depth, this, indentFirst)
+		return new StructuredToString.OfFancyToStrings(depth, this, indentFirst)
 		    .field("pos1L", String.valueOf(pos1L))
 		    .field("pos1H", String.valueOf(pos1H))
 		    .field("pos2L", String.valueOf(pos2L))

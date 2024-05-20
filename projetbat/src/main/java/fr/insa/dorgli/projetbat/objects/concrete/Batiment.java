@@ -1,7 +1,11 @@
-package fr.insa.dorgli.projetbat.objects;
+package fr.insa.dorgli.projetbat.objects.concrete;
 
+import fr.insa.dorgli.projetbat.objects.Deserialize;
+import fr.insa.dorgli.projetbat.objects.types.TypeBatiment;
 import fr.insa.dorgli.projetbat.ui.gui.DrawingContext;
+import fr.insa.dorgli.projetbat.utils.FancyToStrings;
 import java.util.ArrayList;
+import java.util.Collection;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 
 public class Batiment extends Drawable implements HasPrice {
@@ -91,12 +95,12 @@ public class Batiment extends Drawable implements HasPrice {
 
 	@Override
 	public String toString(int depth, boolean indentFirst) {
-		return new StructuredToString.OfBObject(depth, this, indentFirst)
+		return new StructuredToString.OfFancyToStrings(depth, this, indentFirst)
 		    .textField("nom", nom)
 		    .textField("description", description)
 		    .field("typeBatiment", typeBatiment.toString(depth + 1))
-		    .fieldShortCollection("apparts", (ArrayList<BObject>) ((ArrayList<?>) apparts))
-		    .fieldShortCollection("niveaux", (ArrayList<BObject>) ((ArrayList<?>) niveaux))
+		    .fieldShortCollection("apparts", (Collection<FancyToStrings>) ((ArrayList<?>) apparts))
+		    .fieldShortCollection("niveaux", (Collection<FancyToStrings>) ((ArrayList<?>) niveaux))
         	    .getValue();
 	}
 

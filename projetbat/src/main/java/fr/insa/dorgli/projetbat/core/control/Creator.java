@@ -1,4 +1,4 @@
-package fr.insa.dorgli.projetbat.core;
+package fr.insa.dorgli.projetbat.core.control;
 
 import fr.insa.dorgli.projetbat.objects.BObject;
 

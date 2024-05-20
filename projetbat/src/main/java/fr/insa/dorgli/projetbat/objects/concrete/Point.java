@@ -1,4 +1,4 @@
-package fr.insa.dorgli.projetbat.objects;
+package fr.insa.dorgli.projetbat.objects.concrete;
 
 import fr.insa.dorgli.projetbat.ui.gui.DrawingContext;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
@@ -67,7 +67,7 @@ public class Point extends DrawablePoint {
 
 	@Override
 	public String toString(int depth, boolean indentFirst) {
-		return new StructuredToString.OfBObject(depth, this, indentFirst)
+		return new StructuredToString.OfFancyToStrings(depth, this, indentFirst)
 		    .field("x", String.valueOf(point.getX()))
 		    .field("y", String.valueOf(point.getY()))
 		    .field("niveau", niveau == null ? "(null)" : niveau.toString(depth + 1))

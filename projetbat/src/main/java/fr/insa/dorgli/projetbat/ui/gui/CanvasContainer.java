@@ -1,11 +1,11 @@
 package fr.insa.dorgli.projetbat.ui.gui;
 
 import fr.insa.dorgli.projetbat.core.Config;
-import fr.insa.dorgli.projetbat.objects.Drawable;
-import fr.insa.dorgli.projetbat.objects.DrawableLine;
-import fr.insa.dorgli.projetbat.objects.DrawablePath;
-import fr.insa.dorgli.projetbat.objects.DrawablePoint;
-import fr.insa.dorgli.projetbat.objects.Niveau;
+import fr.insa.dorgli.projetbat.objects.concrete.Drawable;
+import fr.insa.dorgli.projetbat.objects.concrete.DrawableLine;
+import fr.insa.dorgli.projetbat.objects.concrete.DrawablePath;
+import fr.insa.dorgli.projetbat.objects.concrete.DrawablePoint;
+import fr.insa.dorgli.projetbat.objects.concrete.Niveau;
 import fr.insa.dorgli.projetbat.ui.TUI;
 import fr.insa.dorgli.projetbat.utils.PointPolarCompare;
 import java.awt.Rectangle;

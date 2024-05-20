@@ -1,7 +1,9 @@
-package fr.insa.dorgli.projetbat.objects;
+package fr.insa.dorgli.projetbat.objects.concrete;
 
+import fr.insa.dorgli.projetbat.utils.FancyToStrings;
 import fr.insa.dorgli.projetbat.ui.gui.DrawingContext;
 import java.util.ArrayList;
+import java.util.Collection;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 
 public class PlafondSol extends Drawable implements HasPrice {
@@ -69,9 +71,9 @@ public class PlafondSol extends Drawable implements HasPrice {
 
 	@Override
 	public String toString(int depth, boolean indentFirst) {
-		return new StructuredToString.OfBObject(depth, this, indentFirst)
-		    .fieldShortCollection("revetements", (ArrayList<BObject>) ((ArrayList<?>) revetements))
-		    .fieldShortCollection("ouvertures", (ArrayList<BObject>) ((ArrayList<?>) ouvertures))
+		return new StructuredToString.OfFancyToStrings(depth, this, indentFirst)
+		    .fieldShortCollection("revetements", (Collection<FancyToStrings>) ((ArrayList<?>) revetements))
+		    .fieldShortCollection("ouvertures", (Collection<FancyToStrings>) ((ArrayList<?>) ouvertures))
         	    .getValue();
 	}
 

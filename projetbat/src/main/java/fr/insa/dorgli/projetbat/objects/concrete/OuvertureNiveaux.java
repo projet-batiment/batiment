@@ -1,5 +1,6 @@
-package fr.insa.dorgli.projetbat.objects;
+package fr.insa.dorgli.projetbat.objects.concrete;
 
+import fr.insa.dorgli.projetbat.objects.types.TypeOuvertureNiveau;
 import fr.insa.dorgli.projetbat.ui.gui.DrawingContext;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 
@@ -52,7 +53,7 @@ public class OuvertureNiveaux extends Drawable {
 
 	@Override
 	public String toString(int depth, boolean indentFirst) {
-		return new StructuredToString.OfBObject(depth, this, indentFirst)
+		return new StructuredToString.OfFancyToStrings(depth, this, indentFirst)
 		    .field("posL", String.valueOf(posL))
 		    .field("posH", String.valueOf(posH))
 		    .field("typeOuverture", typeOuverture.toString(depth + 1))

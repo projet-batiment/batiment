@@ -1,4 +1,4 @@
-package fr.insa.dorgli.projetbat.objects;
+package fr.insa.dorgli.projetbat.objects.concrete;
 
 import java.awt.geom.Line2D;
 

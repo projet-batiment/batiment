@@ -1,6 +1,5 @@
 package fr.insa.dorgli.projetbat.utils;
 
-import fr.insa.dorgli.projetbat.objects.BObject;
 import java.util.Collection;
 
 public class StructuredToString {
@@ -53,44 +52,44 @@ public class StructuredToString {
 		return indent;
 	}
 
-	public static class OfBObject extends StructuredToString {
-		public OfBObject(String title) {
+	public static class OfFancyToStrings extends StructuredToString {
+		public OfFancyToStrings(String title) {
 			super(title);
 		}
 
-		public OfBObject(int depth, String title) {
+		public OfFancyToStrings(int depth, String title) {
 			super(depth, title);
 		}
 
-		public OfBObject(int depth, String title, boolean indentFirst) {
+		public OfFancyToStrings(int depth, String title, boolean indentFirst) {
 			super(depth, title, indentFirst);
 		}
 
-		public OfBObject(BObject object) {
+		public OfFancyToStrings(FancyToStrings object) {
 			super(object.toStringShort());
 		}
 
-		public OfBObject(int depth, BObject object) {
+		public OfFancyToStrings(int depth, FancyToStrings object) {
 			super(depth, object.toStringShort());
 		}
 
-		public OfBObject(int depth, BObject object, boolean indentFirst) {
+		public OfFancyToStrings(int depth, FancyToStrings object, boolean indentFirst) {
 			super(depth, object.toStringShort(), indentFirst);
 		}
 
 		@Override
-		public OfBObject field(String name, String value) {
-			return (OfBObject) super.field(name, value);
+		public OfFancyToStrings field(String name, String value) {
+			return (OfFancyToStrings) super.field(name, value);
 		}
 
 		@Override
-		public OfBObject textField(String name, String value) {
-			return (OfBObject) super.textField(name, value);
+		public OfFancyToStrings textField(String name, String value) {
+			return (OfFancyToStrings) super.textField(name, value);
 		}
 
-		public OfBObject fieldShortCollection(String name, Collection<BObject> arr) {
+		public OfFancyToStrings fieldShortCollection(String name, Collection<FancyToStrings> arr) {
 			String value = arr.size() + " [ ";
-			for (BObject object: arr) {
+			for (FancyToStrings object: arr) {
 				value += object.toStringShort() + ", ";
 			}
 			value += " ]";
@@ -99,9 +98,9 @@ public class StructuredToString {
 			return this;
 		}
 
-		public OfBObject field(String name, Collection<BObject> arr) {
+		public OfFancyToStrings field(String name, Collection<FancyToStrings> arr) {
 			String value = arr.size() + " [ \n";
-			for (BObject object: arr) {
+			for (FancyToStrings object: arr) {
 				value += object.toString(super.depth + 2, true) + ",\n";
 			}
 			value += super.getIndent() + "    ]";

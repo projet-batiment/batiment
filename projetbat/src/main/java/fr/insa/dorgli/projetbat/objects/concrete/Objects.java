@@ -1,5 +1,13 @@
-package fr.insa.dorgli.projetbat.objects;
+package fr.insa.dorgli.projetbat.objects.concrete;
 
+import fr.insa.dorgli.projetbat.objects.BObject;
+import fr.insa.dorgli.projetbat.utils.FancyToStrings;
+import fr.insa.dorgli.projetbat.objects.types.TypeMur;
+import fr.insa.dorgli.projetbat.objects.types.TypeAppart;
+import fr.insa.dorgli.projetbat.objects.types.TypeOuvertureNiveau;
+import fr.insa.dorgli.projetbat.objects.types.TypeRevetement;
+import fr.insa.dorgli.projetbat.objects.types.TypeOuvertureMur;
+import fr.insa.dorgli.projetbat.objects.types.TypeBatiment;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 import fr.insa.dorgli.projetbat.ui.TUI;
 import java.util.HashMap;
@@ -281,26 +289,26 @@ public class Objects {
 
 	@Override
 	public String toString() {
-		return new StructuredToString.OfBObject(0, "Objects")
-		    .field("typesBatiment", (Collection<BObject>)((Collection<?>)typesBatiment.values()) )
-		    .field("typesAppart", (Collection<BObject>)((Collection<?>)typesAppart.values()) )
-		    .field("typesMur", (Collection<BObject>)((Collection<?>)typesMur.values()) )
-		    .field("typesOuverturesMur", (Collection<BObject>)((Collection<?>)typesOuverturesMur.values()) )
-		    .field("typesOuverturesNiveau", (Collection<BObject>)((Collection<?>)typesOuverturesNiveau.values()) )
-		    .field("typesRevetement", (Collection<BObject>)((Collection<?>)typesRevetement.values()) )
+		return new StructuredToString.OfFancyToStrings(0, "Objects")
+		    .field("typesBatiment", (Collection<FancyToStrings>) ((Collection<?>)typesBatiment.values()) )
+		    .field("typesAppart", (Collection<FancyToStrings>) ((Collection<?>)typesAppart.values()) )
+		    .field("typesMur", (Collection<FancyToStrings>) ((Collection<?>)typesMur.values()) )
+		    .field("typesOuverturesMur", (Collection<FancyToStrings>) ((Collection<?>)typesOuverturesMur.values()) )
+		    .field("typesOuverturesNiveau", (Collection<FancyToStrings>) ((Collection<?>)typesOuverturesNiveau.values()) )
+		    .field("typesRevetement", (Collection<FancyToStrings>) ((Collection<?>)typesRevetement.values()) )
 
-		    .field("OuverturesMur", (Collection<BObject>)((Collection<?>)ouverturesMur.values()) )
-		    .field("OuverturesNiveaux", (Collection<BObject>)((Collection<?>)ouverturesNiveaux.values()) )
-		    .field("RevetementMur", (Collection<BObject>)((Collection<?>)revetementsMur.values()) )
-		    .field("RevetementPlafondSol", (Collection<BObject>)((Collection<?>)revetementsPlafondSol.values()) )
+		    .field("OuverturesMur", (Collection<FancyToStrings>) ((Collection<?>)ouverturesMur.values()) )
+		    .field("OuverturesNiveaux", (Collection<FancyToStrings>) ((Collection<?>)ouverturesNiveaux.values()) )
+		    .field("RevetementMur", (Collection<FancyToStrings>) ((Collection<?>)revetementsMur.values()) )
+		    .field("RevetementPlafondSol", (Collection<FancyToStrings>) ((Collection<?>)revetementsPlafondSol.values()) )
 
-		    .field("batiments", (Collection<BObject>)((Collection<?>)batiments.values()) )
-		    .field("niveaux", (Collection<BObject>)((Collection<?>)niveaux.values()) )
-		    .field("apparts", (Collection<BObject>)((Collection<?>)apparts.values()) )
-		    .field("pieces", (Collection<BObject>)((Collection<?>)pieces.values()) )
-		    .field("plafondSols", (Collection<BObject>)((Collection<?>)murs.values()) )
-		    .field("murs", (Collection<BObject>)((Collection<?>)murs.values()) )
-		    .field("points", (Collection<BObject>)((Collection<?>)points.values()) )
+		    .field("batiments", (Collection<FancyToStrings>) ((Collection<?>)batiments.values()) )
+		    .field("niveaux", (Collection<FancyToStrings>) ((Collection<?>)niveaux.values()) )
+		    .field("apparts", (Collection<FancyToStrings>) ((Collection<?>)apparts.values()) )
+		    .field("pieces", (Collection<FancyToStrings>) ((Collection<?>)pieces.values()) )
+		    .field("plafondSols", (Collection<FancyToStrings>) ((Collection<?>)murs.values()) )
+		    .field("murs", (Collection<FancyToStrings>) ((Collection<?>)murs.values()) )
+		    .field("points", (Collection<FancyToStrings>) ((Collection<?>)points.values()) )
 
 		    .getValue()
 		;

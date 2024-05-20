@@ -1,4 +1,4 @@
-package fr.insa.dorgli.projetbat.objects;
+package fr.insa.dorgli.projetbat.objects.types;
 
 public class TypeAppart extends Type {
 	public TypeAppart(int id, String nom, String description) {

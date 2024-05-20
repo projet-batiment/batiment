@@ -1,8 +1,11 @@
-package fr.insa.dorgli.projetbat.objects;
+package fr.insa.dorgli.projetbat.objects.concrete;
 
+import fr.insa.dorgli.projetbat.utils.FancyToStrings;
+import fr.insa.dorgli.projetbat.objects.types.TypeMur;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 import fr.insa.dorgli.projetbat.ui.gui.DrawingContext;
 import java.util.ArrayList;
+import java.util.Collection;
 import javafx.scene.paint.Color;
 
 public class Mur extends DrawableLine implements HasPrice {
@@ -131,13 +134,13 @@ public class Mur extends DrawableLine implements HasPrice {
 
 	@Override
 	public String toString(int depth, boolean indentFirst) {
-		return new StructuredToString.OfBObject(depth, this, indentFirst)
+		return new StructuredToString.OfFancyToStrings(depth, this, indentFirst)
 		    .field("pointDebut", pointDebut.toString(depth + 1))
 		    .field("pointFin", pointFin.toString(depth + 1))
 		    .field("hauteur", String.valueOf(hauteur))
-		    .fieldShortCollection("revetements1", (ArrayList<BObject>) ((ArrayList<?>) revetements1))
-		    .fieldShortCollection("revetements2", (ArrayList<BObject>) ((ArrayList<?>) revetements2))
-		    .fieldShortCollection("ouvertures", (ArrayList<BObject>) ((ArrayList<?>) ouvertures))
+		    .fieldShortCollection("revetements1", (Collection<FancyToStrings>) ((ArrayList<?>) revetements1))
+		    .fieldShortCollection("revetements2", (Collection<FancyToStrings>) ((ArrayList<?>) revetements2))
+		    .fieldShortCollection("ouvertures", (Collection<FancyToStrings>) ((ArrayList<?>) ouvertures))
 		    .getValue();
 	}
 
