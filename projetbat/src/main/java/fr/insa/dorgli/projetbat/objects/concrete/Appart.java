@@ -9,7 +9,7 @@ import fr.insa.dorgli.projetbat.utils.StructuredToString;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class Appart extends BObject {
+public class Appart extends BObject implements HasPrice{
 	private String nom;
 	private String description;
 	private ArrayList<Piece> pieces;
