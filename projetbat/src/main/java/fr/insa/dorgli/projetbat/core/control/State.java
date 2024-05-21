@@ -79,29 +79,29 @@ public class State {
 	}
 	public void addSelectedElement(SelectableId elm) {
 		selectedElements.add(elm);
-		config.getMainWindow().getSidePaneContainer().update();
+		config.getMainWindow().getSidePaneContainer().updateSelection();
 	}
 	public void removeSelectedElement(SelectableId elm) {
 		selectedElements.remove(elm);
-		config.getMainWindow().getSidePaneContainer().update();
+		config.getMainWindow().getSidePaneContainer().updateSelection();
 	}
 	public void setSelectedElement(SelectableId elm) {
 		clearSelectedElement();
 		selectedElements.add(elm);
-		config.getMainWindow().getSidePaneContainer().update();
+		config.getMainWindow().getSidePaneContainer().updateSelection();
 	}
 	public void clearSelectedElement() {
 		selectedElements.clear();
-		config.getMainWindow().getSidePaneContainer().update();
+		config.getMainWindow().getSidePaneContainer().updateSelection();
 	}
 
 	public void addDevis(Devis devis) {
 		devisList.add(devis);
-		config.getMainWindow().getSidePaneContainer().update();
+		config.getMainWindow().getSidePaneContainer().addDevis(devis);
 	}
 	public void removeDevis(Devis devis) {
 		devisList.remove(devis);
-		config.getMainWindow().getSidePaneContainer().update();
+		config.getMainWindow().getSidePaneContainer().removeDevis(devis);
 	}
 
 	public Creator getCreator() {

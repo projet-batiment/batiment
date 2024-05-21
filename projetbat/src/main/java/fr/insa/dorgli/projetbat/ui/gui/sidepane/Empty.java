@@ -1,13 +1,17 @@
 package fr.insa.dorgli.projetbat.ui.gui.sidepane;
 
+import fr.insa.dorgli.projetbat.core.Config;
 import javafx.scene.control.Label;
-import javafx.scene.control.Tab;
+import javafx.scene.layout.Pane;
 
-public class Empty extends SidePane {
-	@Override
-	public void update() { }
+public class Empty extends SmartTab {
+	public Empty(Config config) {
+		super(config, "(Vide)");
 
-	public Empty() {
-		super.addTab(new Tab("(Vide)", new Label("Aucun objet n'est sélectionné")));
+		super.prependInitFunction((Pane pane) -> 
+			pane.getChildren().add(new Label("Aucun objet n'est sélectionné"))
+		);
+
+		super.initialize();
 	}
 }

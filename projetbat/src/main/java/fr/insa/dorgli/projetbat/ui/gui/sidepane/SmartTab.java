@@ -38,7 +38,6 @@ public abstract class SmartTab extends Tab {
 		initialized = true;
 		initFunctions.stream().forEach((Consumer<Pane> each) -> each.accept((Pane) ourVBox));
 		reset();
-		config.tui.log("ourVBox children: " + Arrays.toString(ourVBox.getChildren().toArray()));
 	};
 
 	// update handler adders

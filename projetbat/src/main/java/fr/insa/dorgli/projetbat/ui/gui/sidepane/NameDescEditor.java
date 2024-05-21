@@ -35,7 +35,7 @@ public abstract class NameDescEditor extends Editor {
 
 		super.prependInitFunction((Pane pane) -> {
 			pane.widthProperty().addListener((Observable eh) -> {
-				double maxWidth = pane.getWidth() - 5;
+				final double maxWidth = 380;
 				nom.setMaxWidth(maxWidth);
 				description.setMaxWidth(maxWidth);
 			});

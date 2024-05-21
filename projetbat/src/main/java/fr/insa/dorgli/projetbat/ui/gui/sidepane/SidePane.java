@@ -1,16 +1,95 @@
 package fr.insa.dorgli.projetbat.ui.gui.sidepane;
 
-import javafx.scene.control.Tab;
+import fr.insa.dorgli.projetbat.core.Config;
+import fr.insa.dorgli.projetbat.objects.Devis;
+import fr.insa.dorgli.projetbat.objects.SelectableId;
+import fr.insa.dorgli.projetbat.objects.concrete.*;
+import fr.insa.dorgli.projetbat.objects.types.*;
+import java.util.HashMap;
+import java.util.HashSet;
 import javafx.scene.control.TabPane;
 
-public abstract class SidePane extends TabPane {
-	public void addTab(Tab newTab) {
-		super.getTabs().add(newTab);
+public class SidePane extends TabPane {
+	Config config;
+
+	private SmartTab selectionTab;
+	private final HashMap<Devis, DevisEditor> devisEditors;
+
+	private void setSelectionTab(SmartTab tab) {
+		super.getTabs().remove(selectionTab);
+		selectionTab = tab;
+		super.getTabs().add(0, tab);
 	}
 
-	public abstract void update();
+	public final void addDevis(Devis devis) {
+		DevisEditor linkedEditor = new DevisEditor(config, devis);
+		devisEditors.put(devis, linkedEditor);
+		super.getTabs().add(linkedEditor);
+	}
+	public final void removeDevis(Devis devis) {
+		DevisEditor linkedEditor = devisEditors.get(devis);
+		devisEditors.remove(devis);
+		super.getTabs().remove(linkedEditor);
+	}
 
-	public SidePane() {
+	public final void updateSelection() {
+		HashSet<SelectableId> selectedObjects = config.controller.state.getSelectedElements();
+
+		if (selectedObjects.isEmpty()) {
+			setSelectionTab(new Empty(config));
+
+		} else if (selectedObjects.size() > 1) {
+			setSelectionTab(new MultiSelectTab(config, selectedObjects));
+
+		} else {
+			switch (selectedObjects.iterator().next()) {
+				case Piece piece -> {
+					setSelectionTab(new PieceEditor(config, piece));
+				}
+				case Mur mur -> {
+					setSelectionTab(new MurEditor(config, mur));
+				}
+				case Point point -> {
+					setSelectionTab(new PointEditor(config, point));
+				}
+
+				case TypeAppart typeAppart -> {
+					setSelectionTab(new TypeAppartEditor(config, typeAppart));
+				}
+				case TypeBatiment typeBatiment -> {
+					setSelectionTab(new TypeBatimentEditor(config, typeBatiment));
+				}
+				case TypeMur typeMur -> {
+					setSelectionTab(new TypeMurEditor(config, typeMur));
+				}
+				case TypeOuvertureMur typeOuvertureMur -> {
+					setSelectionTab(new TypeOuvertureMurEditor(config, typeOuvertureMur));
+				}
+				case TypeOuvertureNiveau typeOuvertureNiveau -> {
+					setSelectionTab(new TypeOuvertureNiveauEditor(config, typeOuvertureNiveau));
+				}
+				case TypeRevetement typeOuvertureNiveau -> {
+					setSelectionTab(new TypeRevetementEditor(config, typeOuvertureNiveau));
+				}
+
+				default -> {
+					config.tui.warn("sidePane: singleObject: something else...");
+					setSelectionTab(new Empty(config));
+				}
+			}
+		}
+	}
+
+	public SidePane(Config config) {
+		this.config = config;
+
+		this.devisEditors = new HashMap<>();
 		super.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
+
+		final double width = 300;
+		this.setMaxWidth(width);
+		this.setWidth(width);
+
+		updateSelection();
 	}
 }

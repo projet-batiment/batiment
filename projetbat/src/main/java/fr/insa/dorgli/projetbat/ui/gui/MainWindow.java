@@ -2,7 +2,7 @@ package fr.insa.dorgli.projetbat.ui.gui;
 
 import fr.insa.dorgli.projetbat.core.Config;
 import fr.insa.dorgli.projetbat.core.control.Controller;
-import fr.insa.dorgli.projetbat.ui.gui.sidepane.SidePaneContainer;
+import fr.insa.dorgli.projetbat.ui.gui.sidepane.SidePane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
@@ -11,7 +11,7 @@ public class MainWindow extends BorderPane {
 
 	private final OutilsTop outilsTop;
 	private final CanvasContainer canvasContainer;
-	private final SidePaneContainer sidePaneContainer;
+	private final SidePane sidePane;
 
 	public MainWindow(Config config, Stage mainStage) {
 		config.setMainWindow(this);
@@ -26,8 +26,8 @@ public class MainWindow extends BorderPane {
 		this.canvasContainer = new CanvasContainer(config, this);
 		this.setCenter(canvasContainer);
 
-		this.sidePaneContainer = new SidePaneContainer(config);
-		this.setRight(sidePaneContainer);
+		this.sidePane = new SidePane(config);
+		this.setRight(sidePane);
 	}
 
 	public Controller getController() {
@@ -38,8 +38,8 @@ public class MainWindow extends BorderPane {
 		return canvasContainer;
 	}
 
-	public SidePaneContainer getSidePaneContainer() {
-		return sidePaneContainer;
+	public SidePane getSidePaneContainer() {
+		return sidePane;
 	}
 
 	public void setButtonZoomZeroSelected(boolean value) {
