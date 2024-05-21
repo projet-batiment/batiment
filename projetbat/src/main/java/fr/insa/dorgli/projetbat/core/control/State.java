@@ -1,6 +1,7 @@
 package fr.insa.dorgli.projetbat.core.control;
 
 import fr.insa.dorgli.projetbat.core.Config;
+import fr.insa.dorgli.projetbat.objects.Devis;
 import fr.insa.dorgli.projetbat.objects.concrete.Mur;
 import fr.insa.dorgli.projetbat.objects.concrete.Batiment;
 import fr.insa.dorgli.projetbat.objects.concrete.Niveau;
@@ -21,9 +22,10 @@ public class State {
 
 	public Batiment currentBatiment;
 	public Niveau currentNiveau;
-
 	public Drawable viewRootElement;
+
 	private final HashSet<SelectableId> selectedElements;
+	private final HashSet<Devis> devisList;
 	private ActionState actionState;
 
 	private Creator creator;
@@ -36,6 +38,7 @@ public class State {
 
 		this.viewRootElement = null;
 		this.selectedElements = new HashSet<>();
+		this.devisList = new HashSet<>();
 		this.actionState = ActionState.DEFAULT;
 
 		this.creator = null;
@@ -89,6 +92,15 @@ public class State {
 	}
 	public void clearSelectedElement() {
 		selectedElements.clear();
+		config.getMainWindow().getSidePaneContainer().update();
+	}
+
+	public void addDevis(Devis devis) {
+		devisList.add(devis);
+		config.getMainWindow().getSidePaneContainer().update();
+	}
+	public void removeDevis(Devis devis) {
+		devisList.remove(devis);
 		config.getMainWindow().getSidePaneContainer().update();
 	}
 

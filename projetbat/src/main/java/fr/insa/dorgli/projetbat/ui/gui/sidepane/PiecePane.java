@@ -7,8 +7,6 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -21,16 +19,12 @@ public class PiecePane extends ParentSidePane {
 		public PieceEditor(Config config) {
 			super(config, "Piece", piece);
 
-			TextField name = new TextField();
-			TextArea description = new TextArea();
-
 			super.prependSaveFunction((ActionEvent eh) -> {
 				// TODO!!
 			});
 
 			super.prependResetFunction(() -> {
-				name.setText(piece.getNom());
-				description.setText(piece.getDescription());
+				// TODO!!
 			});
 
 			super.prependInitFunction((Pane pane) ->

@@ -64,8 +64,8 @@ public class SidePaneContainer extends Pane {
 		config.tui.debug("sidePane: singleObject: is " + (object == null ? "(null)" : object.getClass().getSimpleName()));
 
 		switch (object) {
-			case Devis devis -> {
-				sidePane = new DevisPane(config, devis);
+			case null -> {
+				sidePane = new Empty();
 			}
 
 			case Piece piece -> {
@@ -82,9 +82,6 @@ public class SidePaneContainer extends Pane {
 				sidePane = new TypeMurPane(config, typeMur);
 			}
 
-			case null -> {
-				sidePane = new Empty();
-			}
 			default -> {
 				config.tui.warn("sidePane: singleObject: sth else...");
 				sidePane = new Empty();

@@ -4,7 +4,7 @@ import fr.insa.dorgli.projetbat.utils.FancyToStrings;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 import java.util.HashSet;
 
-public class Devis extends SelectableId implements HasPrice {
+public class Devis extends SelectableId implements NameDesc, HasPrice {
 	private String nom;
 	private String description;
 	private HashSet<HasPrice> studiedObjects;
@@ -44,18 +44,22 @@ public class Devis extends SelectableId implements HasPrice {
 		this.description = description;
 	}
 
+	@Override
 	public String getNom() {
 		return nom;
 	}
 
+	@Override
 	public void setNom(String nom) {
 		this.nom = nom;
 	}
 
+	@Override
 	public String getDescription() {
 		return description;
 	}
 
+	@Override
 	public void setDescription(String description) {
 		this.description = description;
 	}

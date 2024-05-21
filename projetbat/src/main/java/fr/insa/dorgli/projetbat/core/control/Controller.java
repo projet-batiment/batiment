@@ -201,8 +201,9 @@ public class Controller {
 
 	public void devisTotal() {
 		Devis devis = new Devis(config.project);
+		config.project.objects.put(devis);
 		config.tui.log("controller: selecting new devis " + devis.toStringShort() + " now");
-		state.setSelectedElement(devis);
+		state.addDevis(devis);
 	}
 
 	public void devisSelection() {
@@ -211,7 +212,7 @@ public class Controller {
 
 		Devis devis = new Devis(havePrice);
 		config.tui.log("controller: selecting new devis " + devis.toStringShort() + " now");
-		state.setSelectedElement(devis);
+		state.addDevis(devis);
 	}
 
 	public void saveDevis() {

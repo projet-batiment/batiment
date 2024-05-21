@@ -1,6 +1,5 @@
 package fr.insa.dorgli.projetbat.objects;
 
-import fr.insa.dorgli.projetbat.objects.BObject;
 import fr.insa.dorgli.projetbat.objects.concrete.Appart;
 import fr.insa.dorgli.projetbat.objects.concrete.Batiment;
 import fr.insa.dorgli.projetbat.objects.concrete.Drawable;
@@ -49,7 +48,7 @@ public class Objects {
 	private HashMap<Integer, TypeAppart> typesAppart = new HashMap<>();
 	private HashMap<Integer, TypeBatiment> typesBatiment = new HashMap<>();
 
-	private final HashMap<Integer, BObject> all = new HashMap<>();
+	private final HashMap<Integer, SelectableId> all = new HashMap<>();
 
 //	public void drawAll(CanvasContainer canvasContainer) {
 ////		System.out.println("INF: draw/objects: murs (" + murs.size() + "): " + murs.toString());
@@ -145,7 +144,7 @@ public class Objects {
 	 * @param object
 	 * @return the id given to the object, or -1 if the id is already held by another object 
 	 */
-	public int put(BObject object) {
+	public int put(SelectableId object) {
 		if (object.getId() <= 0) {
 			object.setId(generateId());
 		}
@@ -158,11 +157,11 @@ public class Objects {
 		}
 	}
 
-	public BObject get(int id) {
+	public SelectableId get(int id) {
 		return all.get(id);
 	}
 
-	public HashMap<Integer, BObject> getAll() {
+	public HashMap<Integer, SelectableId> getAll() {
 		return all;
 	}
 

@@ -1,10 +1,10 @@
 package fr.insa.dorgli.projetbat.core;
 
-import fr.insa.dorgli.projetbat.objects.BObject;
 import fr.insa.dorgli.projetbat.objects.concrete.Batiment;
 import fr.insa.dorgli.projetbat.objects.concrete.Drawable;
 import fr.insa.dorgli.projetbat.objects.HasPrice;
 import fr.insa.dorgli.projetbat.objects.Objects;
+import fr.insa.dorgli.projetbat.objects.SelectableId;
 import fr.insa.dorgli.projetbat.utils.FancyToStrings;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 
@@ -38,17 +38,14 @@ public class Project extends FancyToStrings implements HasPrice {
 	public String toString(int depth) {
 		return toString(depth, false);
 	}
-	public String toString(boolean indentFirst) {
-		return toString(0, indentFirst);
-	}
 
 	@Override
 	public double calculerPrix() {
 		var prixWrapper = new Object(){ double prix = 0; };
 
 		objects.getAll().values().stream()
-		    .filter((BObject bobject) -> bobject instanceof Batiment)
-		    .forEach((BObject batiment) -> prixWrapper.prix += ((Batiment)batiment).calculerPrix())
+		    .filter((SelectableId object) -> object instanceof Batiment)
+		    .forEach((SelectableId batiment) -> prixWrapper.prix += ((Batiment)batiment).calculerPrix())
 		;
 
 		return prixWrapper.prix;

@@ -134,7 +134,7 @@ public class Deserialize {
 		}
 
  		public void setNiveau(Objects objects) {
-			BObject propObject = objects.get(niveauId);
+			SelectableId propObject = objects.get(niveauId);
 			if (propObject instanceof Niveau niveau) {
 				point.setNiveau(niveau);
 				debug("pseudoPoint: set niveau of point " + point.toString());
@@ -334,7 +334,7 @@ public class Deserialize {
 				case "last viewRootElement" -> {
 					try {
 						int drawableId = Integer.parseInt(command[1]);
-						BObject drawableObject = newProject.objects.get(drawableId);
+						SelectableId drawableObject = newProject.objects.get(drawableId);
 						if (drawableObject instanceof Drawable drawable) {
 							debug("default viewRootElement read: " + drawable);
 							newProject.firstViewRootElement = drawable;
@@ -557,7 +557,7 @@ public class Deserialize {
 
 				try {
 					int trId = Integer.parseInt(splitted[1]);
-					BObject propObject = objects.get(trId);
+					SelectableId propObject = objects.get(trId);
 					if (propObject instanceof TypeRevetement tr) {
 						double p1l = Double.parseDouble(splitted[2]);
 						double p1h = Double.parseDouble(splitted[3]);
@@ -611,7 +611,7 @@ public class Deserialize {
 
 				try {
 					int toId = Integer.parseInt(splitted[1]);
-					BObject propObject = objects.get(toId);
+					SelectableId propObject = objects.get(toId);
 					if (propObject instanceof TypeOuvertureMur to) {
 						double p1l = Double.parseDouble(splitted[2]);
 						double p1h = Double.parseDouble(splitted[3]);
@@ -669,7 +669,7 @@ public class Deserialize {
 					TypeMur tm = null;
 
 					int point1Id = Integer.parseInt(splitted[1]);
-					BObject point1Object = objects.get(point1Id);
+					SelectableId point1Object = objects.get(point1Id);
 					if (point1Object instanceof Point point) {
 						p1 = point;
 					} else if (point1Object == null) {
@@ -679,7 +679,7 @@ public class Deserialize {
 					}
 
 					int point2Id = Integer.parseInt(splitted[2]);
-					BObject point2Object = objects.get(point2Id);
+					SelectableId point2Object = objects.get(point2Id);
 					if (point2Object instanceof Point point) {
 						p2 = point;
 					} else if (point2Object == null) {
@@ -689,7 +689,7 @@ public class Deserialize {
 					}
 
 					int tmId = Integer.parseInt(splitted[4]);
-					BObject tmObject = objects.get(tmId);
+					SelectableId tmObject = objects.get(tmId);
 					if (tmObject instanceof TypeMur typeMur) {
 						tm = typeMur;
 					} else if (tmObject == null) {
@@ -814,7 +814,7 @@ public class Deserialize {
 
 				try {
 					int trId = Integer.parseInt(splitted[1]);
-					BObject propObject = objects.get(trId);
+					SelectableId propObject = objects.get(trId);
 					if (propObject instanceof TypeRevetement tr) {
 						double p1l = Double.parseDouble(splitted[2]);
 						double p1h = Double.parseDouble(splitted[3]);
@@ -868,7 +868,7 @@ public class Deserialize {
 
 				try {
 					int toId = Integer.parseInt(splitted[1]);
-					BObject propObject = objects.get(toId);
+					SelectableId propObject = objects.get(toId);
 					if (propObject instanceof TypeOuvertureNiveau to) {
 						double p1l = Double.parseDouble(splitted[2]);
 						double p1h = Double.parseDouble(splitted[3]);
@@ -1011,7 +1011,7 @@ public class Deserialize {
 									for (String each: pointsIds) {
 										try {
 											int pointId = Integer.parseInt(each);
-											BObject propObject = objects.get(pointId);
+											SelectableId propObject = objects.get(pointId);
 											if (propObject instanceof Point point) {
 												points.add(point);
 											} else if (propObject == null) {
@@ -1039,7 +1039,7 @@ public class Deserialize {
 									for (String each: mursIds) {
 										try {
 											int murId = Integer.parseInt(each);
-											BObject propObject = objects.get(murId);
+											SelectableId propObject = objects.get(murId);
 											if (propObject instanceof Mur mur) {
 												murs.add(mur);
 											} else if (propObject == null) {
@@ -1166,7 +1166,7 @@ public class Deserialize {
 				try {
 					// lire les propriétés directes du appart
 					int taId = Integer.parseInt(splitted[3]);
-					BObject taObject = objects.get(taId);
+					SelectableId taObject = objects.get(taId);
 					if (taObject instanceof TypeAppart ta) {
 						// lire les Pieces
 						ArrayList<Piece> pieces = new ArrayList<>();
@@ -1188,7 +1188,7 @@ public class Deserialize {
 											for (String each: piecesIds) {
 												try {
 													int pieceId = Integer.parseInt(each);
-													BObject propObject = objects.get(pieceId);
+													SelectableId propObject = objects.get(pieceId);
 													if (propObject instanceof Piece piece) {
 														pieces.add(piece);
 													} else if (propObject == null) {
@@ -1284,7 +1284,7 @@ public class Deserialize {
 										for (String each: appartsIds) {
 											try {
 												int appartId = Integer.parseInt(each);
-												BObject propObject = objects.get(appartId);
+												SelectableId propObject = objects.get(appartId);
 												if (propObject instanceof Appart appart) {
 													apparts.add(appart);
 												} else if (propObject == null) {
@@ -1312,7 +1312,7 @@ public class Deserialize {
 										for (String each: piecesIds) {
 											try {
 												int pieceId = Integer.parseInt(each);
-												BObject propObject = objects.get(pieceId);
+												SelectableId propObject = objects.get(pieceId);
 												if (propObject instanceof Piece piece) {
 													pieces.add(piece);
 												} else if (propObject == null) {
@@ -1340,7 +1340,7 @@ public class Deserialize {
 										for (String each: orpheansIds) {
 											try {
 												int orpheanId = Integer.parseInt(each);
-												BObject propObject = objects.get(orpheanId);
+												SelectableId propObject = objects.get(orpheanId);
 												if (propObject instanceof Drawable orphean) {
 													orpheans.add(orphean);
 												} else if (propObject == null) {
@@ -1448,7 +1448,7 @@ public class Deserialize {
 				try {
 					// lire les propriétés directes du batiment
 					int tbId = Integer.parseInt(splitted[3]);
-					BObject tbObject = objects.get(tbId);
+					SelectableId tbObject = objects.get(tbId);
 					if (tbObject instanceof TypeBatiment tb) {
 
 						ArrayList<Appart> apparts = new ArrayList<>();
@@ -1471,7 +1471,7 @@ public class Deserialize {
 											for (String each: appartsIds) {
 												try {
 													int appartId = Integer.parseInt(each);
-													BObject propObject = objects.get(appartId);
+													SelectableId propObject = objects.get(appartId);
 													if (propObject instanceof Appart appart) {
 														apparts.add(appart);
 													} else if (propObject == null) {
@@ -1499,7 +1499,7 @@ public class Deserialize {
 											for (String each: niveauxIds) {
 												try {
 													int niveauId = Integer.parseInt(each);
-													BObject propObject = objects.get(niveauId);
+													SelectableId propObject = objects.get(niveauId);
 													if (propObject instanceof Niveau niveau) {
 														niveaux.add(niveau);
 													} else if (propObject == null) {
