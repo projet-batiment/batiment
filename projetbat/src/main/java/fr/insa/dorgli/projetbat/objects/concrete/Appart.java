@@ -9,7 +9,7 @@ import fr.insa.dorgli.projetbat.utils.StructuredToString;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class Appart extends BObject {
+public class Appart extends BObject implements HasPrice {
 	private String nom;
 	private String description;
 	private ArrayList<Piece> pieces;
@@ -60,11 +60,6 @@ public class Appart extends BObject {
 		this.typeAppart = typeAppart;
 	}
 
-	public double calculerPrix() {
-		// TODO ??
-		return 0;
-	}
-
 	@Override
 	public boolean ready() {
 		return (
@@ -100,5 +95,14 @@ public class Appart extends BObject {
 		}
 
 		return out + "EOS:Entry";
+	}
+
+	public double calculerPrix() {
+		double prixAppart = 0;
+
+		for (Piece eachPiece: pieces){
+			prixAppart += eachPiece.calculerPrix();
+		}
+		return prixAppart;
 	}
 }
