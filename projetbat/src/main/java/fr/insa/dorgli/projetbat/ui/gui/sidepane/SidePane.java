@@ -43,6 +43,15 @@ public class SidePane extends TabPane {
 
 		} else {
 			switch (selectedObjects.iterator().next()) {
+				case Batiment batiment -> {
+					setSelectionTab(new BatimentEditor(config, batiment));
+				}
+				case Niveau niveau -> {
+					setSelectionTab(new NiveauEditor(config, niveau));
+				}
+				case Appart appart -> {
+					setSelectionTab(new AppartEditor(config, appart));
+				}
 				case Piece piece -> {
 					setSelectionTab(new PieceEditor(config, piece));
 				}
@@ -70,6 +79,11 @@ public class SidePane extends TabPane {
 				}
 				case TypeRevetement typeOuvertureNiveau -> {
 					setSelectionTab(new TypeRevetementEditor(config, typeOuvertureNiveau));
+				}
+
+				case null -> {
+					config.tui.warn("sidePane: singleObject: (null)...");
+					setSelectionTab(new Empty(config));
 				}
 
 				default -> {

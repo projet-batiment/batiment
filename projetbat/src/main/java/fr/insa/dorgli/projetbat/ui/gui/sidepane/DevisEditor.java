@@ -43,7 +43,7 @@ public class DevisEditor extends NameDescEditor {
 		super.prependInitFunction((Pane pane) -> {
 			pane.getChildren().addAll(
 				ourVBox,
-				new Label("Prix : " + devis.calculerPrix()),
+				new Label("Prix : " + (Math.round(devis.calculerPrix() * 100) / 100) + "€"),
 				delete
 			);
 		});

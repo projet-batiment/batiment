@@ -3,6 +3,7 @@ package fr.insa.dorgli.projetbat.objects.concrete;
 import fr.insa.dorgli.projetbat.objects.HasPrice;
 import fr.insa.dorgli.projetbat.objects.Objects;
 import fr.insa.dorgli.projetbat.objects.Deserialize;
+import fr.insa.dorgli.projetbat.objects.NameDesc;
 import fr.insa.dorgli.projetbat.objects.types.TypeBatiment;
 import fr.insa.dorgli.projetbat.ui.gui.DrawingContext;
 import fr.insa.dorgli.projetbat.utils.FancyToStrings;
@@ -10,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 
-public class Batiment extends Drawable implements HasPrice {
+public class Batiment extends Drawable implements HasPrice, NameDesc {
 	private String nom;
 	private String description;
 	private TypeBatiment typeBatiment;

@@ -4,13 +4,14 @@ import fr.insa.dorgli.projetbat.objects.Objects;
 import fr.insa.dorgli.projetbat.objects.BObject;
 import fr.insa.dorgli.projetbat.objects.Deserialize;
 import fr.insa.dorgli.projetbat.objects.HasPrice;
+import fr.insa.dorgli.projetbat.objects.NameDesc;
 import fr.insa.dorgli.projetbat.objects.types.TypeAppart;
 import fr.insa.dorgli.projetbat.utils.FancyToStrings;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class Appart extends BObject implements HasPrice {
+public class Appart extends BObject implements HasPrice, NameDesc {
 	private String nom;
 	private String description;
 	private ArrayList<Piece> pieces;

@@ -39,21 +39,21 @@ public class DrawingContext {
 		config.tui.diveWhere("DrawingContext/redraw");
 
 		reset();
-		if (config.controller.state.viewRootElement == null) {
+		if (config.controller.state.getViewRootElement() == null) {
 			// TODO!!! amnesic debug
 			config.tui.debug("no rootObjects");
 		} else {
 			config.tui.begin();
 
 			// TODO!! toStringShort
-			config.tui.debug("drawing from root object " + config.controller.state.viewRootElement.toString());
-			draw(config.controller.state.viewRootElement);
+			config.tui.debug("drawing from root object " + config.controller.state.getViewRootElement().toString());
+			draw(config.controller.state.getViewRootElement());
 
 			config.tui.ended();
 		}
 
 		State state = config.controller.state;
-		if (state.getActionState() == State.ActionState.CREATE_MUR) {
+		if (state.getActionState() == State.ActionState.CREATE) {
 			if (state.getCreator().step == 1) {
 				Point2D.Double mousePosition = cc.getMousePositionData();
 				Point mousePositionObject = new Point();

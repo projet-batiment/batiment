@@ -119,7 +119,7 @@ public class Mur extends DrawableLine implements HasPrice {
 		// TODO: amnesic debug dive
 		dcx.tui().debug("Mur: drawing " + (isFocused ? "focused " : "") + "Mur " + this.toStringShort());
 		if (isFocused) {
-			dcx.drawLine(this, pointDebut, pointFin, 15, Color.NAVAJOWHITE);
+			dcx.drawLine(this, pointDebut, pointFin, 15, Color.web("CCB18A"));
 		} else {
 			dcx.drawLine(this, pointDebut, pointFin, 10, Color.DIMGRAY);
 		}

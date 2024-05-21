@@ -1,12 +1,12 @@
 package fr.insa.dorgli.projetbat.core.control;
 
 import fr.insa.dorgli.projetbat.core.Config;
+import fr.insa.dorgli.projetbat.objects.BObject;
 import fr.insa.dorgli.projetbat.objects.Devis;
-import fr.insa.dorgli.projetbat.objects.concrete.Mur;
-import fr.insa.dorgli.projetbat.objects.concrete.Batiment;
-import fr.insa.dorgli.projetbat.objects.concrete.Niveau;
-import fr.insa.dorgli.projetbat.objects.concrete.Drawable;
 import fr.insa.dorgli.projetbat.objects.SelectableId;
+import fr.insa.dorgli.projetbat.objects.concrete.Batiment;
+import fr.insa.dorgli.projetbat.objects.concrete.Drawable;
+import fr.insa.dorgli.projetbat.objects.concrete.Niveau;
 
 import java.util.HashSet;
 
@@ -15,14 +15,14 @@ public class State {
 		DEFAULT, // none
 		MULTI_SELECT,
 
-		CREATE_MUR,
+		CREATE,
 	}
 
 	private final Config config;
 
-	public Batiment currentBatiment;
+	private Batiment currentBatiment;
 	public Niveau currentNiveau;
-	public Drawable viewRootElement;
+	private Drawable viewRootElement;
 
 	private final HashSet<SelectableId> selectedElements;
 	private final HashSet<Devis> devisList;
@@ -53,10 +53,51 @@ public class State {
 		config.tui.debug("new state " + newState);
 
 		switch (newState) {
-			case CREATE_MUR -> {
-				creator = new Creator(new Mur());
-				actionState = ActionState.CREATE_MUR;
-				config.tui.debug("createMur: initialised mur creation");
+			case CREATE -> {
+				config.tui.error("setAction CREATE shouldn't be called directly");
+//				actionState = ActionState.CREATE;
+//				config.tui.debug("create: initialised " + newWhich + " creation");
+//				switch (newWhich) {
+//					case BATIMENT
+//						-> creator = new Creator(new Batiment());
+//					case NIVEAU
+//						-> creator = new Creator(new Niveau());
+//					case APPART
+//						-> creator = new Creator(new Appart());
+//					case PIECE
+//						-> creator = new Creator(new Piece());
+//					case MUR
+//						-> creator = new Creator(new Mur());
+//					case PLAFONDSOL
+//						-> creator = new Creator(new PlafondSol());
+//
+//					case REVETEMENT_MUR 
+//						-> creator = new Creator(new RevetementMur());
+//					case REVETEMENT_PLAFONDSOL 
+//						-> creator = new Creator(new RevetementPlafondSol());
+//					case OUVERTURE_MUR 
+//						-> creator = new Creator(new OuvertureMur());
+//					case OUVERTURE_NIVEAUX 
+//						-> creator = new Creator(new OuvertureNiveaux());
+//
+//					case TYPE_BATIMENT 
+//						-> creator = new Creator(new TypeBatiment());
+//					case TYPE_APPART 
+//						-> creator = new Creator(new TypeAppart());
+//					case TYPE_MUR 
+//						-> creator = new Creator(new TypeMur());
+//					case TYPE_OUVERTURE_MUR 
+//						-> creator = new Creator(new TypeOuvertureMur());
+//					case TYPE_OUVERTURE_NIVEAUX 
+//						-> creator = new Creator(new TypeOuvertureNiveau());
+//					case TYPE_REVETEMENT 
+//						-> creator = new Creator(new TypeRevetement());
+//
+//					default -> {
+//						config.tui.error("create: not implemented: " + newWhich);
+//						actionState = ActionState.DEFAULT;
+//					}
+//				}
 			}
 
 			case MULTI_SELECT, DEFAULT
@@ -77,8 +118,12 @@ public class State {
 	public boolean isSelectedElement(SelectableId elm) {
 		return selectedElements.contains(elm);
 	}
-	public void addSelectedElement(SelectableId elm) {
-		selectedElements.add(elm);
+	public void toggleSelectedElement(SelectableId elm) {
+		if (selectedElements.contains(elm))
+			selectedElements.remove(elm);
+		else
+			selectedElements.add(elm);
+
 		config.getMainWindow().getSidePaneContainer().updateSelection();
 	}
 	public void removeSelectedElement(SelectableId elm) {
@@ -104,6 +149,29 @@ public class State {
 		config.getMainWindow().getSidePaneContainer().removeDevis(devis);
 	}
 
+	public Drawable getViewRootElement() {
+		return viewRootElement;
+	}
+
+	public void setViewRootElement(Drawable viewRootElement) {
+		this.viewRootElement = viewRootElement;
+		config.getMainWindow().getCanvasContainer().redraw();
+	}
+
+	public Batiment getCurrentBatiment() {
+		return currentBatiment;
+	}
+
+	public void setCurrentBatiment(Batiment currentBatiment) {
+		this.currentBatiment = currentBatiment;
+	}
+
+
+	public <T extends BObject> Creator create(T object) {
+		actionState = ActionState.CREATE;
+		creator = new Creator(object);
+		return creator;
+	}
 	public Creator getCreator() {
 		return creator;
 	}
