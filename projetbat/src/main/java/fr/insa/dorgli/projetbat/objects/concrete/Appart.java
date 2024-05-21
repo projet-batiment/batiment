@@ -101,4 +101,13 @@ public class Appart extends BObject implements HasPrice{
 
 		return out + "EOS:Entry";
 	}
+
+	public double calculerPrix() {
+		double prixAppart = 0;
+
+		for (Piece eachPiece: pieces){
+			prixAppart += eachPiece.calculerPrix();
+		}
+		return prixAppart;
+	}
 }
