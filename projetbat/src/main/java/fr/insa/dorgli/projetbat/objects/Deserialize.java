@@ -1,26 +1,11 @@
 package fr.insa.dorgli.projetbat.objects;
 
-import fr.insa.dorgli.projetbat.objects.concrete.Piece;
-import fr.insa.dorgli.projetbat.objects.concrete.OuvertureNiveaux;
-import fr.insa.dorgli.projetbat.objects.concrete.PlafondSol;
-import fr.insa.dorgli.projetbat.objects.concrete.Appart;
-import fr.insa.dorgli.projetbat.objects.concrete.RevetementMur;
-import fr.insa.dorgli.projetbat.objects.concrete.Mur;
-import fr.insa.dorgli.projetbat.objects.concrete.Batiment;
-import fr.insa.dorgli.projetbat.objects.concrete.OuvertureMur;
-import fr.insa.dorgli.projetbat.objects.concrete.Niveau;
-import fr.insa.dorgli.projetbat.objects.concrete.RevetementPlafondSol;
-import fr.insa.dorgli.projetbat.objects.concrete.Drawable;
-import fr.insa.dorgli.projetbat.objects.concrete.Point;
-import fr.insa.dorgli.projetbat.objects.types.TypeMur;
-import fr.insa.dorgli.projetbat.objects.types.TypeAppart;
-import fr.insa.dorgli.projetbat.objects.types.TypeOuvertureNiveau;
-import fr.insa.dorgli.projetbat.objects.types.TypeRevetement;
-import fr.insa.dorgli.projetbat.objects.types.TypeOuvertureMur;
-import fr.insa.dorgli.projetbat.objects.types.TypeBatiment;
+import fr.insa.dorgli.projetbat.objects.concrete.*;
+import fr.insa.dorgli.projetbat.objects.types.*;
 import fr.insa.dorgli.projetbat.ui.TUI;
 import fr.insa.dorgli.projetbat.core.Config;
 import fr.insa.dorgli.projetbat.core.Project;
+import fr.insa.dorgli.projetbat.objects.concrete.DrawableRoot;
 import fr.insa.dorgli.projetbat.utils.SmartReader;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 import java.io.File;
@@ -155,6 +140,12 @@ public class Deserialize {
 		}
 	}
 
+	public class LoadedProject extends Project {
+		public Batiment currentBatiment; 
+		public Niveau currentNiveau; 
+		public DrawableRoot viewRootElement; 
+	}
+
 	public class Result {
 		public enum Status {
 			SUCCESS,
@@ -164,12 +155,12 @@ public class Deserialize {
 		}
 
 		public final Status status;
-		public final Project project;
+		public final LoadedProject project;
 		public final Exception exception;
 		public final String[] messages;
 
 		// bare OK
-		public Result(Project project) {
+		public Result(LoadedProject project) {
 			this(Status.SUCCESS, project, null, null);
 		}
 		// bare ERROR
@@ -185,7 +176,7 @@ public class Deserialize {
 			this(status, null, null, exception);
 		}
 		// private all-in-one
-		private Result(Status status, Project project, String[] messages, Exception exception) {
+		private Result(Status status, LoadedProject project, String[] messages, Exception exception) {
 			this.status = status;
 			this.project = project;
 			this.messages = messages;
@@ -201,7 +192,7 @@ public class Deserialize {
 		config.tui.diveWhere("deserializeFile");
 		config.tui.begin();
 
-		Project newProject = new Project();
+		LoadedProject newLoadedProject = new LoadedProject();
 		ArrayList<PseudoPoint> pseudoPoints = new ArrayList<>();
 
 		try {
@@ -229,19 +220,19 @@ public class Deserialize {
 						debug("reading objects section " + TUI.blue("'" + objectsKind + "'") + "...");
 
 						switch (objectsKind) {
-							case "Batiment" ->		batimentsFromString(newProject.objects);
-							case "Point" -> 		pseudoPoints = pointsFromString(newProject.objects);
-							case "TypeRevetement" -> 	typeRevetementsFromString(newProject.objects);
-							case "TypeOuvertureMur" -> 	typeOuvertureMursFromString(newProject.objects);
-							case "TypeOuvertureNiveau" -> 	typeOuvertureNiveauxFromString(newProject.objects);
-							case "TypeMur" -> 		typeMursFromString(newProject.objects);
-							case "TypeAppart" -> 		typeAppartsFromString(newProject.objects);
-							case "TypeBatiment" -> 		typeBatimentsFromString(newProject.objects);
-							case "Mur" -> 			mursFromString(newProject.objects);
-							case "Piece" ->			piecesFromString(newProject.objects);
-							case "Appart" ->		appartsFromString(newProject.objects);
-							case "Niveau" ->		niveauxFromString(newProject.objects);
-							//case "PlafondSol" -> 		newProject.objects.plafondsSols = plafondSolsFromString(newProject.objects);
+							case "Batiment" ->		batimentsFromString(newLoadedProject.objects);
+							case "Point" -> 		pseudoPoints = pointsFromString(newLoadedProject.objects);
+							case "TypeRevetement" -> 	typeRevetementsFromString(newLoadedProject.objects);
+							case "TypeOuvertureMur" -> 	typeOuvertureMursFromString(newLoadedProject.objects);
+							case "TypeOuvertureNiveau" -> 	typeOuvertureNiveauxFromString(newLoadedProject.objects);
+							case "TypeMur" -> 		typeMursFromString(newLoadedProject.objects);
+							case "TypeAppart" -> 		typeAppartsFromString(newLoadedProject.objects);
+							case "TypeBatiment" -> 		typeBatimentsFromString(newLoadedProject.objects);
+							case "Mur" -> 			mursFromString(newLoadedProject.objects);
+							case "Piece" ->			piecesFromString(newLoadedProject.objects);
+							case "Appart" ->		appartsFromString(newLoadedProject.objects);
+							case "Niveau" ->		niveauxFromString(newLoadedProject.objects);
+							//case "PlafondSol" -> 		newLoadedProject.objects.plafondsSols = plafondSolsFromString(newLoadedProject.objects);
 							default -> error("section d'objects inconnue: '" + objectsKind + "'");
 						}
 
@@ -252,7 +243,7 @@ public class Deserialize {
 						}
 					} else if (line.startsWith("FILE")) {
 						debug("reading " + TUI.blue("FILE") + " statements");
-						fileStatements(newProject);
+						fileStatements(newLoadedProject);
 					} else {
 						error("section inconnue: '" + line + "'");
 					}
@@ -269,7 +260,7 @@ public class Deserialize {
 			}
 
 			for (PseudoPoint p: pseudoPoints) {
-				p.setNiveau(newProject.objects);
+				p.setNiveau(newLoadedProject.objects);
 			}
 
 		} catch (Exception e) {
@@ -277,7 +268,7 @@ public class Deserialize {
 			return config.tui.popWhere( new Result(Result.Status.UNEXPECTED_ERROR, e) );
 		}
 
-		debug("Les objets suivants ont été lus:\n" + newProject.objects.toString());
+		debug("Les objets suivants ont été lus:\n" + newLoadedProject.objects.toString());
 
 		if (config.tui.getErrCounter() > 0) {
 			config.tui.ended(TUI.red(config.tui.getErrCounter() + " errors"));
@@ -286,11 +277,11 @@ public class Deserialize {
 			config.tui.ended(TUI.green("success"));
 	}
 
-		return config.tui.popWhere( new Result(newProject) );
+		return config.tui.popWhere( new Result(newLoadedProject) );
 	}
 
 	/// FileStatements
-	private void fileStatements(Project newProject) throws IOException {
+	private void fileStatements(LoadedProject newLoadedProject) throws IOException {
 		config.tui.diveWhere("fileStatements");
 		config.tui.begin();
 		String[] command;
@@ -321,23 +312,23 @@ public class Deserialize {
 
 				case "projectName" -> {
 					String unescaped = unescapeString(command[1]);
-					newProject.projectName = unescaped;
+					newLoadedProject.projectName = unescaped;
 					debug("set projectName = '" + unescaped + "'");
 				}
 
 				case "projectDescription" -> {
 					String unescaped = unescapeString(command[1]);
-					newProject.projectDescription = unescaped;
+					newLoadedProject.projectDescription = unescaped;
 					debug("set projectDescription = '" + unescaped + "'");
 				}
 
 				case "last viewRootElement" -> {
 					try {
 						int drawableId = Integer.parseInt(command[1]);
-						SelectableId drawableObject = newProject.objects.get(drawableId);
-						if (drawableObject instanceof Drawable drawable) {
+						SelectableId drawableObject = newLoadedProject.objects.get(drawableId);
+						if (drawableObject instanceof DrawableRoot drawable) {
 							debug("default viewRootElement read: " + drawable);
-							newProject.firstViewRootElement = drawable;
+							newLoadedProject.viewRootElement = drawable;
 						} else if (drawableObject == null) {
 							errorIdNone("Drawable", drawableId);
 						} else {

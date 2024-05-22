@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 
-public class Niveau extends Drawable implements NameDesc {
+public class Niveau extends DrawableRoot implements NameDesc {
 	private String nom;
 	private String description;
 	private double hauteur;
@@ -83,10 +83,10 @@ public class Niveau extends Drawable implements NameDesc {
 	}
 
 	@Override
-	public void draw(DrawingContext dcx, boolean isFocused) {
+	public void drawRoot(DrawingContext dcx) {
 		dcx.tui().diveWhere("niveau.draw");
 
-		dcx.tui().debug("in" + (isFocused ? " focused" : "") + " Niveau " + this.toStringShort());
+		dcx.tui().debug("in Niveau " + this.toStringShort());
 		dcx.tui().debug("drawing " + pieces.size() + " piece objects");
 		for (Piece piece: pieces) {
 			dcx.draw(piece);

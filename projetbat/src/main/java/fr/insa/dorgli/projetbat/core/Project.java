@@ -1,7 +1,6 @@
 package fr.insa.dorgli.projetbat.core;
 
 import fr.insa.dorgli.projetbat.objects.concrete.Batiment;
-import fr.insa.dorgli.projetbat.objects.concrete.Drawable;
 import fr.insa.dorgli.projetbat.objects.HasPrice;
 import fr.insa.dorgli.projetbat.objects.Objects;
 import fr.insa.dorgli.projetbat.objects.SelectableId;
@@ -14,8 +13,6 @@ public class Project extends FancyToStrings implements HasPrice {
 	public String projectName = new String();
 	public String projectDescription = new String();
 	public String savefilePath = new String();
-
-	public Drawable firstViewRootElement;
 
 	@Override
 	public String toStringShort() {

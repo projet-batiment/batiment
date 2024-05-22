@@ -8,6 +8,7 @@ import fr.insa.dorgli.projetbat.objects.concrete.Drawable;
 import fr.insa.dorgli.projetbat.objects.concrete.Point;
 import fr.insa.dorgli.projetbat.core.Config;
 import fr.insa.dorgli.projetbat.core.control.State;
+import fr.insa.dorgli.projetbat.objects.concrete.DrawableRoot;
 import fr.insa.dorgli.projetbat.ui.TUI;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
@@ -47,7 +48,8 @@ public class DrawingContext {
 
 			// TODO!! toStringShort
 			config.tui.debug("drawing from root object " + config.controller.state.getViewRootElement().toString());
-			draw(config.controller.state.getViewRootElement());
+			DrawableRoot root = config.controller.state.getViewRootElement();
+			config.controller.state.getViewRootElement().drawRoot(this);
 
 			config.tui.ended();
 		}

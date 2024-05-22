@@ -5,7 +5,7 @@ import fr.insa.dorgli.projetbat.objects.BObject;
 import fr.insa.dorgli.projetbat.objects.Devis;
 import fr.insa.dorgli.projetbat.objects.SelectableId;
 import fr.insa.dorgli.projetbat.objects.concrete.Batiment;
-import fr.insa.dorgli.projetbat.objects.concrete.Drawable;
+import fr.insa.dorgli.projetbat.objects.concrete.DrawableRoot;
 import fr.insa.dorgli.projetbat.objects.concrete.Niveau;
 
 import java.util.HashSet;
@@ -22,7 +22,7 @@ public class State {
 
 	private Batiment currentBatiment;
 	public Niveau currentNiveau;
-	private Drawable viewRootElement;
+	private DrawableRoot viewRootElement;
 
 	private final HashSet<SelectableId> selectedElements;
 	private final HashSet<Devis> devisList;
@@ -149,11 +149,11 @@ public class State {
 		config.getMainWindow().getSidePaneContainer().removeDevis(devis);
 	}
 
-	public Drawable getViewRootElement() {
+	public DrawableRoot getViewRootElement() {
 		return viewRootElement;
 	}
 
-	public void setViewRootElement(Drawable viewRootElement) {
+	public void setViewRootElement(DrawableRoot viewRootElement) {
 		this.viewRootElement = viewRootElement;
 		config.getMainWindow().getCanvasContainer().redraw();
 	}

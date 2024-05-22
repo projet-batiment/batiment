@@ -48,7 +48,7 @@ public class Controller {
 					config.tui.log("successfully loaded the project!");
 
 					// TODOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
-					state.setViewRootElement(result.project.firstViewRootElement);
+					state.setViewRootElement(result.project.viewRootElement);
 
 					config.getMainWindow().getCanvasContainer().moveView(Direction.FIT); // implies a redraw
 				}
@@ -280,7 +280,7 @@ public class Controller {
 					return niveau == null ? "(aucun)" : niveau.getNom();
 				}
 			});
-			state.setViewRootElement((Drawable) chooser.perform());
+			state.setViewRootElement((DrawableRoot) chooser.perform());
 		}
 	}
 
@@ -304,5 +304,9 @@ public class Controller {
 	}
 	public void menuButtonSelectCurrentBatiment() {
 		state.setSelectedElement(state.getCurrentBatiment());
+	}
+
+	public void redrawCanvas() {
+		config.getMainWindow().getCanvasContainer().redraw();
 	}
 }

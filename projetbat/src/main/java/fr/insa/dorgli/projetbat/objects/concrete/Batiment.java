@@ -1,5 +1,6 @@
 package fr.insa.dorgli.projetbat.objects.concrete;
 
+import fr.insa.dorgli.projetbat.objects.BObject;
 import fr.insa.dorgli.projetbat.objects.HasPrice;
 import fr.insa.dorgli.projetbat.objects.Objects;
 import fr.insa.dorgli.projetbat.objects.Deserialize;
@@ -11,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 
-public class Batiment extends Drawable implements HasPrice, NameDesc {
+public class Batiment extends BObject implements HasPrice, NameDesc {
 	private String nom;
 	private String description;
 	private TypeBatiment typeBatiment;
@@ -33,18 +34,22 @@ public class Batiment extends Drawable implements HasPrice, NameDesc {
 		this.apparts = apparts;
 	}
 
+	@Override
 	public String getNom() {
 		return nom;
 	}
 
+	@Override
 	public void setNom(String nom) {
 		this.nom = nom;
 	}
 
+	@Override
 	public String getDescription() {
 		return description;
 	}
 
+	@Override
 	public void setDescription(String description) {
 		this.description = description;
 	}
@@ -85,11 +90,6 @@ public class Batiment extends Drawable implements HasPrice, NameDesc {
 	}
 
 	@Override
-	public void draw(DrawingContext ctxt, boolean isFocused) {
-		ctxt.tui().error("batiment.draw: cannot draw batiment");
-	}
-
-	@Override
 	public boolean ready() {
 		return (
 			typeBatiment != null
@@ -107,6 +107,7 @@ public class Batiment extends Drawable implements HasPrice, NameDesc {
         	    .getValue();
 	}
 
+	@Override
 	public String serialize(Objects objects) {
 		String out = String.join(",",
 		    String.valueOf(super.getId()),
