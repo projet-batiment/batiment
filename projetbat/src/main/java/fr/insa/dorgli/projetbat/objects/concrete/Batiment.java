@@ -20,7 +20,7 @@ public class Batiment extends BObject implements HasPrice, NameDesc {
 	private ArrayList<Appart> apparts;
 
 	public Batiment() {
-		nom = new String();
+		nom = "Nouveau bâtiment";
 		description = new String();
 		niveaux = new ArrayList<>();
 		apparts = new ArrayList<>();

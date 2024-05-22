@@ -324,15 +324,28 @@ public class Deserialize {
 
 				case "last viewRootElement" -> {
 					try {
-						int drawableId = Integer.parseInt(command[1]);
-						SelectableId drawableObject = newLoadedProject.objects.get(drawableId);
-						if (drawableObject instanceof DrawableRoot drawable) {
-							debug("default viewRootElement read: " + drawable);
-							newLoadedProject.viewRootElement = drawable;
-						} else if (drawableObject == null) {
-							errorIdNone("Drawable", drawableId);
+						String[] splitted = command[1].split(":");
+						int batimentId = Integer.parseInt(splitted[0]);
+						int rootId = Integer.parseInt(splitted[1]);
+
+						SelectableId batimentObject = newLoadedProject.objects.get(batimentId);
+						if (batimentObject instanceof Batiment batiment) {
+							debug("last batiment read: " + batiment);
+							newLoadedProject.currentBatiment = batiment;
+						} else if (batimentObject == null) {
+							errorIdNone("Batiment", batimentId);
 						} else {
-							errorIdWrongType("Drawable", drawableId);
+							errorIdWrongType("Batiment", batimentId);
+						}
+
+						SelectableId rootObject = newLoadedProject.objects.get(rootId);
+						if (rootObject instanceof DrawableRoot drawable) {
+							debug("last viewRootElement read: " + drawable);
+							newLoadedProject.viewRootElement = drawable;
+						} else if (rootObject == null) {
+							errorIdNone("DrawableRoot", rootId);
+						} else {
+							errorIdWrongType("DrawableRoot", rootId);
 						}
 					} catch (NumberFormatException e) {
 						errorParse(line, e);

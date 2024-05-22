@@ -2,12 +2,12 @@ package fr.insa.dorgli.projetbat.core;
 
 import fr.insa.dorgli.projetbat.objects.concrete.Batiment;
 import fr.insa.dorgli.projetbat.objects.HasPrice;
+import fr.insa.dorgli.projetbat.objects.NameDesc;
 import fr.insa.dorgli.projetbat.objects.Objects;
 import fr.insa.dorgli.projetbat.objects.SelectableId;
-import fr.insa.dorgli.projetbat.utils.FancyToStrings;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 
-public class Project extends FancyToStrings implements HasPrice {
+public class Project extends SelectableId implements HasPrice, NameDesc {
 	public Objects objects = new Objects();
 
 	public String projectName = new String();
@@ -38,13 +38,37 @@ public class Project extends FancyToStrings implements HasPrice {
 
 	@Override
 	public double calculerPrix() {
-		var prixWrapper = new Object(){ double prix = 0; };
+		double prix = 0;
 
-		objects.getAll().values().stream()
-		    .filter((SelectableId object) -> object instanceof Batiment)
-		    .forEach((SelectableId batiment) -> prixWrapper.prix += ((Batiment)batiment).calculerPrix())
-		;
+		for (Batiment batiment: objects.getBatiments())
+			prix += batiment.calculerPrix();
 
-		return prixWrapper.prix;
+		return prix;
+	}
+
+	@Override
+	public String getNom() {
+		return projectName;
+	}
+
+	@Override
+	public String getDescription() {
+		return projectDescription;
+	}
+
+	@Override
+	public void setNom(String nom) {
+		projectName = nom;
+	}
+
+	@Override
+	public void setDescription(String description) {
+		projectDescription = description;
+	}
+
+	@Override
+	public String serialize(Objects objects) {
+		// TODO
+		throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
 	}
 }

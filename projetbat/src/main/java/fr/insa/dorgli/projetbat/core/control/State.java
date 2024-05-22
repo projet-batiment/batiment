@@ -7,6 +7,7 @@ import fr.insa.dorgli.projetbat.objects.SelectableId;
 import fr.insa.dorgli.projetbat.objects.concrete.Batiment;
 import fr.insa.dorgli.projetbat.objects.concrete.DrawableRoot;
 import fr.insa.dorgli.projetbat.objects.concrete.Niveau;
+import fr.insa.dorgli.projetbat.ui.gui.Direction;
 
 import java.util.HashSet;
 
@@ -21,7 +22,7 @@ public class State {
 	private final Config config;
 
 	private Batiment currentBatiment;
-	public Niveau currentNiveau;
+//	public Niveau currentNiveau;
 	private DrawableRoot viewRootElement;
 
 	private final HashSet<SelectableId> selectedElements;
@@ -34,7 +35,7 @@ public class State {
 		this.config = config;
 
 		this.currentBatiment = null;
-		this.currentNiveau = null;
+//		this.currentNiveau = null;
 
 		this.viewRootElement = null;
 		this.selectedElements = new HashSet<>();
@@ -55,49 +56,6 @@ public class State {
 		switch (newState) {
 			case CREATE -> {
 				config.tui.error("setAction CREATE shouldn't be called directly");
-//				actionState = ActionState.CREATE;
-//				config.tui.debug("create: initialised " + newWhich + " creation");
-//				switch (newWhich) {
-//					case BATIMENT
-//						-> creator = new Creator(new Batiment());
-//					case NIVEAU
-//						-> creator = new Creator(new Niveau());
-//					case APPART
-//						-> creator = new Creator(new Appart());
-//					case PIECE
-//						-> creator = new Creator(new Piece());
-//					case MUR
-//						-> creator = new Creator(new Mur());
-//					case PLAFONDSOL
-//						-> creator = new Creator(new PlafondSol());
-//
-//					case REVETEMENT_MUR 
-//						-> creator = new Creator(new RevetementMur());
-//					case REVETEMENT_PLAFONDSOL 
-//						-> creator = new Creator(new RevetementPlafondSol());
-//					case OUVERTURE_MUR 
-//						-> creator = new Creator(new OuvertureMur());
-//					case OUVERTURE_NIVEAUX 
-//						-> creator = new Creator(new OuvertureNiveaux());
-//
-//					case TYPE_BATIMENT 
-//						-> creator = new Creator(new TypeBatiment());
-//					case TYPE_APPART 
-//						-> creator = new Creator(new TypeAppart());
-//					case TYPE_MUR 
-//						-> creator = new Creator(new TypeMur());
-//					case TYPE_OUVERTURE_MUR 
-//						-> creator = new Creator(new TypeOuvertureMur());
-//					case TYPE_OUVERTURE_NIVEAUX 
-//						-> creator = new Creator(new TypeOuvertureNiveau());
-//					case TYPE_REVETEMENT 
-//						-> creator = new Creator(new TypeRevetement());
-//
-//					default -> {
-//						config.tui.error("create: not implemented: " + newWhich);
-//						actionState = ActionState.DEFAULT;
-//					}
-//				}
 			}
 
 			case MULTI_SELECT, DEFAULT
@@ -155,7 +113,8 @@ public class State {
 
 	public void setViewRootElement(DrawableRoot viewRootElement) {
 		this.viewRootElement = viewRootElement;
-		config.getMainWindow().getCanvasContainer().redraw();
+		config.getMainWindow().getCanvasContainer().moveView(Direction.FIT);
+		config.controller.redrawCanvas();
 	}
 
 	public Batiment getCurrentBatiment() {

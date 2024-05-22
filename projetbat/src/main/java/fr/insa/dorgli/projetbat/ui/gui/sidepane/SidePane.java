@@ -1,6 +1,7 @@
 package fr.insa.dorgli.projetbat.ui.gui.sidepane;
 
 import fr.insa.dorgli.projetbat.core.Config;
+import fr.insa.dorgli.projetbat.core.Project;
 import fr.insa.dorgli.projetbat.objects.Devis;
 import fr.insa.dorgli.projetbat.objects.SelectableId;
 import fr.insa.dorgli.projetbat.objects.concrete.*;
@@ -33,9 +34,13 @@ public class SidePane extends TabPane {
 	}
 
 	public final void updateSelection() {
+
 		HashSet<SelectableId> selectedObjects = config.controller.state.getSelectedElements();
 
-		if (selectedObjects.isEmpty()) {
+		if (config.project.objects.getAll().isEmpty())
+			setSelectionTab(new EmptyProject(config));
+
+		else if (selectedObjects.isEmpty()) {
 			setSelectionTab(new Empty(config));
 
 		} else if (selectedObjects.size() > 1) {
@@ -79,6 +84,10 @@ public class SidePane extends TabPane {
 				}
 				case TypeRevetement typeOuvertureNiveau -> {
 					setSelectionTab(new TypeRevetementEditor(config, typeOuvertureNiveau));
+				}
+
+				case Project project -> {
+					setSelectionTab(new ProjectEditor(config, project));
 				}
 
 				case null -> {

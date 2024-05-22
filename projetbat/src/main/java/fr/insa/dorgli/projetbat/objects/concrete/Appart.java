@@ -18,7 +18,7 @@ public class Appart extends BObject implements HasPrice, NameDesc {
 	private TypeAppart typeAppart;
 
 	public Appart() {
-		nom = new String();
+		nom = "Nouvel appartement";
 		description = new String();
 		pieces = new ArrayList<>();
 	}

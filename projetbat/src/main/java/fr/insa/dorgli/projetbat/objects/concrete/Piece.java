@@ -20,7 +20,7 @@ public class Piece extends DrawablePath implements HasPrice, NameDesc {
 	private PlafondSol sol;
 
 	public Piece() {
-		nom = new String();
+		nom = "Nouvelle pièce";
 		description = new String();
 		points = new ArrayList<>();
 		murs = new ArrayList<>();

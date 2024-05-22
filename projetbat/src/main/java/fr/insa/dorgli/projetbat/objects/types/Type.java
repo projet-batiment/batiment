@@ -11,7 +11,7 @@ public abstract class Type extends BObject implements NameDesc {
 	protected String description;
 
 	public Type() {
-		this.nom = new String();
+		this.nom = "Nouveau " + this.getClass().getSimpleName();
 		this.description = new String();
 	}
 	public Type(int id, String nom, String description) {

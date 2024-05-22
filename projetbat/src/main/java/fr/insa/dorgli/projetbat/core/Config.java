@@ -11,8 +11,8 @@ import javafx.stage.Stage;
 // Ainsi qu'un annuaire de tous les objets créés lors de l'exécution (dans des hashmap)
 public class Config {
 	public class GuiConfig {
-		public static double MIN_WIDTH = 500;
-		public static double MIN_HEIGHT = 400;
+		public static double MIN_WIDTH = 750;
+		public static double MIN_HEIGHT = 450;
 	}
 
 	// propriétés statiques

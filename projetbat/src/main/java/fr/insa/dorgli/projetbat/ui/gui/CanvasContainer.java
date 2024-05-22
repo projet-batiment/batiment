@@ -234,7 +234,10 @@ public class CanvasContainer extends Pane {
 	private void fitArea(Rectangle pointArea) {
 		config.tui.diveWhere("canvasContainer/fitArea");
 
-		if (! totalDrawingRectangle.contains(pointArea)) {
+		if (totalDrawingRectangle.getWidth() == 0 && totalDrawingRectangle.getHeight() == 0) {
+			totalDrawingRectangle = pointArea;
+			config.tui.debug("Initialized a new totalDrawingRectangle to fitArea: " + totalDrawingRectangle.toString());
+		} else if (! totalDrawingRectangle.contains(pointArea)) {
 			config.tui.debug("Recalculating the totalDrawingRectangle: old " + totalDrawingRectangle.toString());
 			totalDrawingRectangle.add(pointArea);
 			config.tui.debug("Recalculated the totalDrawingRectangle:  new " + totalDrawingRectangle.toString());
@@ -516,7 +519,7 @@ public class CanvasContainer extends Pane {
 		disableDrawing = true; // do not draw anything !!
 
 		config.tui.debug("recalculateTotalDrawingRectangle: triggering redraw in order to place all the canvas-objects in that holly rectangle again");
-		redraw();
+		drawingContext.redraw();
 
 		if (totalDrawingRectangle.getWidth() == 0 && totalDrawingRectangle.getHeight() == 0) {
 			// the rectangle is empty => fit the canvas itself
@@ -555,7 +558,7 @@ public class CanvasContainer extends Pane {
 
 		// set up a white background:
 		double margin = 5;
-		ctxt.setFill(Color.WHITE);
+		ctxt.setFill(config.controller.state.getViewRootElement() == null ? Color.web("e8e8e8") : Color.WHITE);
 		ctxt.fillRect(
 		    scaleToView(- ctxt.getTransform().getTx() - margin),
 		    scaleToView(- ctxt.getTransform().getTy() - margin),

@@ -18,7 +18,7 @@ public class Niveau extends DrawableRoot implements NameDesc {
 	private ArrayList<Drawable> orpheans;
 
 	public Niveau() {
-		nom = new String();
+		nom = "Nouveau niveau";
 		description = new String();
 		pieces = new ArrayList<>();
 		apparts = new ArrayList<>();

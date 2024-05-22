@@ -1,14 +1,14 @@
 package fr.insa.dorgli.projetbat.core.control;
 
 import fr.insa.dorgli.projetbat.core.Config;
+import fr.insa.dorgli.projetbat.core.Project;
 import fr.insa.dorgli.projetbat.objects.concrete.*;
-import fr.insa.dorgli.projetbat.objects.types.*;
 import fr.insa.dorgli.projetbat.objects.Deserialize;
 import fr.insa.dorgli.projetbat.ui.gui.Direction;
 import fr.insa.dorgli.projetbat.objects.*;
 import fr.insa.dorgli.projetbat.objects.HasPrice;
 import fr.insa.dorgli.projetbat.ui.TUI;
-import fr.insa.dorgli.projetbat.ui.gui.sidepane.ChooseFromList;
+import fr.insa.dorgli.projetbat.ui.gui.popups.ChooseFromList;
 import java.awt.geom.Point2D;
 import java.io.File;
 import java.util.ArrayList;
@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ChoiceDialog;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 
@@ -31,6 +30,7 @@ public class Controller {
 	public Controller(Config config) {
 		this.config = config;
 		this.state = new State(config);
+		config.project = new Project();
 	}
 
 	public void openFile(ActionEvent event) {
@@ -49,6 +49,7 @@ public class Controller {
 
 					// TODOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 					state.setViewRootElement(result.project.viewRootElement);
+					state.setCurrentBatiment(result.project.currentBatiment);
 
 					config.getMainWindow().getCanvasContainer().moveView(Direction.FIT); // implies a redraw
 				}
@@ -99,7 +100,7 @@ public class Controller {
 		config.tui.log("saveFile: echoing the savefile:");
 
 		String out = "FILE\n"
-		    + "version:" + config.maximumSavefileVersion + "\n"
+		    + "version:" + Config.maximumSavefileVersion + "\n"
 		    + "projectName:" + config.project.projectName + "\n"
 		    + "projectDescription:" + config.project.projectDescription + "\n"
 		    + "EOS:FILE\n\n"
@@ -126,8 +127,7 @@ public class Controller {
 						if (closestObject instanceof Point closestPoint) {
 							point = closestPoint;
 						} else {
-							point = config.project.objects.createPoint(mousePositionData.getX(), mousePositionData.getY(), currentNiveau);
-							config.project.objects.put(point);
+							point = new Point(-1, mousePositionData.getX(), mousePositionData.getY(), currentNiveau);
 						}
 						config.tui.log("point is " + point);
 
@@ -137,25 +137,32 @@ public class Controller {
 
 								Point endPoint = new Point();
 								endPoint.getPoint().setLocation(point.getPoint());
-								config.project.objects.put(endPoint);
+								endPoint.setNiveau(currentNiveau);
 								newMur.setPointFin(endPoint);
 
-								config.project.objects.put(newMur);
 								config.tui.debug("added the new mur and its points to the objects: " + newMur.toStringShort());
 
 								state.setSelectedElement(newMur);
 							}
 							case 1 -> {
-								newMur.getPointFin().getPoint().setLocation(point.getPoint());
+								newMur.setPointFin(point);
 								config.tui.debug("created mur: " + newMur);
 
+								config.project.objects.put(newMur.getPointDebut());
+								currentNiveau.getOrpheans().remove(newMur.getPointDebut());
+								config.project.objects.put(newMur.getPointFin());
+								currentNiveau.getOrpheans().remove(newMur.getPointFin());
+								config.project.objects.put(newMur);
 								currentNiveau.getOrpheans().add(newMur);
-								config.tui.debug("created mur is set as orphean of " + currentNiveau);
+
+								config.tui.debug("created mur is set as orphean of " + currentNiveau.toStringShort());
 
 								state.endCreation();
-								config.getMainWindow().getCanvasContainer().redraw();
+								config.getMainWindow().getSidePaneContainer().updateSelection();
 							}
 						}
+
+						redrawCanvas();
 					} else {
 						// TODO
 						config.tui.error("unknown viewRootElement type: expecting Niveau, got "
@@ -172,31 +179,34 @@ public class Controller {
 				if (closestObject != null) {
 					config.tui.log("controller: toggling (multi) selected object " + closestObject.toStringShort() + " now");
 					state.toggleSelectedElement(closestObject);
-					config.getMainWindow().getCanvasContainer().redraw();
+					redrawCanvas();
 				}
 			}
 
 			default -> {
 				Drawable closestObject = config.getMainWindow().getCanvasContainer().getClosestLinked();
 				if (closestObject == null) {
-					config.tui.log("controller: no object to be focused");
+					config.tui.debug("controller: no object to be focused");
 					state.clearSelectedElement();
-					config.getMainWindow().getCanvasContainer().redraw();
+					redrawCanvas();
 				} else {
-					config.tui.log("controller: selecting object " + closestObject.toStringShort()+ " now");
-					state.setSelectedElement(closestObject);
-					config.getMainWindow().getCanvasContainer().redraw();
+					if (event.isControlDown()) {
+						config.tui.debug("controller: ctrl-click: going into multi-select with object " + closestObject.toStringShort()+ " now");
+						state.setActionState(State.ActionState.MULTI_SELECT);
+						canvasMouseClicked(event, mousePositionData);
+					} else {
+						config.tui.debug("controller: selecting object " + closestObject.toStringShort()+ " now");
+						state.setSelectedElement(closestObject);
+						redrawCanvas();
+					}
 				}
 			}
 		}
 	}
 
 	public void canvasMouseMoved(MouseEvent eh, Point2D.Double mousePositionData) {
-		switch (state.getActionState()) {
-			case State.ActionState.CREATE -> {
-				if (state.getCreator().step == 1) config.getMainWindow().getCanvasContainer().redraw();
-			}
-		}
+		if (state.getActionState() == State.ActionState.CREATE && state.getCreator().object instanceof Mur)
+			redrawCanvas();
 	}
 
 	public void setLogLevel(TUI.LogLevel newLevel) {
@@ -224,86 +234,167 @@ public class Controller {
 		config.tui.error("controller: TODO: saveDevis");
 	}
 
+	public void menuClickedApropos() {
+		Alert alert = new Alert(AlertType.INFORMATION);
+		alert.setTitle("À propos");
+		alert.setHeaderText("À propos : " + Config.applicationName);
+		alert.setContentText("Veuillez poser votre question à l'un des créateurs de ce projet, il aura sûrement réponse à votre question !");
+
+		alert.showAndWait();
+	}
 	public void menuClickedHelp() {
 		Alert alert = new Alert(AlertType.INFORMATION);
 		alert.setTitle("Aide");
-		alert.setHeaderText(Config.applicationName);
+		alert.setHeaderText("Aide");
 		alert.setContentText("Veuillez poser votre question à l'un des créateurs de ce projet, il aura sûrement réponse à votre question !");
 
 		alert.showAndWait();
 	}
 
-	public <T extends BObject> void menuButtonCreate(T object) {
-		if (object instanceof Mur) {
-			state.create(object);
+	public void menuButtonCreate(BObject object) {
+		switch (object) {
+			case Mur mur -> state.create(object);
 
-		} else if (object instanceof Piece piece) {
-			if (state.getSelectedElements().size() >= 3) {
-				boolean allMurs = true;
-				for (SelectableId each: state.getSelectedElements()) {
- 					if (! (each instanceof Mur || each instanceof Point)) allMurs = false; 
-				}
+			case Piece piece -> {
+				if (state.getViewRootElement() instanceof Niveau currentNiveau) {
+					if (state.getSelectedElements().size() >= 3) {
+						boolean allMurs = true;
+						for (SelectableId each: state.getSelectedElements()) {
+							if (! (each instanceof Mur || each instanceof Point)) allMurs = false; 
+						}
 
-				if (allMurs) {
-					piece.setMurs(new ArrayList(state.getSelectedElements().stream().filter(each -> each instanceof Mur).collect(Collectors.toSet())));
-					piece.setPoints(new ArrayList(state.getSelectedElements().stream().filter(each -> each instanceof Point).collect(Collectors.toSet())));
-					config.project.objects.put(piece);
-					state.setSelectedElement(piece);
-					config.getMainWindow().getCanvasContainer().redraw();
+						if (allMurs) {
+							HashSet<Mur> murs = new HashSet<>();
+							HashSet<Point> points = new HashSet<>();
+
+							for (SelectableId each: state.getSelectedElements()) {
+								if (each instanceof Mur mur) {
+									murs.add(mur);
+									points.add(mur.getPointDebut());
+									points.add(mur.getPointFin());
+									currentNiveau.getOrpheans().remove(mur);
+								} else if (each instanceof Point point) {
+									points.add(point);
+									currentNiveau.getOrpheans().remove(point);
+								}
+							}
+
+							piece.setMurs(new ArrayList(murs));
+							piece.setPoints(new ArrayList(points));
+
+							config.project.objects.put(piece);
+							currentNiveau.getPieces().add(piece);
+							config.tui.debug("created piece added to " + currentNiveau.toStringShort());
+
+							state.setSelectedElement(piece);
+							config.getMainWindow().getCanvasContainer().redraw();
+						} else {
+							config.tui.error("controller/create: pour créer une pièce, il ne faut sélectionner QUE des MURS et des POINTS");
+							new Alert(AlertType.INFORMATION, "Pour créer une pièce, il ne faut sélectionner que des murs et des points.").showAndWait();
+						}
+					} else {
+						config.tui.error("controller/create: pour créer une pièce, il faut sélectionner AU MOINS 3 murs ou points");
+						new Alert(AlertType.INFORMATION, "Pour créer une pièce, il faut sélectionner au moins 3 murs ou points.").showAndWait();
+					}
 				} else {
-					config.tui.error("controller/create: pour créer une pièce, il ne faut sélectionner QUE des MURS et des POINTS");
+					// TODO
+					config.tui.error("unknown viewRootElement type: expecting Niveau, got "
+					    + (state.getViewRootElement() == null ? "(null)" : state.getViewRootElement().toStringShort() )
+					);
 				}
-			} else {
-				config.tui.error("controller/create: pour créer une pièce, il faut sélectionner AU MOINS 3 murs ou points");
 			}
 
-		} else {
-			config.project.objects.put(object);
-			state.setSelectedElement(object);
-			config.getMainWindow().getCanvasContainer().redraw();
+			default -> {
+				if (object instanceof Niveau niveau) {
+					if (state.getCurrentBatiment() == null) {
+						new Alert(AlertType.INFORMATION, "Veuillez sélectionner un bâtiment pour lequel créer un niveau").showAndWait();
+						return;
+					}
+					state.setViewRootElement(niveau);
+				} else if (object instanceof Batiment batiment) {
+					state.setCurrentBatiment(batiment);
+				}
+
+				config.project.objects.put(object);
+				state.setSelectedElement(object);
+//				state.create(object);
+
+				redrawCanvas();
+			}
 		}
-		state.create(object);
 	}
 
 	public void menuButtonMultiSelect(boolean multiselect) {
 		state.setActionState(multiselect ? State.ActionState.MULTI_SELECT : State.ActionState.DEFAULT);
 	}
 
-	public void menuButtonChooseNiveau() {
-		Set niveaux = config.project.objects.getAll().values().stream().filter(each -> each instanceof Niveau).collect(Collectors.toSet());
-		if (niveaux.isEmpty()) {
-			config.tui.error("il n'y a pas de niveau à sélectionner");
+	public void selectFromList(String itemsName, Set<SelectableId> list) {
+		SelectableId selected = chooseFromList(itemsName, list);
+		if (selected != null)
+			state.setSelectedElement(selected);
+	}
+	public SelectableId chooseFromList(String itemsName, Set<SelectableId> list) {
+		return chooseFromList(itemsName, null, list);
+	}
+	public SelectableId chooseFromList(String itemsName, SelectableId defaultItem, Set<SelectableId> list) {
+		if (list.isEmpty()) {
+			config.tui.error("il n'y a pas de " + itemsName + " à sélectionner");
+			new Alert(AlertType.INFORMATION, "Il n'y a pas de " + itemsName + " à sélectionner dans le projet.").showAndWait();
+			return null;
 		} else {
-			ChooseFromList<Niveau> chooser = new ChooseFromList(state.currentNiveau, niveaux, new Function<Niveau, String>() {
+			ChooseFromList<SelectableId> chooser = new ChooseFromList(defaultItem, list, new Function<SelectableId, String>() {
 				@Override
-				public String apply(Niveau niveau) {
-					return niveau == null ? "(aucun)" : niveau.getNom();
+				public String apply(SelectableId object) {
+					if (object instanceof NameDesc nameDesc)
+						return nameDesc.getNom();
+					else
+						return object.toStringShort();
 				}
-			});
-			state.setViewRootElement((DrawableRoot) chooser.perform());
+			}, "Choisissez un/e " + itemsName);
+			return chooser.perform();
 		}
+	}
+
+	public void menuButtonNiveauToRoot() {
+		Set niveaux = config.project.objects.getNiveaux();
+		for (SelectableId each: config.project.objects.getAll().values()) {
+			if (each instanceof Niveau niveau && state.getCurrentBatiment().getNiveaux().contains(niveau))
+				niveaux.add(each);
+		}
+
+		DrawableRoot niveau = (DrawableRoot) chooseFromList("niveau", state.getViewRootElement(), niveaux);
+		if (niveau != null){
+			state.setViewRootElement(niveau);
+		} else
+			config.tui.log("no selection");
 	}
 
 	public void menuButtonChooseBatiment() {
-		Set batiments = config.project.objects.getAll().values().stream().filter(each -> each instanceof Batiment).collect(Collectors.toSet());
-		if (batiments.isEmpty()) {
-			config.tui.error("il n'y a pas de batiment à sélectionner");
-		} else {
-			ChooseFromList chooser = new ChooseFromList(state.getCurrentBatiment(), batiments, new Function<Batiment, String>() {
-				@Override
-				public String apply(Batiment batiment) {
-					return batiment == null ? "(aucun)" : batiment.getNom();
-				}
-			});
-			state.setCurrentBatiment((Batiment) chooser.perform());
-		}
+		Set batiments = config.project.objects.getBatiments();
+		Batiment batiment = (Batiment) chooseFromList("batiment", state.getCurrentBatiment(), batiments);
+		if (batiment != null) {
+			state.setCurrentBatiment(batiment);
+			new Alert(AlertType.WARNING, "TODO: changer les niveaux et les bâtiments ensemble").showAndWait();
+		} else
+			config.tui.log("no selection");
 	}
 
 	public void menuButtonSelectCurrentNiveau() {
-		state.setSelectedElement(state.getViewRootElement());
+		DrawableRoot niveau = state.getViewRootElement();
+		if (niveau != null)
+			state.setSelectedElement(niveau);
+		else
+			new Alert(AlertType.INFORMATION, "Il n'y a pas de niveau actuel").showAndWait();
 	}
 	public void menuButtonSelectCurrentBatiment() {
-		state.setSelectedElement(state.getCurrentBatiment());
+		Batiment batiment = state.getCurrentBatiment();
+		if (batiment != null)
+			state.setSelectedElement(batiment);
+		else
+			new Alert(AlertType.INFORMATION, "Il n'y a pas de bâtiment actuel").showAndWait();
+	}
+	public void menuButtonSelectCurrentProject() {
+		state.setSelectedElement(config.project);
 	}
 
 	public void redrawCanvas() {

@@ -5,6 +5,7 @@ import fr.insa.dorgli.projetbat.core.control.Controller;
 import fr.insa.dorgli.projetbat.objects.concrete.*;
 import fr.insa.dorgli.projetbat.objects.types.*;
 import fr.insa.dorgli.projetbat.ui.TUI;
+import java.util.Set;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -22,14 +23,14 @@ public class OutilsTop extends MenuBar {
 	private final MenuItem buttonSaveAs;
 
 	// action
-	private final Menu action;
+	private final Menu menuSelectionner;
 
-	private final MenuItem buttonBatimentEdit;
-	private final MenuItem buttonNiveauEdit;
-	private final MenuItem buttonProjectEdit;
+	private final MenuItem buttonCurrentBatimentEdit;
+	private final MenuItem buttonCurrentNiveauEdit;
+	private final MenuItem buttonCurrentProjectEdit;
 	private final MenuItem buttonDeleteSelection;
 	private final CheckMenuItem buttonMultiSelect;
-	private final MenuItem buttonFocusedToRoot;
+//	private final MenuItem buttonFocusedToRoot;
 
 	private final MenuItem buttonBatimentCreer;
 	private final MenuItem buttonNiveauCreer;
@@ -43,6 +44,18 @@ public class OutilsTop extends MenuBar {
 	private final MenuItem buttonTypeRevetementCreer;
 	private final MenuItem buttonTypeOuvertureNiveauxCreer;
 	private final MenuItem buttonTypeOuvertureMurCreer;
+
+	private final MenuItem buttonBatimentEdit;
+	private final MenuItem buttonNiveauEdit;
+	private final MenuItem buttonAppartEdit;
+	private final MenuItem buttonPieceEdit;
+	private final MenuItem buttonMurEdit;
+	private final MenuItem buttonTypeBatimentEdit;
+	private final MenuItem buttonTypeAppartEdit;
+	private final MenuItem buttonTypeMurEdit;
+	private final MenuItem buttonTypeRevetementEdit;
+	private final MenuItem buttonTypeOuvertureNiveauxEdit;
+	private final MenuItem buttonTypeOuvertureMurEdit;
 
 	// devis
 	private final Menu menuDevis;
@@ -114,38 +127,33 @@ public class OutilsTop extends MenuBar {
 			buttonSaveAs
 		);
 
-		///// Menu Actions
+		///// Menu Créer
 
-		/// Sous-menu créer
-
-		buttonBatimentCreer = new MenuItem("Batiment");
+		buttonBatimentCreer = new MenuItem("Un Batiment...");
 		buttonBatimentCreer.setOnAction(event -> {
 			Batiment batiment = new Batiment();
-			batiment.setNom("Nouveau batiment");
-			config.controller.menuButtonCreate(batiment);
+			config.controller.menuButtonCreate(new Batiment());
 		});
 
-		buttonNiveauCreer = new MenuItem("Niveau");
+		buttonNiveauCreer = new MenuItem("Un Niveau...");
 		buttonNiveauCreer.setOnAction(event -> {
 			config.tui.log("clicked: create: new Niveau");
-			Niveau niveau = new Niveau();
-			niveau.setNom("Nouveau niveau");
-			config.controller.menuButtonCreate(niveau);
+			config.controller.menuButtonCreate(new Niveau());
 		});
 
-		buttonAppartCreer = new MenuItem("Appart");
+		buttonAppartCreer = new MenuItem("Un Appartement...");
 		buttonAppartCreer.setOnAction(event -> {
 			config.tui.log("clicked: create: new Appart");
 			config.controller.menuButtonCreate(new Appart());
 		});
 
-		buttonPieceCreer = new MenuItem("Piece");
+		buttonPieceCreer = new MenuItem("Un Pièce...");
 		buttonPieceCreer.setOnAction(event -> {
 			config.tui.log("clicked: create: new Piece");
 			config.controller.menuButtonCreate(new Piece());
 		});
 
-		buttonMurCreer = new MenuItem("Mur");
+		buttonMurCreer = new MenuItem("Un Mur...");
 		buttonMurCreer.setOnAction(event -> {
 			config.tui.log("clicked: create: new Mur");
 			config.controller.menuButtonCreate(new Mur());
@@ -153,60 +161,164 @@ public class OutilsTop extends MenuBar {
 
 		separatorCreer = new SeparatorMenuItem();
 
-		buttonTypeBatimentCreer = new MenuItem("Type Batiment");
+		buttonTypeBatimentCreer = new MenuItem("Un Type Batiment...");
 		buttonTypeBatimentCreer.setOnAction(event -> {
 			config.tui.log("clicked: create: new TypeBatiment");
 			config.controller.menuButtonCreate(new TypeBatiment());
 		});
 
-		buttonTypeAppartCreer = new MenuItem("Type Appart");
+		buttonTypeAppartCreer = new MenuItem("Un Type Appart...");
 		buttonTypeAppartCreer.setOnAction(event -> {
 			config.tui.log("clicked: create: new TypeAppart");
 			config.controller.menuButtonCreate(new TypeAppart());
 		});
 
-		buttonTypeMurCreer = new MenuItem("Type Mur");
+		buttonTypeMurCreer = new MenuItem("Un Type Mur...");
 		buttonTypeMurCreer.setOnAction(event -> {
 			config.tui.log("clicked: create: new TypeMur");
 			config.controller.menuButtonCreate(new TypeMur());
 		});
 
-		buttonTypeRevetementCreer = new MenuItem("Type Revetement");
+		buttonTypeRevetementCreer = new MenuItem("Un Type Revetement...");
 		buttonTypeRevetementCreer.setOnAction(event -> {
-			config.tui.log("clicked: create: new TypeRevetement");
+			config.tui.log("clicked: create: new TypeRevetement...");
 			config.controller.menuButtonCreate(new TypeRevetement());
 		});
 
-		buttonTypeOuvertureNiveauxCreer = new MenuItem("Type Ouverture Niveaux");
+		buttonTypeOuvertureNiveauxCreer = new MenuItem("Un Type Ouverture Niveau...");
 		buttonTypeOuvertureNiveauxCreer.setOnAction(event -> {
-			config.tui.log("clicked: create: new TypeOuvertureNiveaux");
+			config.tui.log("clicked: create: new TypeOuvertureNiveau");
 			config.controller.menuButtonCreate(new TypeOuvertureNiveau());
 		});
 
-		buttonTypeOuvertureMurCreer = new MenuItem("Type Ouverture Mur");
+		buttonTypeOuvertureMurCreer = new MenuItem("Un Type Ouverture Mur...");
 		buttonTypeOuvertureMurCreer.setOnAction(event -> {
 			config.tui.log("clicked: create: new TypeOuvertureMur");
 			config.controller.menuButtonCreate(new TypeOuvertureMur());
 		});
 
-		/// Sous-menu éditer
+		Menu menuCreer = new Menu("Créer", null,
+			buttonBatimentCreer,
+			buttonNiveauCreer,
+			buttonAppartCreer,
+			buttonPieceCreer,
+			buttonMurCreer,
+			separatorCreer,
+			buttonTypeBatimentCreer,
+			buttonTypeAppartCreer,
+			buttonTypeMurCreer,
+			buttonTypeRevetementCreer,
+			buttonTypeOuvertureNiveauxCreer,
+			buttonTypeOuvertureMurCreer
+		);
 
-		buttonProjectEdit = new MenuItem("Projet actuel");
-		buttonProjectEdit.setOnAction(event -> {
-			config.tui.log("clicked: edit current project");
+		///// Menu Éditer
+
+		buttonCurrentProjectEdit = new MenuItem("Projet actuel");
+		buttonCurrentProjectEdit.setOnAction(event -> {
+			config.controller.menuButtonSelectCurrentProject();
 		});
 
-		buttonBatimentEdit = new MenuItem("Batiment actuel");
-		buttonBatimentEdit.setOnAction(event -> {
+		buttonCurrentBatimentEdit = new MenuItem("Batiment actuel");
+		buttonCurrentBatimentEdit.setOnAction(event -> {
 			config.controller.menuButtonSelectCurrentBatiment();
 		});
 
-		buttonNiveauEdit = new MenuItem("Niveau actuel");
-		buttonNiveauEdit.setOnAction(event -> {
+		buttonCurrentNiveauEdit = new MenuItem("Niveau actuel");
+		buttonCurrentNiveauEdit.setOnAction(event -> {
 			config.controller.menuButtonSelectCurrentNiveau();
 		});
+
+		SeparatorMenuItem separatorEdit1 = new SeparatorMenuItem();
+
+		buttonBatimentEdit = new MenuItem("Un Batiment...");
+		buttonBatimentEdit.setOnAction(event -> {
+			Set batiments = config.project.objects.getBatiments();
+			config.controller.selectFromList("batiment", batiments);
+		});
+
+		buttonNiveauEdit = new MenuItem("Un Niveau...");
+		buttonNiveauEdit.setOnAction(event -> {
+			Set niveaux = config.project.objects.getNiveaux();
+			config.controller.selectFromList("niveau", niveaux);
+		});
+
+		buttonAppartEdit = new MenuItem("Un Appartement...");
+		buttonAppartEdit.setOnAction(event -> {
+			Set objects = config.project.objects.getApparts();
+			config.controller.selectFromList("appartement", objects);
+		});
+
+		buttonPieceEdit = new MenuItem("Une Pièce...");
+		buttonPieceEdit.setOnAction(event -> {
+			Set objects = config.project.objects.getPieces();
+			config.controller.selectFromList("pièce", objects);
+		});
+
+		buttonMurEdit = new MenuItem("Un Mur...");
+		buttonMurEdit.setOnAction(event -> {
+			Set objects = config.project.objects.getMurs();
+			config.controller.selectFromList("mur", objects);
+		});
+
+		SeparatorMenuItem separatorEdit2 = new SeparatorMenuItem();
+
+		buttonTypeBatimentEdit = new MenuItem("Un Type Batiment...");
+		buttonTypeBatimentEdit.setOnAction(event -> {
+			Set objects = config.project.objects.getTypesBatiment();
+			config.controller.selectFromList("type de bâtiment", objects);
+		});
+
+		buttonTypeAppartEdit = new MenuItem("Un Type Appart...");
+		buttonTypeAppartEdit.setOnAction(event -> {
+			Set objects = config.project.objects.getTypesAppart();
+			config.controller.selectFromList("type d'appartement", objects);
+		});
+
+		buttonTypeMurEdit = new MenuItem("Un Type Mur...");
+		buttonTypeMurEdit.setOnAction(event -> {
+			Set objects = config.project.objects.getTypesMur();
+			config.controller.selectFromList("type de mur", objects);
+		});
+
+		buttonTypeRevetementEdit = new MenuItem("Un Type Revetement...");
+		buttonTypeRevetementEdit.setOnAction(event -> {
+			Set objects = config.project.objects.getTypesRevetement();
+			config.controller.selectFromList("type de revêtement", objects);
+		});
+
+		buttonTypeOuvertureNiveauxEdit = new MenuItem("Un Type Ouverture Niveaux...");
+		buttonTypeOuvertureNiveauxEdit.setOnAction(event -> {
+			Set objects = config.project.objects.getTypesOuverturesNiveau();
+			config.controller.selectFromList("type d'ouverture-niveau", objects);
+		});
+
+		buttonTypeOuvertureMurEdit = new MenuItem("Un Type Ouverture Mur...");
+		buttonTypeOuvertureMurEdit.setOnAction(event -> {
+			Set objects = config.project.objects.getTypesOuverturesNiveau();
+			config.controller.selectFromList("type d'ouverture-mur", objects);
+		});
+
+		Menu menuEditer = new Menu("Éditer", null,
+			buttonCurrentProjectEdit,
+			buttonCurrentBatimentEdit,
+			buttonCurrentNiveauEdit,
+			separatorEdit1,
+			buttonBatimentEdit,
+			buttonNiveauEdit,
+			buttonAppartEdit,
+			buttonPieceEdit,
+			buttonMurEdit,
+			separatorEdit2,
+			buttonTypeBatimentEdit,
+			buttonTypeAppartEdit,
+			buttonTypeMurEdit,
+			buttonTypeRevetementEdit,
+			buttonTypeOuvertureNiveauxEdit,
+			buttonTypeOuvertureMurEdit
+		);
 		
-		/// sans sous-menu
+		///// Menu Sélectionner
 
 		buttonMultiSelect = new CheckMenuItem("Sélections plusieurs objets");
 		buttonMultiSelect.setSelected(false);
@@ -220,46 +332,26 @@ public class OutilsTop extends MenuBar {
 			config.tui.log("clicked: delete selection");
 		});
 
-		buttonFocusedToRoot = new MenuItem("L'objet sélectionné");
-		buttonFocusedToRoot.setOnAction(event -> {
-			config.tui.log("clicked: focused to root");
+//		buttonFocusedToRoot = new MenuItem("L'objet sélectionné");
+//		buttonFocusedToRoot.setOnAction(event -> {
+//			config.tui.log("clicked: focused to root");
+//		});
+
+		MenuItem menuChooseNiveauToRoot = new MenuItem("Un niveau...");
+		menuChooseNiveauToRoot.setOnAction(event -> {
+			config.controller.menuButtonNiveauToRoot();
 		});
 
-		MenuItem menuNiveaux = new MenuItem("Un niveau...");
-		menuNiveaux.setOnAction(event -> {
-			config.controller.menuButtonChooseNiveau();
-		});
-
-		MenuItem menuBatiments = new MenuItem("Un batiment...");
-		menuBatiments.setOnAction(event -> {
+		MenuItem menuChooseBatiment = new MenuItem("Un batiment...");
+		menuChooseBatiment.setOnAction(event -> {
 			config.controller.menuButtonChooseBatiment();
-			config.tui.log("click: batiment to root");
 		});
 
-		action = new Menu("Actions", null,
-			new Menu("Créer...", null,
-				buttonBatimentCreer,
-				buttonNiveauCreer,
-				buttonAppartCreer,
-				buttonPieceCreer,
-				buttonMurCreer,
-				separatorCreer,
-				buttonTypeBatimentCreer,
-				buttonTypeAppartCreer,
-				buttonTypeMurCreer,
-				buttonTypeRevetementCreer,
-				buttonTypeOuvertureNiveauxCreer,
-				buttonTypeOuvertureMurCreer
-			),
-			new Menu("Éditer...", null,
-				buttonProjectEdit,
-				buttonBatimentEdit,
-				buttonNiveauEdit
-			),
+		menuSelectionner = new Menu("Sélectionner", null,
 			new Menu("Afficher dans le plan...", null,
-				buttonFocusedToRoot,
-				menuNiveaux,
-				menuBatiments
+//				buttonFocusedToRoot,
+				menuChooseNiveauToRoot,
+				menuChooseBatiment
 			),
 			buttonMultiSelect,
 			buttonDeleteSelection
@@ -448,13 +540,12 @@ public class OutilsTop extends MenuBar {
 
 		buttonAide = new MenuItem("Afficher l'aide");
 		buttonAide.setOnAction(e -> {
-			config.tui.log("clicked: help");
 			controller.menuClickedHelp();
 		});
 
 		buttonApropos = new MenuItem("À propos de " + Config.applicationName);
 		buttonApropos.setOnAction(e -> {
-			config.tui.log("clicked: apropos");
+			controller.menuClickedApropos();
 		});
 
 		separatorAide = new SeparatorMenuItem();
@@ -468,7 +559,9 @@ public class OutilsTop extends MenuBar {
 		///// MenuBar
 
 		super.getMenus().addAll(menuFichier,
-			action,
+			menuEditer,
+			menuCreer,
+			menuSelectionner,
 			menuDevis,
 			menuAfficher,
 			menuOptions,
