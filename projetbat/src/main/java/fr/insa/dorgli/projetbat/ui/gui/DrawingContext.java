@@ -55,19 +55,13 @@ public class DrawingContext {
 		}
 
 		State state = config.controller.state;
-		if (state.getActionState() == State.ActionState.CREATE) {
+		if (state.getActionState() == State.ActionState.CREATE || state.getActionState() == State.ActionState.CREATE_SERIE) {
 			if (state.getCreator().step == 1) {
 				Point2D.Double mousePosition = cc.getMousePositionData();
-				Point mousePositionObject = new Point();
-				mousePositionObject.setX(mousePosition.getX());
-				mousePositionObject.setY(mousePosition.getY());
 
-				Mur placeholderMur = new Mur();
-				placeholderMur.setPointDebut( ((Mur) state.getCreator().object).getPointDebut() );
-				placeholderMur.setPointFin(mousePositionObject);
-
-				placeholderMur.draw(this, true);
-				config.tui.debug("state == CREATE_MUR(1): drawing placeholder mur " + placeholderMur);
+				Mur created = (Mur) state.getCreator().object;
+				cc.drawLine(created, new Line2D.Double(created.getPointDebut().getPoint(), mousePosition), 15, Color.web("CCB18A"));
+				config.tui.debug("state == CREATE_MUR(1): manually drawing created mur " + created);
 			}
 		}
 
@@ -79,7 +73,6 @@ public class DrawingContext {
 	public void draw(Drawable object) {
 //		if (drawnObjects.contains(object)) {
 //			 TODO!! amnesic debug
-//			 TODO!! toStringShort
 //			config.tui.debug("DrawingContext/draw: skipping already drawn object " + object.toString());
 //		} else {
 			config.tui.debug("DrawingContext/draw: drawing object " + object.toStringShort());

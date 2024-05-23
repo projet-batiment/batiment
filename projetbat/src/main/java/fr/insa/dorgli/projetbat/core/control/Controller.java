@@ -117,13 +117,18 @@ public class Controller {
 	public void canvasMouseClicked(MouseEvent event, Point2D.Double mousePositionData, State.ActionState actionState) {
 		config.tui.log("controller: a click occurred in the canvasContainer at (" + mousePositionData.getX() + ":" + mousePositionData.getY() + ")");
 		switch (actionState) {
-			case CREATE -> {
-				if (state.getCreator().object instanceof Mur newMur) {
-					config.tui.diveWhere("controller: click/createMur/" + state.getCreator().step);
+			case CREATE, CREATE_SERIE -> {
+				if (state.getViewRootElement() instanceof Niveau currentNiveau) {
+					mousePositionData.setLocation(
+						Math.floor(mousePositionData.getX() * 1000) / 1000,
+						Math.floor(mousePositionData.getY() * 1000) / 1000
+					);
+					Drawable closestObject = config.getMainWindow().getCanvasContainer().getClosestLinked(30);
 
-					if (state.getViewRootElement() instanceof Niveau currentNiveau) {
+					if (state.getCreator().object instanceof Mur newMur) {
+						config.tui.diveWhere("controller: click/createMur/" + state.getCreator().step);
+
 						Point point;
-						Drawable closestObject = config.getMainWindow().getCanvasContainer().getClosestLinked();
 						if (closestObject instanceof Point closestPoint) {
 							point = closestPoint;
 						} else {
@@ -157,20 +162,46 @@ public class Controller {
 
 								config.tui.debug("created mur is set as orphean of " + currentNiveau.toStringShort());
 
+
 								state.endCreation();
-								config.getMainWindow().getSidePane().updateSelection();
+								updateSidePaneSelection();
 							}
 						}
 
 						redrawCanvas();
-					} else {
-						// TODO
-						config.tui.error("unknown viewRootElement type: expecting Niveau, got "
-						    + (state.getViewRootElement() == null ? "(null)" : state.getViewRootElement().toStringShort() )
-						);
+						config.tui.popWhere();
+
+					} else if (state.getCreator().object instanceof Point newPoint) {
+						config.tui.diveWhere("controller: click/createPoint/" + state.getCreator().step);
+
+						if (closestObject instanceof Point closestPoint) {
+							config.tui.debug("reusing existing point " + closestObject);
+							newPoint = closestPoint;
+						} else {
+							newPoint.setX(mousePositionData.getX());
+							newPoint.setY(mousePositionData.getY());
+							newPoint.setNiveau(currentNiveau);
+							config.tui.debug("created point: " + newPoint);
+
+							config.project.objects.put(newPoint);
+							currentNiveau.getOrpheans().add(newPoint);
+
+							config.tui.debug("created point is set as orphean of " + currentNiveau.toStringShort());
+						}
+
+						state.setSelectedElement(newPoint);
+						state.endCreation();
+						updateSidePaneSelection();
+
+						redrawCanvas();
+						config.tui.popWhere();
 					}
 
-					config.tui.popWhere();
+				} else {
+					// TODO
+					config.tui.error("unknown viewRootElement type: expecting Niveau, got "
+					    + (state.getViewRootElement() == null ? "(null)" : state.getViewRootElement().toStringShort() )
+					);
 				}
 			}
 
@@ -204,7 +235,8 @@ public class Controller {
 	}
 
 	public void canvasMouseMoved(MouseEvent eh, Point2D.Double mousePositionData) {
-		if (state.getActionState() == State.ActionState.CREATE && state.getCreator().object instanceof Mur)
+		if ( (state.getActionState() == State.ActionState.CREATE || state.getActionState() == State.ActionState.CREATE_SERIE)
+			&& state.getCreator().object instanceof Mur && state.getCreator().step == 1)
 			redrawCanvas();
 	}
 
@@ -251,9 +283,18 @@ public class Controller {
 		alert.showAndWait();
 	}
 
-	public void menuButtonCreate(BObject object) {
+	public void menuButtonCreateSerie(BObject object) {
+		if (object instanceof Mur mur) {
+			state.createSerie(object);
+		} else {
+			config.tui.error("controller: create serie: unimplemented type: " + object.getClass().getSimpleName());
+		}
+
+	}
+	public void menuButtonCreateOne(BObject object) {
 		switch (object) {
-			case Mur mur -> state.create(object);
+			case Mur mur -> state.createOne(object);
+			case Point point -> state.createOne(object);
 
 			case Piece piece -> {
 				if (state.getViewRootElement() instanceof Niveau currentNiveau) {

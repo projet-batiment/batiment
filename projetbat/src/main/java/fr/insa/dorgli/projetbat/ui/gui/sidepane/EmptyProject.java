@@ -13,7 +13,7 @@ public class EmptyProject extends SmartTab {
 
 		Button createBatiment = new Button("Créer un bâtiment");
 		createBatiment.setOnAction(eh -> {
-			config.controller.menuButtonCreate(new Batiment());
+			config.controller.menuButtonCreateOne(new Batiment());
 		});
 
 		Button openFile = new Button("Ouvrir un fichier");

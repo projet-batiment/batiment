@@ -2,6 +2,7 @@ package fr.insa.dorgli.projetbat.ui.gui;
 
 import fr.insa.dorgli.projetbat.core.Config;
 import fr.insa.dorgli.projetbat.core.control.Controller;
+import fr.insa.dorgli.projetbat.core.control.State;
 import fr.insa.dorgli.projetbat.objects.concrete.*;
 import fr.insa.dorgli.projetbat.objects.types.*;
 import fr.insa.dorgli.projetbat.ui.TUI;
@@ -132,31 +133,49 @@ public class OutilsTop extends MenuBar {
 		buttonBatimentCreer = new MenuItem("Un Batiment...");
 		buttonBatimentCreer.setOnAction(event -> {
 			Batiment batiment = new Batiment();
-			config.controller.menuButtonCreate(new Batiment());
+			config.controller.menuButtonCreateOne(new Batiment());
 		});
 
 		buttonNiveauCreer = new MenuItem("Un Niveau...");
 		buttonNiveauCreer.setOnAction(event -> {
 			config.tui.log("clicked: create: new Niveau");
-			config.controller.menuButtonCreate(new Niveau());
+			config.controller.menuButtonCreateOne(new Niveau());
 		});
 
 		buttonAppartCreer = new MenuItem("Un Appartement...");
 		buttonAppartCreer.setOnAction(event -> {
 			config.tui.log("clicked: create: new Appart");
-			config.controller.menuButtonCreate(new Appart());
+			config.controller.menuButtonCreateOne(new Appart());
 		});
 
-		buttonPieceCreer = new MenuItem("Un Pièce...");
+		buttonPieceCreer = new MenuItem("Une Pièce...");
 		buttonPieceCreer.setOnAction(event -> {
 			config.tui.log("clicked: create: new Piece");
-			config.controller.menuButtonCreate(new Piece());
+			config.controller.menuButtonCreateOne(new Piece());
 		});
 
 		buttonMurCreer = new MenuItem("Un Mur...");
 		buttonMurCreer.setOnAction(event -> {
 			config.tui.log("clicked: create: new Mur");
-			config.controller.menuButtonCreate(new Mur());
+			config.controller.menuButtonCreateOne(new Mur());
+		});
+
+		MenuItem buttonMurCreerSerie = new MenuItem("Plusieurs murs...");
+		buttonMurCreerSerie.setOnAction(event -> {
+			config.tui.log("clicked: create: Mur serie");
+			config.controller.menuButtonCreateSerie(new Mur());
+		});
+
+		MenuItem buttonPointCreer = new MenuItem("Un Point...");
+		buttonPointCreer.setOnAction(event -> {
+			config.tui.log("clicked: create: new Point");
+			config.controller.menuButtonCreateOne(new Point());
+		});
+
+		MenuItem buttonPointCreerSerie = new MenuItem("Plusieurs points...");
+		buttonPointCreerSerie.setOnAction(event -> {
+			config.tui.log("clicked: create: Point serie");
+			config.controller.menuButtonCreateSerie(new Point());
 		});
 
 		separatorCreer = new SeparatorMenuItem();
@@ -164,37 +183,37 @@ public class OutilsTop extends MenuBar {
 		buttonTypeBatimentCreer = new MenuItem("Un Type Batiment...");
 		buttonTypeBatimentCreer.setOnAction(event -> {
 			config.tui.log("clicked: create: new TypeBatiment");
-			config.controller.menuButtonCreate(new TypeBatiment());
+			config.controller.menuButtonCreateOne(new TypeBatiment());
 		});
 
 		buttonTypeAppartCreer = new MenuItem("Un Type Appart...");
 		buttonTypeAppartCreer.setOnAction(event -> {
 			config.tui.log("clicked: create: new TypeAppart");
-			config.controller.menuButtonCreate(new TypeAppart());
+			config.controller.menuButtonCreateOne(new TypeAppart());
 		});
 
 		buttonTypeMurCreer = new MenuItem("Un Type Mur...");
 		buttonTypeMurCreer.setOnAction(event -> {
 			config.tui.log("clicked: create: new TypeMur");
-			config.controller.menuButtonCreate(new TypeMur());
+			config.controller.menuButtonCreateOne(new TypeMur());
 		});
 
 		buttonTypeRevetementCreer = new MenuItem("Un Type Revetement...");
 		buttonTypeRevetementCreer.setOnAction(event -> {
 			config.tui.log("clicked: create: new TypeRevetement...");
-			config.controller.menuButtonCreate(new TypeRevetement());
+			config.controller.menuButtonCreateOne(new TypeRevetement());
 		});
 
 		buttonTypeOuvertureNiveauxCreer = new MenuItem("Un Type Ouverture Niveau...");
 		buttonTypeOuvertureNiveauxCreer.setOnAction(event -> {
 			config.tui.log("clicked: create: new TypeOuvertureNiveau");
-			config.controller.menuButtonCreate(new TypeOuvertureNiveau());
+			config.controller.menuButtonCreateOne(new TypeOuvertureNiveau());
 		});
 
 		buttonTypeOuvertureMurCreer = new MenuItem("Un Type Ouverture Mur...");
 		buttonTypeOuvertureMurCreer.setOnAction(event -> {
 			config.tui.log("clicked: create: new TypeOuvertureMur");
-			config.controller.menuButtonCreate(new TypeOuvertureMur());
+			config.controller.menuButtonCreateOne(new TypeOuvertureMur());
 		});
 
 		Menu menuCreer = new Menu("Créer", null,
@@ -203,6 +222,9 @@ public class OutilsTop extends MenuBar {
 			buttonAppartCreer,
 			buttonPieceCreer,
 			buttonMurCreer,
+			buttonMurCreerSerie,
+			buttonPointCreer,
+			buttonPointCreerSerie,
 			separatorCreer,
 			buttonTypeBatimentCreer,
 			buttonTypeAppartCreer,
@@ -320,7 +342,13 @@ public class OutilsTop extends MenuBar {
 		
 		///// Menu Sélectionner
 
-		buttonMultiSelect = new CheckMenuItem("Sélections plusieurs objets");
+		MenuItem buttonSelect = new MenuItem("Outil sélection");
+		buttonSelect.setOnAction(event -> {
+			config.tui.log("clicked: select");
+			config.controller.state.setActionState(State.ActionState.DEFAULT);
+		});
+
+		buttonMultiSelect = new CheckMenuItem("Sélection de plusieurs objets");
 		buttonMultiSelect.setSelected(false);
 		buttonMultiSelect.setOnAction(event -> {
 			config.tui.log("clicked: multi select");
@@ -353,6 +381,7 @@ public class OutilsTop extends MenuBar {
 				menuChooseNiveauToRoot,
 				menuChooseBatiment
 			),
+			buttonSelect,
 			buttonMultiSelect,
 			buttonDeleteSelection
 		);

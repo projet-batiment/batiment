@@ -6,10 +6,13 @@ import fr.insa.dorgli.projetbat.objects.Devis;
 import fr.insa.dorgli.projetbat.objects.SelectableId;
 import fr.insa.dorgli.projetbat.objects.concrete.Batiment;
 import fr.insa.dorgli.projetbat.objects.concrete.DrawableRoot;
-import fr.insa.dorgli.projetbat.objects.concrete.Niveau;
 import fr.insa.dorgli.projetbat.ui.gui.Direction;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 import java.util.HashSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class State {
 	public enum ActionState {
@@ -17,6 +20,7 @@ public class State {
 		MULTI_SELECT,
 
 		CREATE,
+		CREATE_SERIE,
 	}
 
 	private final Config config;
@@ -67,7 +71,7 @@ public class State {
 			}
 		}
 
-		config.getMainWindow().getBottomBar().update();
+		updatedSelection();
 		config.tui.popWhere();
 	}
 
@@ -136,19 +140,36 @@ public class State {
 	}
 
 
-	public <T extends BObject> Creator create(T object) {
-		actionState = ActionState.CREATE;
+	private Creator create(BObject object) {
 		config.getMainWindow().getBottomBar().update();
 		creator = new Creator(object);
 		return creator;
+	}
+	public Creator createSerie(BObject object) {
+		actionState = ActionState.CREATE_SERIE;
+		return create(object);
+	}
+	public Creator createOne(BObject object) {
+		actionState = ActionState.CREATE;
+		return create(object);
 	}
 	public Creator getCreator() {
 		return creator;
 	}
 
 	public void endCreation() {
-		this.creator = null;
-		setActionState(ActionState.DEFAULT);
-		config.tui.debug("state/endCreation: cleared creator, set actionState to DEFAULT");
+		if (actionState == State.ActionState.CREATE_SERIE) {
+			try {
+				createSerie(this.creator.object.getClass().getConstructor().newInstance());
+			} catch (Exception ex) {
+				config.tui.error("failed to create new object in create serie: " + ex.getLocalizedMessage());
+				actionState = ActionState.DEFAULT;
+				endCreation();
+			}
+		} else {
+			this.creator = null;
+			setActionState(ActionState.DEFAULT);
+			config.tui.debug("state/endCreation: cleared creator, set actionState to DEFAULT");
+		}
 	}
 }

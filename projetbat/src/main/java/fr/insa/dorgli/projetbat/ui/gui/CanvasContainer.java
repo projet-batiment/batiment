@@ -276,6 +276,10 @@ public class CanvasContainer extends Pane {
 		return getClosestLinked(mousePosition.getX(), mousePosition.getY());
 	}
 
+	public Drawable getClosestLinked(double closestMaxDistance) {
+		return getClosestLinked(mousePosition.getX(), mousePosition.getY(), closestMaxDistance);
+	}
+
 	public Drawable getClosestLinked(double clickX, double clickY) {
 		return getClosestLinked(clickX, clickY, 15);
 	}
