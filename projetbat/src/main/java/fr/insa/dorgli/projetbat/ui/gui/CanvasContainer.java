@@ -11,7 +11,6 @@ import fr.insa.dorgli.projetbat.utils.PointPolarCompare;
 import java.awt.Rectangle;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 import java.awt.geom.Line2D;
@@ -19,6 +18,7 @@ import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.util.Arrays;
 import java.util.HashSet;
+import javafx.scene.layout.Pane;
 
 public class CanvasContainer extends Pane {
 	private final Config config;
@@ -50,6 +50,8 @@ public class CanvasContainer extends Pane {
 		this.config = config;
 
 		canvas = new Canvas(this.getWidth(), this.getHeight());
+
+		super.setMinSize(200, 200);
 		canvas.widthProperty().bind(this.widthProperty());
 		canvas.widthProperty().addListener((o) -> {
 			config.tui.debug("canvasContainer: widht has changed, recsaling and redrawing");
@@ -71,11 +73,11 @@ public class CanvasContainer extends Pane {
 
 		mousePosition = new Point2D.Double();
 		canvas.setOnMouseClicked(eh -> {
-			mainWindow.getController().canvasMouseClicked(eh, getMousePositionData());
+			config.controller.canvasMouseClicked(eh, getMousePositionData());
 		});
 		canvas.setOnMouseMoved(eh -> {
 			mousePosition.setLocation(eh.getX(), eh.getY());
-			mainWindow.getController().canvasMouseMoved(eh, getMousePositionData());
+			config.controller.canvasMouseMoved(eh, getMousePositionData());
 		});
 
  		ctxt = canvas.getGraphicsContext2D();
@@ -521,7 +523,7 @@ public class CanvasContainer extends Pane {
 		config.tui.debug("recalculateTotalDrawingRectangle: triggering redraw in order to place all the canvas-objects in that holly rectangle again");
 		drawingContext.redraw();
 
-		if (totalDrawingRectangle.getWidth() == 0 && totalDrawingRectangle.getHeight() == 0) {
+		if (totalDrawingRectangle.getWidth() <= 200 || totalDrawingRectangle.getHeight() <= 200) {
 			// the rectangle is empty => fit the canvas itself
 			config.tui.debug("recalculateTotalDrawingRectangle: fitting the canvas because the rectangle is empty");
 			fitPoint(0, 0);

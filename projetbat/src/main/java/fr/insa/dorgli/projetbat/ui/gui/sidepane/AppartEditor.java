@@ -1,15 +1,25 @@
 package fr.insa.dorgli.projetbat.ui.gui.sidepane;
 import fr.insa.dorgli.projetbat.core.Config;
+import fr.insa.dorgli.projetbat.objects.SelectableId;
 import fr.insa.dorgli.projetbat.objects.concrete.Appart;
+import fr.insa.dorgli.projetbat.objects.concrete.Piece;
 import fr.insa.dorgli.projetbat.objects.types.TypeAppart;
+import fr.insa.dorgli.projetbat.ui.gui.sidepane.components.IcedListComponent;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
+import fr.insa.dorgli.projetbat.ui.gui.sidepane.components.WrapLabel;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 
 public class AppartEditor extends NameDescEditor {
@@ -32,6 +42,27 @@ public class AppartEditor extends NameDescEditor {
 		};
 		typeAppartCombo.setButtonCell(callback.call(null));
 		typeAppartCombo.setCellFactory(callback);
+
+		Button removePiece = new Button("Enlever...");
+		removePiece.setOnAction(eh -> {
+			Set objects = new HashSet(appart.getPieces());
+			appart.getPieces().remove((Piece) config.controller.chooseFromList("pièce", objects));
+		});
+
+		Button addPiece = new Button("Ajouter...");
+		addPiece.setOnAction(eh -> {
+			new Alert(AlertType.INFORMATION, "Pour ajouter une ou plusieurs pièces à cet appartement, sélectionnez les sur le plan.").showAndWait();
+		});
+
+		VBox pieces = new IcedListComponent(config, this, (Collection<SelectableId>) (Collection<?>) appart.getPieces());
+//		final int maxNameLength = 23;
+//		VBox pieces = new VBox();
+//		for (Piece p: appart.getPieces()) {
+//			String name = p.getNom();
+//			if (name.length() > maxNameLength)
+//				name = name.substring(0, maxNameLength - 2) + "...";
+//			pieces.getChildren().add(new WrapLabel(name));
+//		}
 
 		super.prependSaveFunction((ActionEvent eh) -> {
 			try {
@@ -62,11 +93,18 @@ public class AppartEditor extends NameDescEditor {
 		});
 
 		super.prependInitFunction((Pane pane) ->
-			pane.getChildren().add(
+			pane.getChildren().addAll(
 				new HBox(
-					new Label("Type :"),
+					new WrapLabel("Type d'appartement :"),
 					typeAppartCombo
-				)
+				),
+
+				new HBox(
+					new WrapLabel("Pièces :"),
+					addPiece,
+					removePiece
+				),
+				pieces
 			)
 		);
 

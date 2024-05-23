@@ -7,7 +7,7 @@ import fr.insa.dorgli.projetbat.objects.types.TypeMur;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
+import fr.insa.dorgli.projetbat.ui.gui.sidepane.components.WrapLabel;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
@@ -73,18 +73,18 @@ public class MurEditor extends Editor {
 
 		super.prependInitFunction((Pane pane) ->
 			pane.getChildren().addAll(new VBox(
-					new Label("Coordonnées :"),
+					new WrapLabel("Coordonnées :"),
 					new PointComponent(config, this, mur.getPointDebut(), "Début :"),
 					new PointComponent(config, this, mur.getPointFin(), "Fin :")
 				),
 
 				new HBox(
-					new Label("Type :"),
+					new WrapLabel("Type :"),
 					typeMurCombo
 				),
 
 				new HBox(
-					new Label("Hauteur :"),
+					new WrapLabel("Hauteur :"),
 					hauteur
 				)
 			)
@@ -100,7 +100,7 @@ public class MurEditor extends Editor {
 //			ObservableList<String> plafondsItems = plafonds.getItems();
 //			plafondsItems.add(piece.getPlafond().toStringShort());
 //			HBox plafondsBox = new HBox(
-//				new Label("Plafond :"),
+//				new WrapLabel("Plafond :"),
 //				plafonds
 //			);
 //
@@ -108,7 +108,7 @@ public class MurEditor extends Editor {
 //			ObservableList<String> solsItems = sols.getItems();
 //			solsItems.add(piece.getSol().toStringShort());
 //			HBox solsBox = new HBox(
-//				new Label("Sols :"),
+//				new WrapLabel("Sols :"),
 //				sols
 //			);
 //
@@ -118,7 +118,7 @@ public class MurEditor extends Editor {
 //				mursItems.add(mur.toStringShort());
 //			}
 //			VBox mursBox = new VBox(
-//				new Label("Murs :"),
+//				new WrapLabel("Murs :"),
 //				murs
 //			);
 
@@ -127,6 +127,6 @@ public class MurEditor extends Editor {
 //				solsBox,
 //				mursBox
 //			);
-//			super.getChildren().add(new Label("TODO!!"));
+//			super.getChildren().add(new WrapLabel("TODO!!"));
 //		}
 //	}

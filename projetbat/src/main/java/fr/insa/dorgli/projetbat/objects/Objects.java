@@ -175,6 +175,45 @@ public class Objects {
 		return object.getId();
 	}
 
+	/**
+	 * remove an object from the list of all objects and of its type
+	 * @param object
+	 */
+	public void remove(SelectableId object) {
+		if (all.get(object.getId()) != null) {
+			return;
+		}
+
+		switch (object) {
+			case Batiment batiment -> batiments.remove(batiment);
+			case Niveau niveau -> niveaux.add(niveau);
+			case Appart each -> apparts.add(each);
+			case Piece each -> pieces.add(each);
+			case Mur each -> murs.add(each);
+			case PlafondSol each -> plafondsSols.add(each);
+			case Point each -> points.add(each);
+
+			case OuvertureMur each -> ouverturesMur.add(each);
+			case OuvertureNiveaux each -> ouverturesNiveaux.add(each);
+
+			case RevetementMur each -> revetementsMur.add(each);
+			case RevetementPlafondSol each -> revetementsPlafondSol.add(each);
+
+			case TypeMur each -> typesMur.add(each);
+			case TypeOuvertureMur each -> typesOuverturesMur.add(each);
+			case TypeOuvertureNiveau each -> typesOuverturesNiveau.add(each);
+			case TypeRevetement each -> typesRevetement.add(each);
+			case TypeAppart each -> typesAppart.add(each);
+			case TypeBatiment each -> typesBatiment.add(each);
+
+			case Devis each -> devis.add(each);
+
+			default -> throw new AssertionError();
+		}
+
+		all.remove(object.getId());
+	}
+
 	public SelectableId get(int id) {
 		return all.get(id);
 	}

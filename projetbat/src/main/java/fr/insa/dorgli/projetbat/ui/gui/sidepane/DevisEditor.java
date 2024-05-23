@@ -5,6 +5,7 @@ import fr.insa.dorgli.projetbat.objects.Devis;
 import fr.insa.dorgli.projetbat.objects.HasPrice;
 import fr.insa.dorgli.projetbat.utils.FancyToStrings;
 import javafx.scene.control.Button;
+import fr.insa.dorgli.projetbat.ui.gui.sidepane.components.WrapLabel;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -17,7 +18,7 @@ public class DevisEditor extends NameDescEditor {
 
 		if (devis.getStudiedObject().size() == 1) {
 			ourVBox.getChildren().add(
-				new Label("Devis de : " + ((FancyToStrings) devis.getStudiedObject().iterator().next()).toStringShort())
+				new WrapLabel("Devis de : " + ((FancyToStrings) devis.getStudiedObject().iterator().next()).toStringShort())
 			);
 		} else if (devis.getStudiedObject().size() > 1) {
 			VBox studiedObjectsVBox = new VBox();
@@ -28,12 +29,12 @@ public class DevisEditor extends NameDescEditor {
 				});
 
 			ourVBox.getChildren().addAll(
-				new Label("Devis des objects :"),
+				new WrapLabel("Devis des objects :"),
 				studiedObjectsVBox
 			);
 		} else {
 			ourVBox.getChildren().add(
-				new Label("Ce devis n'est lié à aucun objet !")
+				new WrapLabel("Ce devis n'est lié à aucun objet !")
 			);
 		}
 
@@ -43,7 +44,7 @@ public class DevisEditor extends NameDescEditor {
 		super.prependInitFunction((Pane pane) -> {
 			pane.getChildren().addAll(
 				ourVBox,
-				new Label("Prix : " + (Math.round(devis.calculerPrix() * 100) / 100) + "€"),
+				new WrapLabel("Prix : " + (Math.round(devis.calculerPrix() * 100) / 100) + "€"),
 				delete
 			);
 		});

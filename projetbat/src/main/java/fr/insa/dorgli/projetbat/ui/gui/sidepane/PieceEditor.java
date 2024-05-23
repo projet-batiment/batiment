@@ -5,7 +5,7 @@ import fr.insa.dorgli.projetbat.objects.concrete.Mur;
 import fr.insa.dorgli.projetbat.objects.concrete.Piece;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.scene.control.Label;
+import fr.insa.dorgli.projetbat.ui.gui.sidepane.components.WrapLabel;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -25,7 +25,7 @@ public class PieceEditor extends NameDescEditor {
 
 		super.prependInitFunction((Pane pane) ->
 			pane.getChildren().addAll(
-				new Label("Piece: TODO!!")
+				new WrapLabel("Piece: TODO!!")
 			)
 		);
 
@@ -51,17 +51,17 @@ public class PieceEditor extends NameDescEditor {
 //
 //		super.getChildren().addAll(
 //			new HBox(
-//				new Label("Plafond :"),
+//				new WrapLabel("Plafond :"),
 //				plafonds
 //			),
 //
 //			new HBox(
-//				new Label("Sols :"),
+//				new WrapLabel("Sols :"),
 //				sols
 //			),
 //
 //			new VBox(
-//				new Label("Murs :"),
+//				new WrapLabel("Murs :"),
 //				murs
 //			)
 //		);

@@ -1,7 +1,7 @@
 package fr.insa.dorgli.projetbat.ui.gui.sidepane;
 
 import fr.insa.dorgli.projetbat.core.Config;
-import javafx.scene.control.Label;
+import fr.insa.dorgli.projetbat.ui.gui.sidepane.components.WrapLabel;
 import javafx.scene.layout.Pane;
 
 public class Empty extends SmartTab {
@@ -9,7 +9,7 @@ public class Empty extends SmartTab {
 		super(config, "(Vide)");
 
 		super.prependInitFunction((Pane pane) -> 
-			pane.getChildren().add(new Label("Aucun objet n'est sélectionné"))
+			pane.getChildren().add(new WrapLabel("Aucun objet n'est sélectionné"))
 		);
 
 		super.initialize();

@@ -4,7 +4,7 @@ import fr.insa.dorgli.projetbat.core.Config;
 import fr.insa.dorgli.projetbat.objects.types.TypeOuvertureNiveau;
 import java.util.Arrays;
 import javafx.event.ActionEvent;
-import javafx.scene.control.Label;
+import fr.insa.dorgli.projetbat.ui.gui.sidepane.components.WrapLabel;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -48,17 +48,17 @@ public class TypeOuvertureNiveauEditor extends NameDescEditor {
 		super.prependInitFunction((Pane pane) ->
 			pane.getChildren().addAll(
 				new HBox(
-					new Label("Hauteur :"),
+					new WrapLabel("Hauteur :"),
 					hauteur
 				),
 
 				new HBox(
-					new Label("Largeur :"),
+					new WrapLabel("Largeur :"),
 					largeur
 				),
 
 				new HBox(
-					new Label("Prix ouverture :"),
+					new WrapLabel("Prix ouverture :"),
 					prixOuverture
 				)
 			)

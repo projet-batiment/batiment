@@ -67,7 +67,17 @@ public class State {
 			}
 		}
 
+		config.getMainWindow().getBottomBar().update();
 		config.tui.popWhere();
+	}
+
+	private void updatedSelection() {
+		config.controller.updateSidePaneSelection();
+		config.controller.updateBottomBar();
+	}
+	private void updatedView() {
+		updatedSelection();
+		config.getMainWindow().getCanvasContainer().moveView(Direction.FIT); // implies redraw
 	}
 
 	public HashSet<SelectableId> getSelectedElements() {
@@ -82,29 +92,29 @@ public class State {
 		else
 			selectedElements.add(elm);
 
-		config.getMainWindow().getSidePaneContainer().updateSelection();
+		updatedSelection();
 	}
 	public void removeSelectedElement(SelectableId elm) {
 		selectedElements.remove(elm);
-		config.getMainWindow().getSidePaneContainer().updateSelection();
+		updatedSelection();
 	}
 	public void setSelectedElement(SelectableId elm) {
 		clearSelectedElement();
 		selectedElements.add(elm);
-		config.getMainWindow().getSidePaneContainer().updateSelection();
+		updatedSelection();
 	}
 	public void clearSelectedElement() {
 		selectedElements.clear();
-		config.getMainWindow().getSidePaneContainer().updateSelection();
+		updatedSelection();
 	}
 
 	public void addDevis(Devis devis) {
 		devisList.add(devis);
-		config.getMainWindow().getSidePaneContainer().addDevis(devis);
+		config.getMainWindow().getSidePane().addDevis(devis);
 	}
 	public void removeDevis(Devis devis) {
 		devisList.remove(devis);
-		config.getMainWindow().getSidePaneContainer().removeDevis(devis);
+		config.getMainWindow().getSidePane().removeDevis(devis);
 	}
 
 	public DrawableRoot getViewRootElement() {
@@ -113,8 +123,7 @@ public class State {
 
 	public void setViewRootElement(DrawableRoot viewRootElement) {
 		this.viewRootElement = viewRootElement;
-		config.getMainWindow().getCanvasContainer().moveView(Direction.FIT);
-		config.controller.redrawCanvas();
+		updatedView();
 	}
 
 	public Batiment getCurrentBatiment() {
@@ -123,11 +132,13 @@ public class State {
 
 	public void setCurrentBatiment(Batiment currentBatiment) {
 		this.currentBatiment = currentBatiment;
+		updatedView();
 	}
 
 
 	public <T extends BObject> Creator create(T object) {
 		actionState = ActionState.CREATE;
+		config.getMainWindow().getBottomBar().update();
 		creator = new Creator(object);
 		return creator;
 	}

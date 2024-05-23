@@ -4,7 +4,7 @@ import fr.insa.dorgli.projetbat.core.Config;
 import fr.insa.dorgli.projetbat.objects.types.TypeRevetement;
 import java.util.Arrays;
 import javafx.event.ActionEvent;
-import javafx.scene.control.Label;
+import fr.insa.dorgli.projetbat.ui.gui.sidepane.components.WrapLabel;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -36,7 +36,7 @@ public class TypeRevetementEditor extends NameDescEditor {
 		super.prependInitFunction((Pane pane) ->
 			pane.getChildren().addAll(
 				new HBox(
-					new Label("Prix unitaire :"),
+					new WrapLabel("Prix unitaire :"),
 					prixUnitaire
 				)
 			)

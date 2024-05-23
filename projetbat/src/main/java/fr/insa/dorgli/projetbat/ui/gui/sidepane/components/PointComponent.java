@@ -4,7 +4,7 @@ import fr.insa.dorgli.projetbat.core.Config;
 import fr.insa.dorgli.projetbat.objects.concrete.Point;
 import fr.insa.dorgli.projetbat.ui.gui.sidepane.Editor;
 import javafx.event.ActionEvent;
-import javafx.scene.control.Label;
+import fr.insa.dorgli.projetbat.ui.gui.sidepane.components.WrapLabel;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -40,7 +40,7 @@ public class PointComponent extends VBox {
 
 		if (name != null) {
 			super.getChildren().add(
-				new Label(name)
+				new WrapLabel(name)
 			);
 		}
 

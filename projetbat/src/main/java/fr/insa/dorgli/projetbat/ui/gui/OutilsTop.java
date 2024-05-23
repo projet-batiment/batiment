@@ -99,26 +99,26 @@ public class OutilsTop extends MenuBar {
 
 	public OutilsTop(Config config) {
 		this.config = config;
-		this.controller = config.getMainWindow().getController();
+		this.controller = config.controller;
 
 		///// Menu Fichier
 
 		buttonOpenFile = new MenuItem("Ouvrir...");
 		buttonOpenFile.setOnAction(event -> {
 			config.tui.log("clicked: open file");
-			controller.openFile(event);
+			controller.openFile();
 		});
 
 		buttonSaveFile = new MenuItem("Enregistrer");
 		buttonSaveFile.setOnAction(event -> {
 			config.tui.log("clicked: save file");
-			controller.saveFile(event);
+			controller.saveFile();
 		});
 
 		buttonSaveAs = new MenuItem("Enregistrer sous...");
 		buttonSaveAs.setOnAction(event -> {
 			config.tui.log("clicked: save as");
-			controller.saveFile(event);
+			controller.saveFile();
 		});
 
 		menuFichier = new Menu("Fichier", null,
@@ -558,9 +558,10 @@ public class OutilsTop extends MenuBar {
 
 		///// MenuBar
 
-		super.getMenus().addAll(menuFichier,
-			menuEditer,
+		super.getMenus().addAll(
+			menuFichier,
 			menuCreer,
+			menuEditer,
 			menuSelectionner,
 			menuDevis,
 			menuAfficher,

@@ -16,16 +16,20 @@ public class SidePane extends TabPane {
 	private SmartTab selectionTab;
 	private final HashMap<Devis, DevisEditor> devisEditors;
 
+	private void addTab(SmartTab tab) {
+		super.getTabs().add(0, tab);
+	}
+
 	private void setSelectionTab(SmartTab tab) {
 		super.getTabs().remove(selectionTab);
 		selectionTab = tab;
-		super.getTabs().add(0, tab);
+		addTab(tab);
 	}
 
 	public final void addDevis(Devis devis) {
 		DevisEditor linkedEditor = new DevisEditor(config, devis);
 		devisEditors.put(devis, linkedEditor);
-		super.getTabs().add(linkedEditor);
+		addTab(linkedEditor);
 	}
 	public final void removeDevis(Devis devis) {
 		DevisEditor linkedEditor = devisEditors.get(devis);
@@ -34,7 +38,6 @@ public class SidePane extends TabPane {
 	}
 
 	public final void updateSelection() {
-
 		HashSet<SelectableId> selectedObjects = config.controller.state.getSelectedElements();
 
 		if (config.project.objects.getAll().isEmpty())
@@ -109,9 +112,8 @@ public class SidePane extends TabPane {
 		this.devisEditors = new HashMap<>();
 		super.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
 
-		final double width = 300;
-		this.setMaxWidth(width);
-		this.setWidth(width);
+		final double width = 250;
+		super.setMinWidth(width);
 
 		updateSelection();
 	}

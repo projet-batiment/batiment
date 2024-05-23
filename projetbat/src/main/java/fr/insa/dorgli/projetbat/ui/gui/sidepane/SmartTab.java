@@ -3,8 +3,8 @@ package fr.insa.dorgli.projetbat.ui.gui.sidepane;
 import fr.insa.dorgli.projetbat.core.Config;
 import fr.insa.dorgli.projetbat.utils.VoidConsumer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.function.Consumer;
+import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Tab;
@@ -37,6 +37,8 @@ public abstract class SmartTab extends Tab {
 
 		initialized = true;
 		initFunctions.stream().forEach((Consumer<Pane> each) -> each.accept((Pane) ourVBox));
+		super.setContent(ourVBox);
+
 		reset();
 	};
 
@@ -51,6 +53,10 @@ public abstract class SmartTab extends Tab {
 		this.initFunctions.add(0, initFunction);
 	};
 
+	public final void resize(double width) {
+		ourVBox.setPrefWidth(width);
+	}
+
 	public SmartTab(Config config, String tabName) {
 		super(tabName);
 		this.config = config;
@@ -60,6 +66,5 @@ public abstract class SmartTab extends Tab {
 		initFunctions = new ArrayList<>();
 
 		ourVBox = new VBox();
-		super.setContent(ourVBox);
 	}
 }

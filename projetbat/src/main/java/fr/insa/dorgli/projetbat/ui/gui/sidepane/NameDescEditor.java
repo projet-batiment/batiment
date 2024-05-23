@@ -4,7 +4,7 @@ import fr.insa.dorgli.projetbat.core.Config;
 import fr.insa.dorgli.projetbat.objects.NameDesc;
 import javafx.beans.Observable;
 import javafx.event.ActionEvent;
-import javafx.scene.control.Label;
+import fr.insa.dorgli.projetbat.ui.gui.sidepane.components.WrapLabel;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
@@ -36,18 +36,18 @@ public abstract class NameDescEditor extends Editor {
 		super.prependInitFunction((Pane pane) -> {
 			pane.widthProperty().addListener((Observable eh) -> {
 				final double maxWidth = 380;
-				nom.setMaxWidth(maxWidth);
-				description.setMaxWidth(maxWidth);
+//				nom.setMaxWidth(maxWidth);
+//				description.setMaxWidth(maxWidth);
 			});
 
 			pane.getChildren().addAll(
 				new HBox(
-					new Label("Nom :"),
+					new WrapLabel("Nom :"),
 					nom
 				),
 
 				new VBox(
-					new Label("Description :"),
+					new WrapLabel("Description :"),
 					description
 				)
 			);
