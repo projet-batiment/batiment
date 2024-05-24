@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 public abstract class BObject extends SelectableId {
-	protected final HashSet<BObject> parents = new HashSet<>();
+	protected final HashSet<SelectableId> parents = new HashSet<>();
 	// est ce que l'objet en construction est prêt?
 	public abstract boolean ready();
 
@@ -13,14 +13,14 @@ public abstract class BObject extends SelectableId {
 	}
 	public BObject() { }
 
-	public HashSet<BObject> getParents() {
+	public HashSet<SelectableId> getParents() {
 		return parents;
 	}
 
-	public final void addParents(BObject... objects) {
+	public final void addParents(SelectableId... objects) {
 		parents.addAll(Arrays.asList(objects));
 	}
-	public final void removeParents(BObject... objects) {
+	public final void removeParents(SelectableId... objects) {
 		parents.removeAll(Arrays.asList(objects));
 	}
 }

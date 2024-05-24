@@ -1,7 +1,7 @@
 package fr.insa.dorgli.projetbat.objects.types;
 
-import fr.insa.dorgli.projetbat.objects.Deserialize;
 import fr.insa.dorgli.projetbat.objects.Objects;
+import fr.insa.dorgli.projetbat.objects.Serialize;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 
 public class TypeMur extends Type  {
@@ -45,13 +45,18 @@ public class TypeMur extends Type  {
 	}
 
 	@Override
-	public String serialize(Objects objects) {
-		return String.join(",",
-		    String.valueOf(super.getId()),
-		    Deserialize.escapeString(nom),
-		    Deserialize.escapeString(description),
-		    String.valueOf(epaisseur),
-		    String.valueOf(prixUnitaire)
+	public void serialize(Serialize serializer) {
+		serializer.csv(
+		    super.getId(),
+		    nom,
+		    description,
+		    epaisseur,
+		    prixUnitaire
 		);
+	}
+
+	@Override
+	public String serialize(Objects objects) {
+		return "";
 	}
 }

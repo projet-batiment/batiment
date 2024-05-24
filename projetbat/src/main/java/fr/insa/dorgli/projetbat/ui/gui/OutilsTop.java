@@ -104,6 +104,12 @@ public class OutilsTop extends MenuBar {
 
 		///// Menu Fichier
 
+		MenuItem buttonNewProject = new MenuItem("Nouveau...");
+		buttonNewProject.setOnAction(event -> {
+			config.tui.log("clicked: new project");
+			controller.newProject();
+		});
+
 		buttonOpenFile = new MenuItem("Ouvrir...");
 		buttonOpenFile.setOnAction(event -> {
 			config.tui.log("clicked: open file");
@@ -119,10 +125,11 @@ public class OutilsTop extends MenuBar {
 		buttonSaveAs = new MenuItem("Enregistrer sous...");
 		buttonSaveAs.setOnAction(event -> {
 			config.tui.log("clicked: save as");
-			controller.saveFile();
+			controller.saveFileAs();
 		});
 
 		menuFichier = new Menu("Fichier", null,
+			buttonNewProject,
 			buttonOpenFile,
 			buttonSaveFile,
 			buttonSaveAs
@@ -207,7 +214,7 @@ public class OutilsTop extends MenuBar {
 		buttonTypeOuvertureNiveauxCreer = new MenuItem("Un Type Ouverture Niveau...");
 		buttonTypeOuvertureNiveauxCreer.setOnAction(event -> {
 			config.tui.log("clicked: create: new TypeOuvertureNiveau");
-			config.controller.menuButtonCreateOne(new TypeOuvertureNiveau());
+			config.controller.menuButtonCreateOne(new TypeOuvertureNiveaux());
 		});
 
 		buttonTypeOuvertureMurCreer = new MenuItem("Un Type Ouverture Mur...");
@@ -321,6 +328,14 @@ public class OutilsTop extends MenuBar {
 			config.controller.selectFromList("type d'ouverture-mur", objects);
 		});
 
+		MenuItem buttonDevisEdit = new MenuItem("Un Devis...");
+		buttonDevisEdit.setOnAction(event -> {
+			Set objects = config.project.objects.getDevis();
+			config.controller.selectFromList("devis", objects);
+		});
+
+		SeparatorMenuItem separatorEdit3 = new SeparatorMenuItem();
+
 		Menu menuEditer = new Menu("Éditer", null,
 			buttonCurrentProjectEdit,
 			buttonCurrentBatimentEdit,
@@ -337,7 +352,9 @@ public class OutilsTop extends MenuBar {
 			buttonTypeMurEdit,
 			buttonTypeRevetementEdit,
 			buttonTypeOuvertureNiveauxEdit,
-			buttonTypeOuvertureMurEdit
+			buttonTypeOuvertureMurEdit,
+			separatorEdit3,
+			buttonDevisEdit
 		);
 		
 		///// Menu Sélectionner

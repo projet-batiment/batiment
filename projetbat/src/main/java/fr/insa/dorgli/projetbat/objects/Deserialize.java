@@ -6,12 +6,15 @@ import fr.insa.dorgli.projetbat.ui.TUI;
 import fr.insa.dorgli.projetbat.core.Config;
 import fr.insa.dorgli.projetbat.core.Project;
 import fr.insa.dorgli.projetbat.objects.concrete.DrawableRoot;
+import fr.insa.dorgli.projetbat.utils.CsvRegexMatcher;
+import fr.insa.dorgli.projetbat.utils.EscapeStrings;
 import fr.insa.dorgli.projetbat.utils.SmartReader;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class Deserialize {
 	Config config;
@@ -20,7 +23,6 @@ public class Deserialize {
 
 	///// Sommaire de la classe Deserialize
 	// 
-	// - unescapeString et escapeString : pour permettre des \n, des virgules dans la sauvegarde
 	// - fonctions d'erreur
 	//
 	// - une classe PseudoPoint pour lire temporairement les points et ensuite leur attribuer un réel niveau
@@ -44,34 +46,12 @@ public class Deserialize {
 	//  niveaux
 	//  apparts
 
-
-	// pour faciliter la lecture des regex ci-dessous
-	// normalement, java interprète ces variables comme des constantes de compilation
-	// pour la suite, flemme de faire des pseudo-optimisations dans java...
-	private static final String REGEX_INT = "[0-9]+";
-	private static final String REGEX_DOUBLE = "[0-9]+(\\.[0-9]+)?";
-	private static final String REGEX_STRING = "[^,]*"; // NB: un String peut être vide, d'où le *
-
-	// pour plus de flexibilité
-	private static final String[] ESCAPE_SEQUENCES_REAL = { ",", "\n", "\r", "&" };
-	private static final String[] ESCAPE_SEQUENCES_ESCAPED = { "&c", "&n", "&r", "&&" };
-
-	public static String unescapeString(String escaped) {
-		for (int i = 0; i < ESCAPE_SEQUENCES_ESCAPED.length; i++)
-			escaped = escaped.replaceAll(ESCAPE_SEQUENCES_ESCAPED[i], ESCAPE_SEQUENCES_REAL[i]);
-
-		return escaped;
-	}
-
-	public static String escapeString(String incoming) {
-		for (int i = 0; i < ESCAPE_SEQUENCES_ESCAPED.length; i++)
-			incoming = incoming.replaceAll(ESCAPE_SEQUENCES_REAL[i], ESCAPE_SEQUENCES_ESCAPED[i]);
-
-		return incoming;
-	}
-
 	public Deserialize(Config config) {
 		this.config = config;
+	}
+
+	static private CsvRegexMatcher idCsvRegexMatcher(String order) {
+		return new CsvRegexMatcher("i" + order);
 	}
 
 	private void log(String text) {
@@ -84,8 +64,9 @@ public class Deserialize {
 		config.tui.warn(sreader.getLineNumber() + ": " + text);
 	}
 	private void error(String text) {
-		config.tui.error(sreader.getLineNumber() + ": " + text);
-		errorMessages.add(text);
+		String line = sreader.getLineNumber() + ": " + text;
+		config.tui.error(line);
+		errorMessages.add(line);
 	}
 
 	private void errorParse(String text, Exception e) {
@@ -144,12 +125,16 @@ public class Deserialize {
 		public Batiment currentBatiment; 
 		public Niveau currentNiveau; 
 		public DrawableRoot viewRootElement; 
+
+		public int loadedVersion = -1;
 	}
 
 	public class Result {
 		public enum Status {
 			SUCCESS,
 			FILE_NOT_FOUND,
+			FILE_TOO_OLD,
+			FILE_TOO_RECENT,
 			PARSE_ERROR,
 			UNEXPECTED_ERROR,
 		}
@@ -224,7 +209,7 @@ public class Deserialize {
 							case "Point" -> 		pseudoPoints = pointsFromString(newLoadedProject.objects);
 							case "TypeRevetement" -> 	typeRevetementsFromString(newLoadedProject.objects);
 							case "TypeOuvertureMur" -> 	typeOuvertureMursFromString(newLoadedProject.objects);
-							case "TypeOuvertureNiveau" -> 	typeOuvertureNiveauxFromString(newLoadedProject.objects);
+							case "TypeOuvertureNiveaux" -> 	typeOuvertureNiveauxFromString(newLoadedProject.objects);
 							case "TypeMur" -> 		typeMursFromString(newLoadedProject.objects);
 							case "TypeAppart" -> 		typeAppartsFromString(newLoadedProject.objects);
 							case "TypeBatiment" -> 		typeBatimentsFromString(newLoadedProject.objects);
@@ -232,6 +217,7 @@ public class Deserialize {
 							case "Piece" ->			piecesFromString(newLoadedProject.objects);
 							case "Appart" ->		appartsFromString(newLoadedProject.objects);
 							case "Niveau" ->		niveauxFromString(newLoadedProject.objects);
+							case "Devis" ->			devisFromString(newLoadedProject.objects);
 							//case "PlafondSol" -> 		newLoadedProject.objects.plafondsSols = plafondSolsFromString(newLoadedProject.objects);
 							default -> error("section d'objects inconnue: '" + objectsKind + "'");
 						}
@@ -259,9 +245,9 @@ public class Deserialize {
 				}
 			}
 
-			for (PseudoPoint p: pseudoPoints) {
-				p.setNiveau(newLoadedProject.objects);
-			}
+			if (config.tui.getErrCounter() == 0)
+				for (PseudoPoint p: pseudoPoints)
+					p.setNiveau(newLoadedProject.objects);
 
 		} catch (Exception e) {
 			error("erreur inattendue lors de la lecture du fichier '" + file.getPath() + "': " + e.getMessage());
@@ -272,10 +258,25 @@ public class Deserialize {
 
 		if (config.tui.getErrCounter() > 0) {
 			config.tui.ended(TUI.red(config.tui.getErrCounter() + " errors"));
-			return config.tui.popWhere( new Result(Result.Status.PARSE_ERROR, errorMessages.toArray(String[]::new)) );
+
+			if (newLoadedProject.loadedVersion < 0)
+ 				// version has not been read => parsing errored
+				return config.tui.popWhere( new Result(Result.Status.PARSE_ERROR, errorMessages.toArray(String[]::new)) );
+
+			if (newLoadedProject.loadedVersion < Config.minimumSavefileVersion)
+ 				// too old
+				return config.tui.popWhere( new Result(Result.Status.FILE_TOO_OLD, errorMessages.toArray(String[]::new)) );
+
+			else if (newLoadedProject.loadedVersion > Config.maximumSavefileVersion)
+ 				// too recent
+				return config.tui.popWhere( new Result(Result.Status.FILE_TOO_RECENT, errorMessages.toArray(String[]::new)) );
+
+			else
+ 				// good version but parsing errored
+				return config.tui.popWhere( new Result(Result.Status.PARSE_ERROR, errorMessages.toArray(String[]::new)) );
 		} else {
 			config.tui.ended(TUI.green("success"));
-	}
+		}
 
 		return config.tui.popWhere( new Result(newLoadedProject) );
 	}
@@ -293,15 +294,18 @@ public class Deserialize {
 		) {
 			debug(result.toString());
 			String line = result.getText();
-			command = line.split(":", 2);
+			command = line.split(",");
 			switch (command[0]) {
 				case "version" -> {
 					try {
 						int savefileVersion = Integer.parseInt(command[1]);
+						newLoadedProject.loadedVersion = savefileVersion;
 						if (savefileVersion < Config.minimumSavefileVersion) {
 							error("savefile is too old (v" + savefileVersion + " < min " + Config.minimumSavefileVersion + ")");
+							return;
 						} else if (savefileVersion > Config.maximumSavefileVersion) {
 							error("savefile is too recent (v" + savefileVersion + " > max " + Config.maximumSavefileVersion + ")");
+							return;
 						} else {
 							debug("savefile is of correct version " + savefileVersion);
 						}
@@ -311,44 +315,51 @@ public class Deserialize {
 				}
 
 				case "projectName" -> {
-					String unescaped = unescapeString(command[1]);
+					String unescaped = EscapeStrings.unescapeString(command[1]);
 					newLoadedProject.projectName = unescaped;
 					debug("set projectName = '" + unescaped + "'");
 				}
 
 				case "projectDescription" -> {
-					String unescaped = unescapeString(command[1]);
+					String unescaped = EscapeStrings.unescapeString(command[1]);
 					newLoadedProject.projectDescription = unescaped;
 					debug("set projectDescription = '" + unescaped + "'");
 				}
 
-				case "last viewRootElement" -> {
-					try {
-						String[] splitted = command[1].split(":");
-						int batimentId = Integer.parseInt(splitted[0]);
-						int rootId = Integer.parseInt(splitted[1]);
+				case "last view" -> {
+					if (command.length == 3) {
+						try {
+							int batimentId = Integer.parseInt(command[1]);
+							int rootId = Integer.parseInt(command[2]);
 
-						SelectableId batimentObject = newLoadedProject.objects.get(batimentId);
-						if (batimentObject instanceof Batiment batiment) {
-							debug("last batiment read: " + batiment);
-							newLoadedProject.currentBatiment = batiment;
-						} else if (batimentObject == null) {
-							errorIdNone("Batiment", batimentId);
-						} else {
-							errorIdWrongType("Batiment", batimentId);
-						}
+							if (batimentId > 0) {
+								SelectableId batimentObject = newLoadedProject.objects.get(batimentId);
+								if (batimentObject instanceof Batiment batiment) {
+									debug("last batiment read: " + batiment);
+									newLoadedProject.currentBatiment = batiment;
+								} else if (batimentObject == null) {
+									errorIdNone("Batiment", batimentId);
+								} else {
+									errorIdWrongType("Batiment", batimentId);
+								}
 
-						SelectableId rootObject = newLoadedProject.objects.get(rootId);
-						if (rootObject instanceof DrawableRoot drawable) {
-							debug("last viewRootElement read: " + drawable);
-							newLoadedProject.viewRootElement = drawable;
-						} else if (rootObject == null) {
-							errorIdNone("DrawableRoot", rootId);
-						} else {
-							errorIdWrongType("DrawableRoot", rootId);
+								if (rootId > 0) {
+									SelectableId rootObject = newLoadedProject.objects.get(rootId);
+									if (rootObject instanceof DrawableRoot drawable) {
+										debug("last viewRootElement read: " + drawable);
+										newLoadedProject.viewRootElement = drawable;
+									} else if (rootObject == null) {
+										errorIdNone("DrawableRoot", rootId);
+									} else {
+										errorIdWrongType("DrawableRoot", rootId);
+									}
+								}
+							}
+						} catch (NumberFormatException e) {
+							errorParse(line, e);
 						}
-					} catch (NumberFormatException e) {
-						errorParse(line, e);
+					} else {
+						errorSyntax(line);
 					}
 				}
 
@@ -365,15 +376,15 @@ public class Deserialize {
 		config.tui.begin();
 		ArrayList<PseudoPoint> pseudoPoints = new ArrayList<>();
 
-		final String regex = String.join(",", REGEX_INT, REGEX_DOUBLE, REGEX_DOUBLE, REGEX_INT);
-		debug("regex: '" + regex + "'");
+		CsvRegexMatcher matcher = idCsvRegexMatcher("ddi");
+		debug("regex: '" + matcher.regex + "'");
 		for (
 			SmartReader.ReadResult result = sreader.readLine();
 			result.getState() == SmartReader.ReadState.LINE;
 			result = sreader.readLine()
 		) {
 			String line = result.getText();
-			if (line.matches(regex)) {
+			if (matcher.matches(line)) {
 				String[] splitted = line.split(",");
 
 				int id = Integer.parseInt(splitted[0]);
@@ -410,15 +421,15 @@ public class Deserialize {
 		config.tui.begin();
 		ArrayList<TypeRevetement> typeRevetements = new ArrayList<>();
 
-		final String regex = String.join(",", REGEX_INT, REGEX_STRING, REGEX_STRING, REGEX_DOUBLE);
-		debug("regex: '" + regex + "'");
+		CsvRegexMatcher matcher = idCsvRegexMatcher("ssd");
+		debug("regex: '" + matcher.regex + "'");
 		for (
 			SmartReader.ReadResult result = sreader.readLine();
 			result.getState() == SmartReader.ReadState.LINE;
 			result = sreader.readLine()
 		) {
 			String line = result.getText();
-			if (line.matches(regex)) {
+			if (matcher.matches(line)) {
 				String[] splitted = line.split(",");
 
 				int id = Integer.parseInt(splitted[0]);
@@ -430,7 +441,7 @@ public class Deserialize {
 				try {
 					double prixUnitaire = Double.parseDouble(splitted[3]);
 
-					TypeRevetement object = new TypeRevetement(id, unescapeString(splitted[1]), unescapeString(splitted[2]), prixUnitaire);
+					TypeRevetement object = new TypeRevetement(id, EscapeStrings.unescapeString(splitted[1]), EscapeStrings.unescapeString(splitted[2]), prixUnitaire);
 					typeRevetements.add(object);
 					objects.put(object);
 					debug("read " + object);
@@ -453,15 +464,15 @@ public class Deserialize {
 		config.tui.begin();
 		ArrayList<TypeOuvertureMur> typeOuvertureMurs = new ArrayList<>();
 
-		final String regex = String.join(",", REGEX_INT, REGEX_STRING, REGEX_STRING, REGEX_DOUBLE, REGEX_DOUBLE, REGEX_DOUBLE);
-		debug("regex: '" + regex + "'");
+		CsvRegexMatcher matcher = idCsvRegexMatcher("ssddd");
+		debug("regex: '" + matcher.regex + "'");
 		for (
 			SmartReader.ReadResult result = sreader.readLine();
 			result.getState() == SmartReader.ReadState.LINE;
 			result = sreader.readLine()
 		) {
 			String line = result.getText();
-			if (line.matches(regex)) {
+			if (matcher.matches(line)) {
 				String[] splitted = line.split(",");
 
 				int id = Integer.parseInt(splitted[0]);
@@ -475,7 +486,7 @@ public class Deserialize {
 					double largeur = Double.parseDouble(splitted[4]);
 					double prixUnitaire = Double.parseDouble(splitted[5]);
 
-					TypeOuvertureMur object = new TypeOuvertureMur(id, unescapeString(splitted[1]), unescapeString(splitted[2]), hauteur, largeur, prixUnitaire);
+					TypeOuvertureMur object = new TypeOuvertureMur(id, EscapeStrings.unescapeString(splitted[1]), EscapeStrings.unescapeString(splitted[2]), hauteur, largeur, prixUnitaire);
 					typeOuvertureMurs.add(object);
 					objects.put(object);
 					debug("read " + object);
@@ -498,15 +509,15 @@ public class Deserialize {
 		config.tui.begin();
 		ArrayList<TypeMur> typeMurs = new ArrayList<>();
 
-		final String regex = String.join(",", REGEX_INT, REGEX_STRING, REGEX_STRING, REGEX_DOUBLE, REGEX_DOUBLE);
-		debug("regex: '" + regex + "'");
+		CsvRegexMatcher matcher = idCsvRegexMatcher("ssdd");
+		debug("regex: '" + matcher.regex + "'");
 		for (
 			SmartReader.ReadResult result = sreader.readLine();
 			result.getState() == SmartReader.ReadState.LINE;
 			result = sreader.readLine()
 		) {
 			String line = result.getText();
-			if (line.matches(regex)) {
+			if (matcher.matches(line)) {
 				String[] splitted = line.split(",");
 
 				int id = Integer.parseInt(splitted[0]);
@@ -519,7 +530,7 @@ public class Deserialize {
 					double epaisseur = Double.parseDouble(splitted[3]);
 					double prixU = Double.parseDouble(splitted[4]);
 
-					TypeMur object = new TypeMur(id, unescapeString(splitted[1]), unescapeString(splitted[2]), epaisseur, prixU);
+					TypeMur object = new TypeMur(id, EscapeStrings.unescapeString(splitted[1]), EscapeStrings.unescapeString(splitted[2]), epaisseur, prixU);
 					typeMurs.add(object);
 					objects.put(object);
 					debug("read " + object);
@@ -542,15 +553,15 @@ public class Deserialize {
 		config.tui.begin();
 		ArrayList<RevetementMur> revetementMurs = new ArrayList<>();
 
-			final String regex = String.join(",", REGEX_INT, REGEX_INT, REGEX_DOUBLE, REGEX_DOUBLE, REGEX_DOUBLE, REGEX_DOUBLE);
-			debug("regex: '" + regex + "'");
+		CsvRegexMatcher matcher = idCsvRegexMatcher("idddd");
+		debug("regex: '" + matcher.regex + "'");
 		for (
 			SmartReader.ReadResult result = sreader.readLine();
 			result.getState() == SmartReader.ReadState.LINE;
 			result = sreader.readLine()
 		) {
 			String line = result.getText();
-			if (line.matches(regex)) {
+			if (matcher.matches(line)) {
 				String[] splitted = line.split(",");
 
 				int id = Integer.parseInt(splitted[0]);
@@ -573,9 +584,9 @@ public class Deserialize {
 						objects.put(object);
 						debug("read " + object);
 					} else if (propObject == null) {
-						errorIdNone("TypeOuvertureNiveau", trId);
+						errorIdNone("TypeOuvertureNiveaux", trId);
 					} else {
-						errorIdWrongType("TypeOuvertureNiveau", trId);
+						errorIdWrongType("TypeOuvertureNiveaux", trId);
 					}
 				} catch (NumberFormatException e) {
 					errorParse(line, e);
@@ -596,15 +607,15 @@ public class Deserialize {
 		config.tui.begin();
 		ArrayList<OuvertureMur> ouvertureMurs = new ArrayList<>();
 
-		final String regex = String.join(",", REGEX_INT, REGEX_INT, REGEX_DOUBLE, REGEX_DOUBLE);
-		debug("regex: '" + regex + "'");
+		CsvRegexMatcher matcher = idCsvRegexMatcher("idd");
+		debug("regex: '" + matcher.regex + "'");
 		for (
 			SmartReader.ReadResult result = sreader.readLine();
 			result.getState() == SmartReader.ReadState.LINE;
 			result = sreader.readLine()
 		) {
 			String line = result.getText();
-			if (line.matches(regex)) {
+			if (matcher.matches(line)) {
 				String[] splitted = line.split(",");
 
 				int id = Integer.parseInt(splitted[0]);
@@ -625,9 +636,9 @@ public class Deserialize {
 						objects.put(object);
 						debug("read " + object);
 					} else if (propObject == null) {
-						errorIdNone("TypeOuvertureNiveau", toId);
+						errorIdNone("TypeOuvertureMur", toId);
 					} else {
-						errorIdWrongType("TypeOuvertureNiveau", toId);
+						errorIdWrongType("TypeOuvertureMur", toId);
 					}
 				} catch (NumberFormatException e) {
 					errorParse(line, e);
@@ -648,15 +659,15 @@ public class Deserialize {
 		config.tui.begin();
 		ArrayList<Mur> murs = new ArrayList<>();
 
-		final String regex = String.join(",", REGEX_INT, REGEX_INT, REGEX_INT, REGEX_DOUBLE, REGEX_INT);
-		debug("regex: '" + regex + "'");
+		CsvRegexMatcher matcher = idCsvRegexMatcher("iidi");
+		debug("regex: '" + matcher.regex + "'");
 		for (
 			SmartReader.ReadResult result = sreader.readLine();
 			result.getState() == SmartReader.ReadState.LINE;
 			result = sreader.readLine()
 		) {
 			String line = result.getText();
-			if (line.matches(regex)) {
+			if (matcher.matches(line)) {
 				String[] splitted = line.split(",");
 
 				int id = Integer.parseInt(splitted[0]);
@@ -716,13 +727,13 @@ public class Deserialize {
 							String propType = propResult.getText().replaceFirst("PROP:", "");
 							debug("reading mur prop '" + TUI.blue(propType) + "'");
 							switch (propType) {
-								case "RevetementMur:1" -> {
+								case "revetements1" -> {
 									r1_list = revetementMursFromString(objects);
 								}
-								case "RevetementMur:2" -> {
+								case "revetements2" -> {
 									r2_list = revetementMursFromString(objects);
 								}
-								case "OuvertureMur" -> {
+								case "ouvertures" -> {
 									o_list = ouvertureMursFromString(objects);
 								}
 								default -> error("propriété du mur inconnue: '" + propResult.getText() + "'");
@@ -748,21 +759,21 @@ public class Deserialize {
 		return murs;
 	}
 
-	/// TypeOuvertureNiveau
-	private ArrayList<TypeOuvertureNiveau> typeOuvertureNiveauxFromString(Objects objects) throws IOException {
+	/// TypeOuvertureNiveaux
+	private ArrayList<TypeOuvertureNiveaux> typeOuvertureNiveauxFromString(Objects objects) throws IOException {
 		config.tui.diveWhere("TypeOuvertureNiveaux");
 		config.tui.begin();
-		ArrayList<TypeOuvertureNiveau> typeOuvertureNiveaux = new ArrayList<>();
+		ArrayList<TypeOuvertureNiveaux> typeOuvertureNiveaux = new ArrayList<>();
 
-		final String regex = String.join(",", REGEX_INT, REGEX_STRING, REGEX_STRING, REGEX_DOUBLE, REGEX_DOUBLE, REGEX_DOUBLE);
-		debug("regex: '" + regex + "'");
+		CsvRegexMatcher matcher = idCsvRegexMatcher("ssddd");
+		debug("regex: '" + matcher.regex + "'");
 		for (
 			SmartReader.ReadResult result = sreader.readLine();
 			result.getState() == SmartReader.ReadState.LINE;
 			result = sreader.readLine()
 		) {
 			String line = result.getText();
-			if (line.matches(regex)) {
+			if (matcher.matches(line)) {
 				String[] splitted = line.split(",");
 
 				int id = Integer.parseInt(splitted[0]);
@@ -776,7 +787,7 @@ public class Deserialize {
 					double largeur = Double.parseDouble(splitted[4]);
 					double prixUnitaire = Double.parseDouble(splitted[5]);
 
-					TypeOuvertureNiveau object = new TypeOuvertureNiveau(id, unescapeString(splitted[1]), unescapeString(splitted[2]), hauteur, largeur, prixUnitaire);
+					TypeOuvertureNiveaux object = new TypeOuvertureNiveaux(id, EscapeStrings.unescapeString(splitted[1]), EscapeStrings.unescapeString(splitted[2]), hauteur, largeur, prixUnitaire);
 					typeOuvertureNiveaux.add(object);
 					objects.put(object);
 					debug("read " + object);
@@ -799,15 +810,15 @@ public class Deserialize {
 		config.tui.begin();
 		ArrayList<RevetementPlafondSol> revetementPlafondSols = new ArrayList<>();
 
-		final String regex = String.join(",", REGEX_INT, REGEX_INT, REGEX_DOUBLE, REGEX_DOUBLE, REGEX_DOUBLE, REGEX_DOUBLE);
-		debug("regex: '" + regex + "'");
+		CsvRegexMatcher matcher = idCsvRegexMatcher("idddd");
+		debug("regex: '" + matcher.regex + "'");
 		for (
 			SmartReader.ReadResult result = sreader.readLine();
 			result.getState() == SmartReader.ReadState.LINE;
 			result = sreader.readLine()
 		) {
 			String line = result.getText();
-			if (line.matches(regex)) {
+			if (matcher.matches(line)) {
 				String[] splitted = line.split(",");
 
 				int id = Integer.parseInt(splitted[0]);
@@ -830,9 +841,9 @@ public class Deserialize {
 						objects.put(object);
 						debug("read " + object);
 					} else if (propObject == null) {
-						errorIdNone("TypeOuvertureNiveau", trId);
+						errorIdNone("TypeRevetement", trId);
 					} else {
-						errorIdWrongType("TypeOuvertureNiveau", trId);
+						errorIdWrongType("TypeRevetement", trId);
 					}
 				} catch (NumberFormatException e) {
 					errorParse(line, e);
@@ -853,15 +864,15 @@ public class Deserialize {
 		config.tui.begin();
 		ArrayList<OuvertureNiveaux> ouvertureNiveaux = new ArrayList<>();
 
-		final String regex = String.join(",", REGEX_INT, REGEX_INT, REGEX_INT, REGEX_INT);
-		debug("regex: '" + regex + "'");
+		CsvRegexMatcher matcher = idCsvRegexMatcher("iii");
+		debug("regex: '" + matcher.regex + "'");
 		for (
 			SmartReader.ReadResult result = sreader.readLine();
 			result.getState() == SmartReader.ReadState.LINE;
 			result = sreader.readLine()
 		) {
 			String line = result.getText();
-			if (line.matches(regex)) {
+			if (matcher.matches(line)) {
 				String[] splitted = line.split(",");
 
 				int id = Integer.parseInt(splitted[0]);
@@ -873,7 +884,7 @@ public class Deserialize {
 				try {
 					int toId = Integer.parseInt(splitted[1]);
 					SelectableId propObject = objects.get(toId);
-					if (propObject instanceof TypeOuvertureNiveau to) {
+					if (propObject instanceof TypeOuvertureNiveaux to) {
 						double p1l = Double.parseDouble(splitted[2]);
 						double p1h = Double.parseDouble(splitted[3]);
 
@@ -882,9 +893,9 @@ public class Deserialize {
 						objects.put(object);
 						debug("read " + object);
 					} else if (propObject == null) {
-						errorIdNone("TypeOuvertureNiveau", toId);
+						errorIdNone("TypeOuvertureNiveaux", toId);
 					} else {
-						errorIdWrongType("TypeOuvertureNiveau", toId);
+						errorIdWrongType("TypeOuvertureNiveaux", toId);
 					}
 				} catch (NumberFormatException e) {
 					errorParse(line, e);
@@ -905,15 +916,15 @@ public class Deserialize {
 		config.tui.begin();
 		ArrayList<PlafondSol> plafondSols = new ArrayList<>();
 
-		final String regex = String.join(",", REGEX_INT);
-		debug("regex: '" + regex + "'");
+		CsvRegexMatcher matcher = idCsvRegexMatcher("");
+		debug("regex: '" + matcher.regex + "'");
 		for (
 			SmartReader.ReadResult result = sreader.readLine();
 			result.getState() == SmartReader.ReadState.LINE;
 			result = sreader.readLine()
 		) {
 			String line = result.getText();
-			if (line.matches(regex)) {
+			if (matcher.matches(line)) {
 				String[] splitted = line.split(",");
 
 				try {
@@ -935,10 +946,10 @@ public class Deserialize {
 						String propType = propResult.getText().replaceFirst("PROP:", "");
 						debug("reading plafondSol prop '" + TUI.blue(propType) + "'");
 						switch (propType) {
-							case "RevetementPlafondSol" -> {
+							case "revetements" -> {
 								r_list = revetementPlafondSolsFromString(objects);
 							}
-							case "OuvertureNiveaux" -> {
+							case "ouvertures" -> {
 								o_list = ouvertureNiveauxFromString(objects);
 							}
 							default -> error("propriété du plafondSol inconnue: '" + propResult.getText() + "'");
@@ -969,15 +980,15 @@ public class Deserialize {
 		config.tui.begin();
 		ArrayList<Piece> pieces = new ArrayList<>();
 
-		final String regex = String.join(",", REGEX_INT, REGEX_STRING, REGEX_STRING);
-		debug("regex: '" + regex + "'");
+		CsvRegexMatcher matcher = idCsvRegexMatcher("ss");
+		debug("regex: '" + matcher.regex + "'");
 		for (
 			SmartReader.ReadResult result = sreader.readLine();
 			result.getState() == SmartReader.ReadState.LINE;
 			result = sreader.readLine()
 		) {
 			String line = result.getText();
-			if (line.matches(regex)) {
+			if (matcher.matches(line)) {
 				String[] splitted = line.split(",");
 
 				int id = Integer.parseInt(splitted[0]);
@@ -1010,7 +1021,9 @@ public class Deserialize {
 							SmartReader.ReadResult pointsResult = sreader.readLine();
 							if (pointsResult.getState() == SmartReader.ReadState.LINE) {
 								String text = pointsResult.getText();
-								if (text.matches(REGEX_INT + "(," + REGEX_INT + ")*")) {
+								CsvRegexMatcher propMatcher = new CsvRegexMatcher("I");
+								debug("points: regex: '" + propMatcher.regex + "'");
+								if (propMatcher.matches(text)) {
 									String[] pointsIds = text.split(",");
 									for (String each: pointsIds) {
 										try {
@@ -1038,7 +1051,9 @@ public class Deserialize {
 							SmartReader.ReadResult mursResult = sreader.readLine();
 							if (mursResult.getState() == SmartReader.ReadState.LINE) {
 								String text = mursResult.getText();
-								if (text.matches(REGEX_INT + "(," + REGEX_INT + ")*")) {
+								CsvRegexMatcher propMatcher = new CsvRegexMatcher("I");
+								debug("murs: regex: '" + propMatcher.regex + "'");
+								if (propMatcher.matches(text)) {
 									String[] mursIds = text.split(",");
 									for (String each: mursIds) {
 										try {
@@ -1089,7 +1104,7 @@ public class Deserialize {
 				}
 				config.tui.popWhere();
 
-				Piece object = new Piece(id, unescapeString(splitted[1]), unescapeString(splitted[2]), points, murs, plafond, sol);
+				Piece object = new Piece(id, EscapeStrings.unescapeString(splitted[1]), EscapeStrings.unescapeString(splitted[2]), points, murs, plafond, sol);
 				pieces.add(object);
 				objects.put(object);
 				debug("read " + object);
@@ -1109,15 +1124,15 @@ public class Deserialize {
 		config.tui.begin();
 		ArrayList<TypeAppart> typeApparts = new ArrayList<>();
 
-		final String regex = String.join(",", REGEX_INT, REGEX_STRING, REGEX_STRING);
-		debug("regex: '" + regex + "'");
+		CsvRegexMatcher matcher = idCsvRegexMatcher("ss");
+		debug("regex: '" + matcher.regex + "'");
 		for (
 			SmartReader.ReadResult result = sreader.readLine();
 			result.getState() == SmartReader.ReadState.LINE;
 			result = sreader.readLine()
 		) {
 			String line = result.getText();
-			if (line.matches(regex)) {
+			if (matcher.matches(line)) {
 				String[] splitted = line.split(",");
 
 				int id = Integer.parseInt(splitted[0]);
@@ -1127,7 +1142,7 @@ public class Deserialize {
 				}
 
 				try {
-					TypeAppart object = new TypeAppart(id, unescapeString(splitted[1]), unescapeString(splitted[2]));
+					TypeAppart object = new TypeAppart(id, EscapeStrings.unescapeString(splitted[1]), EscapeStrings.unescapeString(splitted[2]));
 					typeApparts.add(object);
 					objects.put(object);
 					debug("read " + object);
@@ -1150,15 +1165,15 @@ public class Deserialize {
 		config.tui.begin();
 		ArrayList<Appart> apparts = new ArrayList<>();
 
-		final String regex = String.join(",", REGEX_INT, REGEX_STRING, REGEX_STRING, REGEX_INT);
-		debug("regex: '" + regex + "'");
+		CsvRegexMatcher matcher = idCsvRegexMatcher("ssi");
+		debug("regex: '" + matcher.regex + "'");
 		for (
 			SmartReader.ReadResult result = sreader.readLine();
 			result.getState() == SmartReader.ReadState.LINE;
 			result = sreader.readLine()
 		) {
 			String line = result.getText();
-			if (line.matches(regex)) {
+			if (matcher.matches(line)) {
 				String[] splitted = line.split(",");
 
 				int id = Integer.parseInt(splitted[0]);
@@ -1187,7 +1202,9 @@ public class Deserialize {
 									SmartReader.ReadResult piecesResult = sreader.readLine();
 									if (piecesResult.getState() == SmartReader.ReadState.LINE) {
 										String text = piecesResult.getText();
-										if (text.matches(REGEX_INT + "(," + REGEX_INT + ")*")) {
+										CsvRegexMatcher propMatcher = new CsvRegexMatcher("I");
+										debug("pieces: regex: '" + propMatcher.regex + "'");
+										if (propMatcher.matches(text)) {
 											String[] piecesIds = text.split(",");
 											for (String each: piecesIds) {
 												try {
@@ -1215,7 +1232,7 @@ public class Deserialize {
 							}
 						}
 
-						Appart object = new Appart(id, unescapeString(splitted[1]), unescapeString(splitted[2]), pieces, ta);
+						Appart object = new Appart(id, EscapeStrings.unescapeString(splitted[1]), EscapeStrings.unescapeString(splitted[2]), pieces, ta);
 						apparts.add(object);
 						objects.put(object);
 						debug("read " + object);
@@ -1245,15 +1262,15 @@ public class Deserialize {
 		config.tui.begin();
 		ArrayList<Niveau> niveaux = new ArrayList<>();
 
-		final String regex = String.join(",", REGEX_INT, REGEX_STRING, REGEX_STRING, REGEX_DOUBLE);
-		debug("regex: '" + regex + "'");
+		CsvRegexMatcher matcher = idCsvRegexMatcher("ssd");
+		debug("regex: '" + matcher.regex + "'");
 		for (
 			SmartReader.ReadResult result = sreader.readLine();
 			result.getState() == SmartReader.ReadState.LINE;
 			result = sreader.readLine()
 		) {
 			String line = result.getText();
-			if (line.matches(regex)) {
+			if (matcher.matches(line)) {
 				String[] splitted = line.split(",");
 
 				int id = Integer.parseInt(splitted[0]);
@@ -1283,7 +1300,9 @@ public class Deserialize {
 								SmartReader.ReadResult appartsResult = sreader.readLine();
 								if (appartsResult.getState() == SmartReader.ReadState.LINE) {
 									String text = appartsResult.getText();
-									if (text.matches(REGEX_INT + "(," + REGEX_INT + ")*")) {
+									CsvRegexMatcher propMatcher = new CsvRegexMatcher("I");
+									debug("apparts: regex: '" + propMatcher.regex + "'");
+									if (propMatcher.matches(text)) {
 										String[] appartsIds = text.split(",");
 										for (String each: appartsIds) {
 											try {
@@ -1311,7 +1330,9 @@ public class Deserialize {
 								SmartReader.ReadResult piecesResult = sreader.readLine();
 								if (piecesResult.getState() == SmartReader.ReadState.LINE) {
 									String text = piecesResult.getText();
-									if (text.matches(REGEX_INT + "(," + REGEX_INT + ")*")) {
+									CsvRegexMatcher propMatcher = new CsvRegexMatcher("I");
+									debug("pieces: regex: '" + propMatcher.regex + "'");
+									if (propMatcher.matches(text)) {
 										String[] piecesIds = text.split(",");
 										for (String each: piecesIds) {
 											try {
@@ -1339,7 +1360,9 @@ public class Deserialize {
 								SmartReader.ReadResult orpheansResult = sreader.readLine();
 								if (orpheansResult.getState() == SmartReader.ReadState.LINE) {
 									String text = orpheansResult.getText();
-									if (text.matches(REGEX_INT + "(," + REGEX_INT + ")*")) {
+									CsvRegexMatcher propMatcher = new CsvRegexMatcher("I");
+									debug("orpheans: regex: '" + propMatcher.regex + "'");
+									if (propMatcher.matches(text)) {
 										String[] orpheansIds = text.split(",");
 										for (String each: orpheansIds) {
 											try {
@@ -1368,7 +1391,7 @@ public class Deserialize {
 					}
 					config.tui.popWhere();
 
-					Niveau object = new Niveau(id, unescapeString(splitted[1]), unescapeString(splitted[2]), hauteur, pieces, apparts, orpheans);
+					Niveau object = new Niveau(id, EscapeStrings.unescapeString(splitted[1]), EscapeStrings.unescapeString(splitted[2]), hauteur, pieces, apparts, orpheans);
 					niveaux.add(object);
 					objects.put(object);
 					debug("read " + object);
@@ -1391,15 +1414,15 @@ public class Deserialize {
 		config.tui.begin();
 		ArrayList<TypeBatiment> typeBatiments = new ArrayList<>();
 
-		final String regex = String.join(",", REGEX_INT, REGEX_STRING, REGEX_STRING);
-		debug("regex: '" + regex + "'");
+		CsvRegexMatcher matcher = idCsvRegexMatcher("ss");
+		debug("regex: '" + matcher.regex + "'");
 		for (
 			SmartReader.ReadResult result = sreader.readLine();
 			result.getState() == SmartReader.ReadState.LINE;
 			result = sreader.readLine()
 		) {
 			String line = result.getText();
-			if (line.matches(regex)) {
+			if (matcher.matches(line)) {
 				String[] splitted = line.split(",");
 
 				int id = Integer.parseInt(splitted[0]);
@@ -1409,7 +1432,7 @@ public class Deserialize {
 				}
 
 				try {
-					TypeBatiment object = new TypeBatiment(id, unescapeString(splitted[1]), unescapeString(splitted[2]));
+					TypeBatiment object = new TypeBatiment(id, EscapeStrings.unescapeString(splitted[1]), EscapeStrings.unescapeString(splitted[2]));
 					typeBatiments.add(object);
 					objects.put(object);
 					debug("read " + object);
@@ -1432,15 +1455,15 @@ public class Deserialize {
 		config.tui.begin();
 		ArrayList<Batiment> batiments = new ArrayList<>();
 
-		final String regex = String.join(",", REGEX_INT, REGEX_STRING, REGEX_STRING, REGEX_STRING); // TODO: typeBatiment (VALUE->id)
-		debug("regex: '" + regex + "'");
+		CsvRegexMatcher matcher = idCsvRegexMatcher("ssi");
+		debug("regex: '" + matcher.regex + "'");
 		for (
 			SmartReader.ReadResult result = sreader.readLine();
 			result.getState() == SmartReader.ReadState.LINE;
 			result = sreader.readLine()
 		) {
 			String line = result.getText();
-			if (line.matches(regex)) {
+			if (matcher.matches(line)) {
 				String[] splitted = line.split(",");
 
 				int id = Integer.parseInt(splitted[0]);
@@ -1470,7 +1493,9 @@ public class Deserialize {
 									SmartReader.ReadResult appartsResult = sreader.readLine();
 									if (appartsResult.getState() == SmartReader.ReadState.LINE) {
 										String text = appartsResult.getText();
-										if (text.matches(REGEX_INT + "(," + REGEX_INT + ")*")) {
+										CsvRegexMatcher propMatcher = new CsvRegexMatcher("I");
+										debug("apparts: regex: '" + propMatcher.regex + "'");
+										if (propMatcher.matches(text)) {
 											String[] appartsIds = text.split(",");
 											for (String each: appartsIds) {
 												try {
@@ -1498,7 +1523,9 @@ public class Deserialize {
 									SmartReader.ReadResult niveauxResult = sreader.readLine();
 									if (niveauxResult.getState() == SmartReader.ReadState.LINE) {
 										String text = niveauxResult.getText();
-										if (text.matches(REGEX_INT + "(," + REGEX_INT + ")*")) {
+										CsvRegexMatcher propMatcher = new CsvRegexMatcher("I");
+										debug("niveaux: regex: '" + propMatcher.regex + "'");
+										if (propMatcher.matches(text)) {
 											String[] niveauxIds = text.split(",");
 											for (String each: niveauxIds) {
 												try {
@@ -1526,7 +1553,7 @@ public class Deserialize {
 							}
 						}
 
-						Batiment object = new Batiment(id, unescapeString(splitted[1]), unescapeString(splitted[2]), tb, niveaux, apparts);
+						Batiment object = new Batiment(id, EscapeStrings.unescapeString(splitted[1]), EscapeStrings.unescapeString(splitted[2]), tb, niveaux, apparts);
 						batiments.add(object);
 						objects.put(object);
 						debug("read " + object);
@@ -1548,5 +1575,93 @@ public class Deserialize {
 		config.tui.ended();
 		config.tui.popWhere();
 		return batiments;
+	}
+
+	/// Devis
+	private ArrayList<Devis> devisFromString (Objects objects) throws IOException {
+		config.tui.diveWhere("Devis");
+		config.tui.begin();
+		ArrayList<Devis> devis = new ArrayList<>();
+
+		CsvRegexMatcher matcher = idCsvRegexMatcher("ss");
+		debug("regex: '" + matcher.regex + "'");
+		for (
+			SmartReader.ReadResult result = sreader.readLine();
+			result.getState() == SmartReader.ReadState.LINE;
+			result = sreader.readLine()
+		) {
+			String line = result.getText();
+			if (matcher.matches(line)) {
+				String[] splitted = line.split(",");
+
+				int id = Integer.parseInt(splitted[0]);
+
+				if (objects.get(id) != null) {
+					errorIdAgain(id);
+				}
+
+				try {
+					// lire les propriétés directes du devis
+					HashSet<HasPrice> studiedObjects = new HashSet<>();
+					config.tui.diveWhere("props");
+					for (
+						SmartReader.ReadResult propResult = sreader.readLine();
+						propResult.getState() == SmartReader.ReadState.LINE;
+						propResult = sreader.readLine()
+					) {
+						String propType = propResult.getText().replaceFirst("PROP:", "");
+						debug("reading devis prop '" + TUI.blue(propType) + "'");
+						switch (propType) {
+							case "objects" -> {
+								SmartReader.ReadResult studiedResult = sreader.readLine();
+								if (studiedResult.getState() == SmartReader.ReadState.LINE) {
+									String text = studiedResult.getText();
+									CsvRegexMatcher propMatcher = new CsvRegexMatcher("I");
+									debug("objects: regex: '" + propMatcher.regex + "'");
+									if (propMatcher.matches(text)) {
+										String[] studiedIds = text.split(",");
+										for (String each: studiedIds) {
+											try {
+												int eachId = Integer.parseInt(each);
+												SelectableId propObject = objects.get(eachId);
+												if (propObject instanceof HasPrice priced) {
+													studiedObjects.add(priced);
+												} else if (propObject == null) {
+													errorIdNone("HasPrice", eachId);
+												} else {
+													errorIdWrongType("HasPrice", eachId);
+												}
+											} catch (NumberFormatException e) {
+												errorParse(line, e);
+											}
+										}
+									} else {
+										errorSyntax(text);
+									}
+								} else {
+									error("LINE expected but received " + result.getState() + " when reading studiedObjects for Devis");
+								}
+							}
+							default -> error("propriété du devis inconnue: '" + propResult.getText() + "'");
+						}
+					}
+
+					Devis object = new Devis(id, EscapeStrings.unescapeString(splitted[1]), EscapeStrings.unescapeString(splitted[2]), studiedObjects);
+					devis.add(object);
+					objects.put(object);
+					debug("read " + object);
+
+					config.tui.popWhere();
+				} catch (NumberFormatException e) {
+					errorParse(line, e);
+				}
+			} else {
+				errorSyntax(line);
+			}
+		}
+
+		config.tui.ended();
+		config.tui.popWhere();
+		return devis;
 	}
 }

@@ -82,7 +82,7 @@ public class SidePane extends TabPane {
 				case TypeOuvertureMur typeOuvertureMur -> {
 					setSelectionTab(new TypeOuvertureMurEditor(config, typeOuvertureMur));
 				}
-				case TypeOuvertureNiveau typeOuvertureNiveau -> {
+				case TypeOuvertureNiveaux typeOuvertureNiveau -> {
 					setSelectionTab(new TypeOuvertureNiveauEditor(config, typeOuvertureNiveau));
 				}
 				case TypeRevetement typeOuvertureNiveau -> {
@@ -91,6 +91,10 @@ public class SidePane extends TabPane {
 
 				case Project project -> {
 					setSelectionTab(new ProjectEditor(config, project));
+				}
+
+				case Devis devis -> {
+					addDevis(devis);
 				}
 
 				case null -> {

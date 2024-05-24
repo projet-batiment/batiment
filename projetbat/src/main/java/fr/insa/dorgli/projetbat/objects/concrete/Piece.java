@@ -7,7 +7,9 @@ import fr.insa.dorgli.projetbat.utils.FancyToStrings;
 import fr.insa.dorgli.projetbat.objects.Deserialize;
 import fr.insa.dorgli.projetbat.objects.Devis;
 import fr.insa.dorgli.projetbat.objects.NameDesc;
+import fr.insa.dorgli.projetbat.objects.Serialize;
 import fr.insa.dorgli.projetbat.ui.gui.DrawingContext;
+import fr.insa.dorgli.projetbat.utils.EscapeStrings;
 import java.util.ArrayList;
 import java.util.Collection;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
@@ -174,11 +176,41 @@ public class Piece extends DrawablePath implements HasInnerPrice, NameDesc {
         	    .getValue();
 	}
 
+	@Override
+	public void serialize(Serialize serializer) {
+		serializer.csv(
+		    super.getId(),
+		    nom,
+		    description
+		);
+
+		if (!murs.isEmpty()) {
+			serializer.prop("murs");
+			serializer.csv(murs.stream().map(each -> (int) each.getId()));
+		}
+		if (!points.isEmpty()) {
+			serializer.prop("points");
+			serializer.csv(points.stream().map(each -> (int) each.getId()));
+		}
+		if (plafond != null) {
+			serializer.innerProp("plafond");
+			plafond.serialize(serializer);
+			serializer.eos();
+		}
+		if (sol != null) {
+			serializer.innerProp("sol");
+			sol.serialize(serializer);
+			serializer.eos();
+		}
+
+		serializer.eoEntry();
+	}
+
 	public String serialize(Objects objects) {
 		String out = String.join(",",
 		    String.valueOf(super.getId()),
-		    Deserialize.escapeString(nom),
-		    Deserialize.escapeString(description)
+		    EscapeStrings.escapeString(nom),
+		    EscapeStrings.escapeString(description)
 		) + "\n";
 
 		if (!points.isEmpty()) {

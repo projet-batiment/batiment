@@ -26,6 +26,7 @@ public abstract class SelectableId extends FancyToStrings {
 	};
 
 	public abstract String serialize(Objects objects);
+	public abstract void serialize(Serialize serializer);
 
 	@Override
 	public String toStringShort() {

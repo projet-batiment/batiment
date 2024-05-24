@@ -3,6 +3,7 @@ package fr.insa.dorgli.projetbat.objects;
 import fr.insa.dorgli.projetbat.utils.FancyToStrings;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 import java.util.HashSet;
+import java.util.stream.Collectors;
 
 public class Devis extends SelectableId implements NameDesc, HasPrice {
 	private String nom;
@@ -46,6 +47,17 @@ public class Devis extends SelectableId implements NameDesc, HasPrice {
 		this.prixDevis = 0;
 	}
 
+	public Devis(int id, String nom, String description, HashSet<HasPrice> studiedObjects) throws IllegalArgumentException {
+		super(id);
+
+		// this could potentially fail
+		setStudiedObject(studiedObjects);
+
+		this.nom = nom;
+		this.description = description;
+		this.prixDevis = 0;
+	}
+
 	@Override
 	public String getNom() {
 		return nom;
@@ -76,11 +88,11 @@ public class Devis extends SelectableId implements NameDesc, HasPrice {
 		} else {
 			String ourShortStrings = asFancyToStrings().stream()
 			    .map(each -> each.toStringShort())
-			    .reduce(", ", String::concat);
+			    .collect(Collectors.joining(","));
 
 			String theirShortStrings = asFancyToStrings(studiedObjects).stream()
 			    .map(each -> each.toStringShort())
-			    .reduce(", ", String::concat);
+			    .collect(Collectors.joining(","));
 
 			throw new IllegalArgumentException("Already got a studiedObjects: [ "
 			    + ourShortStrings + " ] != null ( [ " + theirShortStrings + " ] )");
@@ -102,6 +114,22 @@ public class Devis extends SelectableId implements NameDesc, HasPrice {
 		    .fieldShortCollection("studiedObject", asFancyToStrings())
 		    .field("studiedObject price", prixToString())
         	    .getValue();
+	}
+
+	@Override
+	public void serialize(Serialize serializer) {
+		serializer.csv(
+		    super.getId(),
+		    nom,
+		    description
+		);
+
+		if (!studiedObjects.isEmpty()) {
+			serializer.prop("objects");
+			serializer.csv(studiedObjects.stream().map(each -> (int) ((SelectableId) each).getId()));
+		}
+
+		serializer.eoEntry();
 	}
 
 	@Override
@@ -151,11 +179,21 @@ public class Devis extends SelectableId implements NameDesc, HasPrice {
 
 	@Override
 	public final void addChildren(BObject... objects) {
-		throw new IllegalAccessError("Shouldn't call Devis.addChildren()");
+		for (BObject each: objects) {
+			if (each instanceof HasPrice priced) {
+				studiedObjects.add(priced);
+				each.addParents(this);
+			}
+		}
 	}
 
 	@Override
 	public void removeChildren(BObject... objects) {
-		throw new IllegalAccessError("Shouldn't call Devis.removeChildren()");
+		for (BObject each: objects) {
+			if (each instanceof HasPrice priced) {
+				studiedObjects.remove(priced);
+				each.addParents(this);
+			}
+		}
 	}
 }

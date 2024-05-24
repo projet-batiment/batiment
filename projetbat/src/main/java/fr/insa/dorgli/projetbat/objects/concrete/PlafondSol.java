@@ -3,6 +3,7 @@ package fr.insa.dorgli.projetbat.objects.concrete;
 import fr.insa.dorgli.projetbat.objects.BObject;
 import fr.insa.dorgli.projetbat.objects.HasPrice;
 import fr.insa.dorgli.projetbat.objects.Objects;
+import fr.insa.dorgli.projetbat.objects.Serialize;
 import fr.insa.dorgli.projetbat.utils.FancyToStrings;
 import fr.insa.dorgli.projetbat.ui.gui.DrawingContext;
 import java.util.ArrayList;
@@ -81,6 +82,28 @@ public class PlafondSol extends Drawable implements HasPrice {
 		    .fieldShortCollection("revetements", (Collection<FancyToStrings>) ((ArrayList<?>) revetements))
 		    .fieldShortCollection("ouvertures", (Collection<FancyToStrings>) ((ArrayList<?>) ouvertures))
         	    .getValue();
+	}
+
+	@Override
+	public void serialize(Serialize serializer) {
+		serializer.csv(
+		    super.getId()
+		);
+
+		if (!revetements.isEmpty()) {
+			serializer.innerProp("revetements");
+			for (RevetementPlafondSol r: revetements)
+				r.serialize(serializer);
+			serializer.eos();
+		}
+		if (!ouvertures.isEmpty()) {
+			serializer.innerProp("ouvertures");
+			for (OuvertureNiveaux r: ouvertures)
+				r.serialize(serializer);
+			serializer.eos();
+		}
+
+		serializer.eoEntry();
 	}
 
 	public String serialize(Objects objects) {

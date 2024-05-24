@@ -7,14 +7,26 @@ import fr.insa.dorgli.projetbat.objects.HasInnerPrice;
 import fr.insa.dorgli.projetbat.objects.NameDesc;
 import fr.insa.dorgli.projetbat.objects.Objects;
 import fr.insa.dorgli.projetbat.objects.SelectableId;
+import fr.insa.dorgli.projetbat.objects.Serialize;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
+import java.io.File;
 
 public class Project extends SelectableId implements HasInnerPrice, NameDesc {
-	public Objects objects = new Objects();
+	public Objects objects;
 
-	public String projectName = new String();
-	public String projectDescription = new String();
-	public String savefilePath = new String();
+	public String projectName;
+	public String projectDescription;
+	public File file;
+	public String savefilePath;
+
+	public Project() {
+		super(0);
+
+		objects = new Objects();
+		projectName = new String();
+		projectDescription = new String();
+		file = null;
+	}
 
 	@Override
 	public String toStringShort() {
@@ -26,6 +38,7 @@ public class Project extends SelectableId implements HasInnerPrice, NameDesc {
 		return new StructuredToString.OfFancyToStrings(depth, this, indentFirst)
 		    .textField("projectName", projectName)
 		    .textField("projectDescription", projectDescription)
+		    .textField("file", file == null ? "(null)" : file.getPath())
         	    .getValue();
 	}
 
@@ -75,9 +88,28 @@ public class Project extends SelectableId implements HasInnerPrice, NameDesc {
 	}
 
 	@Override
+	public void serialize(Serialize serializer) {
+		serializer.section("FILE");
+		serializer.csv("version", Config.maximumSavefileVersion);
+		serializer.csv("projectName", projectName);
+		serializer.csv("projectDescription", projectDescription);
+		serializer.eos();
+
+		objects.serialize(serializer);
+
+		SelectableId currentBatiment = serializer.config.controller.state.getCurrentBatiment();
+		SelectableId viewRootElement = serializer.config.controller.state.getViewRootElement();
+		int batimentId = currentBatiment == null ? -1 : currentBatiment.getId();
+		int viewRootId = viewRootElement == null ? -1 : viewRootElement.getId();
+
+		serializer.section("FILE");
+		serializer.csv("last view", batimentId, viewRootId);
+		serializer.eos();
+	}
+
+	@Override
 	public String serialize(Objects objects) {
-		// TODO
-		throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+		return "";
 	}
 
 	@Override

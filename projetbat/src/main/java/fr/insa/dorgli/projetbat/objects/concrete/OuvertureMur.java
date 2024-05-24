@@ -2,6 +2,7 @@ package fr.insa.dorgli.projetbat.objects.concrete;
 
 import fr.insa.dorgli.projetbat.objects.BObject;
 import fr.insa.dorgli.projetbat.objects.Objects;
+import fr.insa.dorgli.projetbat.objects.Serialize;
 import fr.insa.dorgli.projetbat.objects.types.TypeOuvertureMur;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 import fr.insa.dorgli.projetbat.ui.gui.DrawingContext;
@@ -66,6 +67,10 @@ public class OuvertureMur extends Drawable {
 	@Override
 	public void draw(DrawingContext ctxt, DrawingContext.ObjectState ostate) {
 		ctxt.tui().error("ouvertureMur.draw: cannot draw ouvertureMur");
+	}
+
+	@Override
+	public void serialize(Serialize serializer) {
 	}
 
 	public String serialize(Objects objects) {

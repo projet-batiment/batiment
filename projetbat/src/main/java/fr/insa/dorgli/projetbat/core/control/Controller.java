@@ -11,14 +11,16 @@ import fr.insa.dorgli.projetbat.ui.TUI;
 import fr.insa.dorgli.projetbat.ui.gui.popups.ChooseFromList;
 import java.awt.geom.Point2D;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 
@@ -36,27 +38,60 @@ public class Controller {
 	public void openFile() {
 		config.tui.diveWhere("controller:openFile");
 
+		if (config.project instanceof Project project && ! project.objects.getAll().isEmpty()) {
+			Alert alert = new Alert(AlertType.CONFIRMATION);
+			alert.setTitle("Ouvrir un fichier");
+			alert.setHeaderText("Ouvrir un fichier fermera le projet actuel sans le sauvegarder.");
+			alert.setContentText("Continuer quand même ?");
+
+			Optional<ButtonType> result = alert.showAndWait();
+			if (result.isPresent() && result.get() != ButtonType.OK)
+				return;
+		}
+
 		FileChooser fileChooser = new FileChooser();
-		File f = fileChooser.showOpenDialog(config.getMainStage());
-		if (f != null) {
-			Deserialize.Result result = new Deserialize(config).deserializeFile(f);
+		fileChooser.setTitle("Ouvrir un fichier...");
+		fileChooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("Fichier BATM", "*.batm"));
+
+		File saveFile = fileChooser.showOpenDialog(config.getMainStage());
+		if (saveFile != null) {
+			Deserialize.Result result = new Deserialize(config).deserializeFile(saveFile);
 			switch (result.status) {
 				case SUCCESS -> {
 					config.project = result.project;
+					config.project.file = saveFile;
 					config.tui.log("successfully loaded the project!");
 
-					// TODOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 					state.setViewRootElement(result.project.viewRootElement);
 					state.setCurrentBatiment(result.project.currentBatiment);
 
-					config.getMainWindow().getCanvasContainer().moveView(Direction.FIT); // implies a redraw
+					redrawCanvasFit();
+					updateBottomBar();
+					updateSidePaneSelection();
 				}
 
 				case FILE_NOT_FOUND -> {
 					Alert alert = new Alert(AlertType.ERROR);
 					alert.setTitle("Fichier introuvable");
-					alert.setHeaderText("Le fichier indéqué n'existe pas !");
-					alert.setContentText(f.toString());
+					alert.setHeaderText("Le fichier '" + saveFile.getName() + "' n'existe pas !");
+					alert.setContentText(saveFile.getPath());
+
+					alert.showAndWait();
+				}
+
+				case FILE_TOO_OLD -> {
+					Alert alert = new Alert(AlertType.ERROR);
+					alert.setTitle("Fichier incompatible");
+					alert.setHeaderText("Le fichier '" + saveFile.getName() + "' utilise un format trop ancien !");
+					alert.setContentText("C'est un problème... Essayez de réinstaller une version plus ancienne de " + Config.applicationName + ".\n(" + result.project.loadedVersion + " < " + Config.minimumSavefileVersion + ")");
+
+					alert.showAndWait();
+				}
+				case FILE_TOO_RECENT -> {
+					Alert alert = new Alert(AlertType.ERROR);
+					alert.setTitle("Fichier incompatible");
+					alert.setHeaderText("Le fichier '" + saveFile.getName() + "' utilise un format trop récent !");
+					alert.setContentText("Mettez " + Config.applicationName + " à jour pour utiliser ce fichier.\n(" + result.project.loadedVersion + " > " + Config.maximumSavefileVersion + ")");
 
 					alert.showAndWait();
 				}
@@ -66,7 +101,7 @@ public class Controller {
 					alert.setTitle("Erreur de lecture");
 					alert.setHeaderText("Le fichier de sauvegarde spécifié est erroné !");
 
-					String errorMessages = "Le fichier n'a pas pu être lu pour les raisons suivantes :";
+					String errorMessages = "Le fichier n'a pas pu être lu pour les " + result.messages.length + " raisons suivantes :";
 					for (int i = 0; i < result.messages.length; i++) {
 						errorMessages += "\n" + (i+1) + ") " + result.messages[i];
 					}
@@ -80,7 +115,7 @@ public class Controller {
 
 					Alert alert = new Alert(AlertType.ERROR);
 					alert.setTitle("Erreur inattendue");
-					alert.setHeaderText("Une erreur inattendue est survennue");
+					alert.setHeaderText("Une erreur inattendue est survennue lors de la lecture du fichier :");
 					alert.setContentText(result.exception.getMessage());
 
 					alert.showAndWait();
@@ -91,23 +126,79 @@ public class Controller {
 				config.tui.error("deserialization failed");
 				config.tui.clearErrCounter();
 			}
+		} else {
+			config.tui.log("aucun fichier de sauvegarde spécifié: lecture annulée");
 		}
 
 		config.tui.popWhere();
 	}
 
+	private void saveFile(File saveFile) {
+		if (saveFile == null) {
+			FileChooser fileChooser = new FileChooser();
+			fileChooser.setTitle("Enregistrer le projet sous...");
+			fileChooser.setInitialFileName(config.project.getNom() + ".batm");
+			fileChooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("Fichier BATM", "*.batm"));
+
+			saveFile = fileChooser.showSaveDialog(config.getMainStage());
+		}
+
+		if (saveFile != null) {
+			try {
+				Serialize serializer = new Serialize(saveFile, config);
+				config.project.serialize(serializer);
+				serializer.end();
+
+				if (serializer.getIoErrorCounter() > 0) {
+					config.tui.error(serializer.getIoErrorCounter() + " IOExceptions were encountered during the serialization");
+
+					Alert alert = new Alert(AlertType.ERROR);
+					alert.setTitle("Erreur d'écriture");
+					alert.setHeaderText("Le fichier n'a pas pu être écrit correctement.");
+					alert.showAndWait();
+				} else {
+					config.tui.log("saveFileAs: sauvegarde terminée avec succès");
+					config.project.file = saveFile;
+				}
+			} catch (IOException ex) {
+				config.tui.error("failed to create serializer: " + ex.getMessage());
+			} catch (Exception ex) {
+				ex.printStackTrace(System.out);
+
+				Alert alert = new Alert(AlertType.ERROR);
+				alert.setTitle("Erreur inattendue");
+				alert.setHeaderText("Une erreur inattendue est survennue lors de la sauvegarde :");
+				alert.setContentText(ex.getMessage());
+
+				alert.showAndWait();
+			}
+		}
+	}
+
 	public void saveFile() {
-		config.tui.log("saveFile: echoing the savefile:");
+		saveFile(config.project.file);
+	}
 
-		String out = "FILE\n"
-		    + "version:" + Config.maximumSavefileVersion + "\n"
-		    + "projectName:" + config.project.projectName + "\n"
-		    + "projectDescription:" + config.project.projectDescription + "\n"
-		    + "EOS:FILE\n\n"
-		;
+	public void saveFileAs() {
+		saveFile(null);
+	}
 
-		out += config.project.objects.serialize();
-		config.tui.println(out);
+	public void newProject() {
+		if (config.project instanceof Project project && ! project.objects.getAll().isEmpty()) {
+			Alert alert = new Alert(AlertType.CONFIRMATION);
+			alert.setTitle("Nouveau projet");
+			alert.setHeaderText("Créer un nouveau projet fermera le projet actuel sans le sauvegarder.");
+			alert.setContentText("Continuer quand même ?");
+
+			Optional<ButtonType> result = alert.showAndWait();
+			if (result.isPresent() && result.get() != ButtonType.OK)
+				return;
+		}
+
+		config.project = new Project();
+		redrawCanvasFit();
+		updateBottomBar();
+		updateSidePaneSelection();
 	}
 
 	public void moveCanvasView(Direction direction) {
@@ -261,6 +352,7 @@ public class Controller {
 		    .filter((SelectableId each) -> each instanceof HasPrice).collect(Collectors.toSet()) );
 
 		Devis devis = new Devis(havePrice);
+		config.project.objects.put(devis);
 		config.tui.log("controller: selecting new devis " + devis.toStringShort() + " now");
 		state.addDevis(devis);
 	}
@@ -485,6 +577,9 @@ public class Controller {
 
 	public void redrawCanvas() {
 		config.getMainWindow().getCanvasContainer().redraw();
+	}
+	public void redrawCanvasFit() {
+		config.getMainWindow().getCanvasContainer().moveView(Direction.FIT);
 	}
 	public void updateSidePaneSelection() {
 		config.getMainWindow().getSidePane().updateSelection();

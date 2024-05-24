@@ -6,7 +6,6 @@ import fr.insa.dorgli.projetbat.objects.concrete.Mur;
 import fr.insa.dorgli.projetbat.objects.concrete.Piece;
 import fr.insa.dorgli.projetbat.objects.concrete.PlafondSol;
 import fr.insa.dorgli.projetbat.ui.gui.sidepane.components.ButtonnedListComponent;
-import fr.insa.dorgli.projetbat.ui.gui.sidepane.components.IcedListComponent;
 import fr.insa.dorgli.projetbat.ui.gui.sidepane.components.WrapLabel;
 import java.util.Collection;
 import java.util.HashSet;

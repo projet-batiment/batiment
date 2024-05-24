@@ -24,32 +24,93 @@ public class Objects {
 	private final HashSet<RevetementMur> revetementsMur = new HashSet<>();
 	private final HashSet<RevetementPlafondSol> revetementsPlafondSol = new HashSet<>();
 
+	private final HashSet<TypeBatiment> typesBatiment = new HashSet<>();
+	private final HashSet<TypeAppart> typesAppart = new HashSet<>();
 	private final HashSet<TypeMur> typesMur = new HashSet<>();
 	private final HashSet<TypeOuvertureMur> typesOuverturesMur = new HashSet<>();
-	private final HashSet<TypeOuvertureNiveau> typesOuverturesNiveau = new HashSet<>();
+	private final HashSet<TypeOuvertureNiveaux> typesOuverturesNiveaux = new HashSet<>();
 	private final HashSet<TypeRevetement> typesRevetement = new HashSet<>();
-	private final HashSet<TypeAppart> typesAppart = new HashSet<>();
-	private final HashSet<TypeBatiment> typesBatiment = new HashSet<>();
 
 	private final HashSet<Devis> devis = new HashSet<>();
 
 	private final HashMap<Integer, SelectableId> all = new HashMap<>();
 
-//	public void drawAll(CanvasContainer canvasContainer) {
-////		System.out.println("INF: draw/objects: murs (" + murs.size() + "): " + murs.toString());
-////		for (Entry<Integer, Mur> p: points.entrySet()) {
-////			p.getValue().draw(canvasContainer);
-////		}
-//
-//		System.out.println("INF: draw/objects: points (" + points.size() + "): " + points.toString());
-//		for (Entry<Integer, Point> p: points.entrySet()) {
-//			p.getValue().draw(canvasContainer);
-//		}
-//	}
-
-	private int idCounter = 0;
+	private int idCounter = 1;
 
 	///// serialize
+
+	public void serialize(Serialize serializer) {
+		////////// types
+
+		serializer.objectsSection("TypeBatiment");
+		for (TypeBatiment each: typesBatiment)
+			each.serialize(serializer);
+		serializer.eos();
+
+		serializer.objectsSection("TypeAppart");
+		for (TypeAppart each: typesAppart)
+			each.serialize(serializer);
+		serializer.eos();
+
+		serializer.objectsSection("TypeMur");
+		for (TypeMur each: typesMur)
+			each.serialize(serializer);
+		serializer.eos();
+
+		serializer.objectsSection("TypeRevetement");
+		for (TypeRevetement each: typesRevetement)
+			each.serialize(serializer);
+		serializer.eos();
+
+		serializer.objectsSection("TypeOuvertureNiveaux");
+		for (TypeOuvertureNiveaux each: typesOuverturesNiveaux)
+			each.serialize(serializer);
+		serializer.eos();
+
+		serializer.objectsSection("TypeOuvertureMur");
+		for (TypeOuvertureMur each: typesOuverturesMur)
+			each.serialize(serializer);
+		serializer.eos();
+
+		////////// basic
+
+		serializer.objectsSection("Point");
+		for (Point each: points)
+			each.serialize(serializer);
+		serializer.eos();
+
+		serializer.objectsSection("Mur");
+		for (Mur each: murs)
+			each.serialize(serializer);
+		serializer.eos();
+
+		serializer.objectsSection("Piece");
+		for (Piece each: pieces)
+			each.serialize(serializer);
+		serializer.eos();
+
+		serializer.objectsSection("Appart");
+		for (Appart each: apparts)
+			each.serialize(serializer);
+		serializer.eos();
+
+		serializer.objectsSection("Niveau");
+		for (Niveau each: niveaux)
+			each.serialize(serializer);
+		serializer.eos();
+
+		serializer.objectsSection("Batiment");
+		for (Batiment each: batiments)
+			each.serialize(serializer);
+		serializer.eos();
+
+		////////// devis
+
+		serializer.objectsSection("Devis");
+		for (Devis each: devis)
+			each.serialize(serializer);
+		serializer.eos();
+	}
 
 	public String serialize() {
 		String out = new String();
@@ -70,7 +131,7 @@ public class Objects {
 		out += "EOS:TypeOuvertureMur\n\n";
 
 		out += "OBJECTS:TypeOuvertureNiveau\n\n";
-		for (TypeOuvertureNiveau each: typesOuverturesNiveau)
+		for (TypeOuvertureNiveaux each: typesOuverturesNiveaux)
 			out += each.serialize(this) + "\n";
 		out += "EOS:TypeOuvertureNiveau\n\n";
 
@@ -120,7 +181,13 @@ public class Objects {
 	///// idCounter generator + setter
 
 	public int generateId() {
-		idCounter++;
+		while (all.get(idCounter) != null) {
+			idCounter++;
+
+			if (idCounter <= 0) // in case of overflow
+				idCounter = 1;
+		}
+
 		return idCounter;
 	}
 
@@ -161,7 +228,7 @@ public class Objects {
 
 			case TypeMur each -> typesMur.add(each);
 			case TypeOuvertureMur each -> typesOuverturesMur.add(each);
-			case TypeOuvertureNiveau each -> typesOuverturesNiveau.add(each);
+			case TypeOuvertureNiveaux each -> typesOuverturesNiveaux.add(each);
 			case TypeRevetement each -> typesRevetement.add(each);
 			case TypeAppart each -> typesAppart.add(each);
 			case TypeBatiment each -> typesBatiment.add(each);
@@ -201,7 +268,7 @@ public class Objects {
 
 			case TypeMur each -> typesMur.add(each);
 			case TypeOuvertureMur each -> typesOuverturesMur.add(each);
-			case TypeOuvertureNiveau each -> typesOuverturesNiveau.add(each);
+			case TypeOuvertureNiveaux each -> typesOuverturesNiveaux.add(each);
 			case TypeRevetement each -> typesRevetement.add(each);
 			case TypeAppart each -> typesAppart.add(each);
 			case TypeBatiment each -> typesBatiment.add(each);
@@ -265,8 +332,8 @@ public class Objects {
 	public HashSet<TypeOuvertureMur> getTypesOuverturesMur() {
 		return typesOuverturesMur;
 	}
-	public HashSet<TypeOuvertureNiveau> getTypesOuverturesNiveau() {
-		return typesOuverturesNiveau;
+	public HashSet<TypeOuvertureNiveaux> getTypesOuverturesNiveau() {
+		return typesOuverturesNiveaux;
 	}
 	public HashSet<TypeRevetement> getTypesRevetement() {
 		return typesRevetement;
@@ -289,7 +356,7 @@ public class Objects {
 		    .field("typesAppart", (Collection<FancyToStrings>) ((Collection<?>)typesAppart) )
 		    .field("typesMur", (Collection<FancyToStrings>) ((Collection<?>)typesMur) )
 		    .field("typesOuverturesMur", (Collection<FancyToStrings>) ((Collection<?>)typesOuverturesMur) )
-		    .field("typesOuverturesNiveau", (Collection<FancyToStrings>) ((Collection<?>)typesOuverturesNiveau) )
+		    .field("typesOuverturesNiveau", (Collection<FancyToStrings>) ((Collection<?>)typesOuverturesNiveaux) )
 		    .field("typesRevetement", (Collection<FancyToStrings>) ((Collection<?>)typesRevetement) )
 
 		    .field("OuverturesMur", (Collection<FancyToStrings>) ((Collection<?>)ouverturesMur) )

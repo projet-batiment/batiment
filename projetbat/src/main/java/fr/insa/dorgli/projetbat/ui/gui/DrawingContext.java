@@ -82,7 +82,10 @@ public class DrawingContext {
 			ObjectState ostate;
 			if (config.controller.state.isSelectedElement(object))
 				ostate = ObjectState.SELECTED;
-			else if ( object.getParents().contains(config.controller.state.getTheSelectedElement()) )
+			else if (
+			    config.controller.state.getTheSelectedElement() != config.controller.state.getViewRootElement()
+			    && object.getParents().contains(config.controller.state.getTheSelectedElement())
+			)
 				ostate = ObjectState.MEMBER;
 			else
 				ostate = ObjectState.NORMAL;
