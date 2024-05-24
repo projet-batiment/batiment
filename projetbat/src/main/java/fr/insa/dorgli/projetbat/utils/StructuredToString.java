@@ -77,6 +77,16 @@ public class StructuredToString {
 			super(depth, object.toStringShort(), indentFirst);
 		}
 
+		public OfFancyToStrings field(String name, FancyToStrings value) {
+			String text;
+			if (value == null)
+				text = "(null)";
+			else
+				text = value.toString(depth + 1);
+
+			return (OfFancyToStrings) super.field(name, text);
+		}
+
 		@Override
 		public OfFancyToStrings field(String name, String value) {
 			return (OfFancyToStrings) super.field(name, value);

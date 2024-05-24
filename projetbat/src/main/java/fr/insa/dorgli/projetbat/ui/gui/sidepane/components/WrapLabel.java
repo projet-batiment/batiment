@@ -4,6 +4,10 @@ import javafx.scene.control.Label;
 import javafx.scene.text.TextAlignment;
 
 public class WrapLabel extends Label {
+	public WrapLabel() {
+		this("");
+	}
+
 	public WrapLabel(String string) {
 		super(string);
 		super.setWrapText(true);

@@ -22,6 +22,7 @@ public abstract class NameDescEditor extends Editor {
 		HBox.setHgrow(nom, Priority.ALWAYS);
 		HBox.setHgrow(description, Priority.ALWAYS);
 		description.setWrapText(true);
+		description.setMaxHeight(100);
 
 		super.prependResetFunction(() -> {
 			nom.setText(nameDesc.getNom());

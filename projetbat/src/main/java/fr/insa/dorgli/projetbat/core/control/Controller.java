@@ -368,7 +368,8 @@ public class Controller {
 
 							config.project.objects.put(appart);
 							currentNiveau.addChildren(appart);
-							config.tui.debug("created appart added to " + currentNiveau.toStringShort());
+							state.getCurrentBatiment().addChildren(appart);
+							config.tui.debug("created appart added to " + currentNiveau.toStringShort() + " and " + state.getCurrentBatiment());
 
 							state.setSelectedElement(appart);
 							redrawCanvas();

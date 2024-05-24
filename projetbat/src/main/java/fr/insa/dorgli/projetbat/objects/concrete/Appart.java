@@ -60,11 +60,6 @@ public class Appart extends BObject implements HasInnerPrice, NameDesc {
 		return Collections.unmodifiableList(pieces);
 	}
 
-	public final void removePiece(Piece piece) {
-		pieces.remove(piece);
-		piece.removeParents(this);
-	}
-
 	public void setPieces(ArrayList<Piece> pieces) {
 		this.pieces = pieces;
 	}
@@ -91,7 +86,7 @@ public class Appart extends BObject implements HasInnerPrice, NameDesc {
 		    .textField("nom", nom)
 		    .textField("description", description)
 		    .fieldShortCollection("pieces", (Collection<FancyToStrings>) ((ArrayList<?>) pieces))
-		    .field("typeAppart", typeAppart.toString(depth + 1))
+		    .field("typeAppart", typeAppart)
 		    .getValue();
 	}
 

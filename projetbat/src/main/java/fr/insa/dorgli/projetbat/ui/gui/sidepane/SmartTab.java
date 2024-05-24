@@ -4,7 +4,6 @@ import fr.insa.dorgli.projetbat.core.Config;
 import fr.insa.dorgli.projetbat.utils.VoidConsumer;
 import java.util.ArrayList;
 import java.util.function.Consumer;
-import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Tab;
