@@ -1,5 +1,6 @@
 package fr.insa.dorgli.projetbat.objects.concrete;
 
+import fr.insa.dorgli.projetbat.objects.BObject;
 import fr.insa.dorgli.projetbat.objects.Objects;
 import fr.insa.dorgli.projetbat.objects.types.TypeOuvertureMur;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
@@ -16,7 +17,7 @@ public class OuvertureMur extends Drawable {
 	}
 	public OuvertureMur(int id, TypeOuvertureMur typeOuverture, double posL, double posH) {
 		super(id);
-		this.typeOuverture = typeOuverture;
+		setTypeOuverture(typeOuverture);
 		this.posL = posL;
 		this.posH = posH;
 	}
@@ -25,8 +26,9 @@ public class OuvertureMur extends Drawable {
 		return typeOuverture;
 	}
 
-	public void setTypeOuverture(TypeOuvertureMur typeOuverture) {
+	public final void setTypeOuverture(TypeOuvertureMur typeOuverture) {
 		this.typeOuverture = typeOuverture;
+		typeOuverture.addParents(this);
 	}
 
 	public double getPosL() {
@@ -73,5 +75,20 @@ public class OuvertureMur extends Drawable {
 		    String.valueOf(posL),
 		    String.valueOf(posH)
 		);
+	}
+
+	@Override
+	public void clearChildren() {
+		typeOuverture = null;
+	}
+
+	@Override
+	public final void addChildren(BObject... objects) {
+		throw new IllegalAccessError("Shouldn't call OuvertureMur.addChildren()");
+	}
+
+	@Override
+	public void removeChildren(BObject... objects) {
+		throw new IllegalAccessError("Shouldn't call OuvertureMur.addChildren()");
 	}
 }

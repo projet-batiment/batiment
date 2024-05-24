@@ -1,17 +1,21 @@
 package fr.insa.dorgli.projetbat.objects.concrete;
 
-import fr.insa.dorgli.projetbat.objects.HasPrice;
+import fr.insa.dorgli.projetbat.objects.BObject;
+import fr.insa.dorgli.projetbat.objects.HasInnerPrice;
 import fr.insa.dorgli.projetbat.objects.Objects;
 import fr.insa.dorgli.projetbat.utils.FancyToStrings;
 import fr.insa.dorgli.projetbat.objects.Deserialize;
+import fr.insa.dorgli.projetbat.objects.Devis;
 import fr.insa.dorgli.projetbat.objects.NameDesc;
 import fr.insa.dorgli.projetbat.ui.gui.DrawingContext;
 import java.util.ArrayList;
 import java.util.Collection;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
+import java.util.Collections;
+import java.util.List;
 import javafx.scene.paint.Color;
 
-public class Piece extends DrawablePath implements HasPrice, NameDesc {
+public class Piece extends DrawablePath implements HasInnerPrice, NameDesc {
 	private String nom;
 	private String description;
 	private ArrayList<Point> points;
@@ -29,38 +33,46 @@ public class Piece extends DrawablePath implements HasPrice, NameDesc {
 		super(id);
 		this.nom = nom;
 		this.description = description;
-		this.points = points;
-		this.murs = murs;
-		this.plafond = plafond;
-		this.sol = sol;
+
+		setSol(sol);
+		setPlafond(plafond);
+
+		this.murs = new ArrayList<>();
+		this.points = new ArrayList<>();
+		addChildren((BObject[]) murs.toArray(BObject[]::new));
+		addChildren((BObject[]) points.toArray(BObject[]::new));
 	}
 
+	@Override
 	public String getNom() {
 		return nom;
 	}
 
+	@Override
 	public void setNom(String nom) {
 		this.nom = nom;
 	}
 
+	@Override
 	public String getDescription() {
 		return description;
 	}
 
+	@Override
 	public void setDescription(String description) {
 		this.description = description;
 	}
 
-	public ArrayList<Mur> getMurs() {
-		return murs;
+	public List<Mur> getMurs() {
+		return Collections.unmodifiableList(murs);
 	}
 
 	public void setMurs(ArrayList<Mur> murs) {
 		this.murs = murs;
 	}
 
-	public ArrayList<Point> getPoints() {
-		return points;
+	public List<Point> getPoints() {
+		return Collections.unmodifiableList(points);
 	}
 
 	public void setPoints(ArrayList<Point> points) {
@@ -71,16 +83,18 @@ public class Piece extends DrawablePath implements HasPrice, NameDesc {
 		return plafond;
 	}
 
-	public void setPlafond(PlafondSol plafond) {
+	public final void setPlafond(PlafondSol plafond) {
 		this.plafond = plafond;
+		plafond.addParents(this);
 	}
 
 	public PlafondSol getSol() {
 		return sol;
 	}
 
-	public void setSol(PlafondSol sol) {
+	public final void setSol(PlafondSol sol) {
 		this.sol = sol;
+		sol.addParents(this);
 	}
 
 	public double aire() {
@@ -99,14 +113,24 @@ public class Piece extends DrawablePath implements HasPrice, NameDesc {
 		double prixPiece = 0;
 		double airePiece = aire();
 
-		 for (Mur eachMur: murs) {
+		for (Mur eachMur: murs) {
 			prixPiece += eachMur.calculerPrix();
-		 }
+		}
 
-		prixPiece += plafond.calculerPrix(airePiece);
-		prixPiece += sol.calculerPrix(airePiece);
+		prixPiece += plafond.calculerPrix();
+		prixPiece += sol.calculerPrix();
 
 		return prixPiece;
+	}
+
+	@Override
+	public void calculerPrix(Devis.DevisCalculator calc) {
+		for (Mur eachMur: murs) {
+			calc.addObject(eachMur);
+		}
+
+		calc.addObject(plafond);
+		calc.addObject(sol);
 	}
 
 	@Override
@@ -179,5 +203,49 @@ public class Piece extends DrawablePath implements HasPrice, NameDesc {
 		}
 
 		return out + "EOS:Entry";
+	}
+
+	@Override
+	public void clearChildren() {
+		points.clear();
+		murs.clear();
+		plafond = null;
+		sol = null;
+	}
+
+	@Override
+	public final void addChildren(BObject... objects) {
+		for (BObject object: objects) {
+			switch (object) {
+				case PlafondSol known -> throw new IllegalAccessError("Shoudn't call Piece.addChildren with object PlafondSol");
+				case Mur known -> {
+					murs.add(known);
+					points.add(known.getPointDebut());
+					points.add(known.getPointFin());
+				}
+				case Point known -> points.add(known);
+
+				default -> throw new IllegalArgumentException("Unknown children type for piece: " + object.getClass().getSimpleName());
+			}
+			object.addParents(this);
+		}
+	}
+
+	@Override
+	public void removeChildren(BObject... objects) {
+		for (BObject object: objects) {
+			switch (object) {
+				case PlafondSol known -> throw new IllegalAccessError("Shoudn't call Piece.removeChildren with object PlafondSol");
+				case Mur known -> {
+					murs.remove(known);
+					points.remove(known.getPointDebut());
+					points.remove(known.getPointFin());
+				}
+				case Point known -> points.remove(known);
+
+				default -> throw new IllegalArgumentException("Unknown children type for piece: " + object.getClass().getSimpleName());
+			}
+			object.removeParents(this);
+		}
 	}
 }

@@ -78,9 +78,11 @@ public class State {
 	private void updatedSelection() {
 		config.controller.updateSidePaneSelection();
 		config.controller.updateBottomBar();
+		config.controller.redrawCanvas();
 	}
 	private void updatedView() {
-		updatedSelection();
+		config.controller.updateSidePaneSelection();
+		config.controller.updateBottomBar();
 		config.getMainWindow().getCanvasContainer().moveView(Direction.FIT); // implies redraw
 	}
 

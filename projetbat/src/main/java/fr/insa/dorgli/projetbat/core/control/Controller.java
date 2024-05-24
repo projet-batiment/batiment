@@ -12,6 +12,7 @@ import fr.insa.dorgli.projetbat.ui.gui.popups.ChooseFromList;
 import java.awt.geom.Point2D;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
@@ -75,6 +76,8 @@ public class Controller {
 				}
 
 				case UNEXPECTED_ERROR -> {
+					result.exception.printStackTrace(System.out);
+
 					Alert alert = new Alert(AlertType.ERROR);
 					alert.setTitle("Erreur inattendue");
 					alert.setHeaderText("Une erreur inattendue est survennue");
@@ -154,11 +157,11 @@ public class Controller {
 								config.tui.debug("created mur: " + newMur);
 
 								config.project.objects.put(newMur.getPointDebut());
-								currentNiveau.getOrpheans().remove(newMur.getPointDebut());
+								currentNiveau.removeChildren(newMur.getPointDebut());
 								config.project.objects.put(newMur.getPointFin());
-								currentNiveau.getOrpheans().remove(newMur.getPointFin());
+								currentNiveau.removeChildren(newMur.getPointFin());
 								config.project.objects.put(newMur);
-								currentNiveau.getOrpheans().add(newMur);
+								currentNiveau.addChildren(newMur);
 
 								config.tui.debug("created mur is set as orphean of " + currentNiveau.toStringShort());
 
@@ -184,7 +187,7 @@ public class Controller {
 							config.tui.debug("created point: " + newPoint);
 
 							config.project.objects.put(newPoint);
-							currentNiveau.getOrpheans().add(newPoint);
+							currentNiveau.addChildren(newPoint);
 
 							config.tui.debug("created point is set as orphean of " + currentNiveau.toStringShort());
 						}
@@ -313,10 +316,10 @@ public class Controller {
 									murs.add(mur);
 									points.add(mur.getPointDebut());
 									points.add(mur.getPointFin());
-									currentNiveau.getOrpheans().remove(mur);
+									currentNiveau.removeChildren(mur);
 								} else if (each instanceof Point point) {
 									points.add(point);
-									currentNiveau.getOrpheans().remove(point);
+									currentNiveau.removeChildren(point);
 								}
 							}
 
@@ -324,7 +327,7 @@ public class Controller {
 							piece.setPoints(new ArrayList(points));
 
 							config.project.objects.put(piece);
-							currentNiveau.getPieces().add(piece);
+							currentNiveau.addChildren(piece);
 							config.tui.debug("created piece added to " + currentNiveau.toStringShort());
 
 							state.setSelectedElement(piece);
@@ -364,7 +367,7 @@ public class Controller {
 							appart.setPieces(new ArrayList(pieces));
 
 							config.project.objects.put(appart);
-							currentNiveau.getApparts().add(appart);
+							currentNiveau.addChildren(appart);
 							config.tui.debug("created appart added to " + currentNiveau.toStringShort());
 
 							state.setSelectedElement(appart);

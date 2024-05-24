@@ -1,18 +1,20 @@
 package fr.insa.dorgli.projetbat.objects.concrete;
 
 import fr.insa.dorgli.projetbat.objects.BObject;
-import fr.insa.dorgli.projetbat.objects.HasPrice;
 import fr.insa.dorgli.projetbat.objects.Objects;
 import fr.insa.dorgli.projetbat.objects.Deserialize;
+import fr.insa.dorgli.projetbat.objects.Devis;
+import fr.insa.dorgli.projetbat.objects.HasInnerPrice;
 import fr.insa.dorgli.projetbat.objects.NameDesc;
 import fr.insa.dorgli.projetbat.objects.types.TypeBatiment;
-import fr.insa.dorgli.projetbat.ui.gui.DrawingContext;
 import fr.insa.dorgli.projetbat.utils.FancyToStrings;
 import java.util.ArrayList;
 import java.util.Collection;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
+import java.util.Collections;
+import java.util.List;
 
-public class Batiment extends BObject implements HasPrice, NameDesc {
+public class Batiment extends BObject implements HasInnerPrice, NameDesc {
 	private String nom;
 	private String description;
 	private TypeBatiment typeBatiment;
@@ -29,9 +31,13 @@ public class Batiment extends BObject implements HasPrice, NameDesc {
 		super(id);
 		this.nom = nom;
 		this.description = description;
-		this.typeBatiment = typeBatiment;
-		this.niveaux = niveaux;
-		this.apparts = apparts;
+
+		setTypeBatiment(typeBatiment);
+
+		this.niveaux = new ArrayList<>();
+		this.apparts = new ArrayList<>();
+		addChildren((BObject[]) niveaux.toArray(BObject[]::new));
+		addChildren((BObject[]) apparts.toArray(BObject[]::new));
 	}
 
 	@Override
@@ -54,16 +60,16 @@ public class Batiment extends BObject implements HasPrice, NameDesc {
 		this.description = description;
 	}
 
-	public ArrayList<Niveau> getNiveaux() {
-		return niveaux;
+	public List<Niveau> getNiveaux() {
+		return Collections.unmodifiableList(niveaux);
 	}
 
 	public void setNiveaux(ArrayList<Niveau> niveaux) {
 		this.niveaux = niveaux;
 	}
 
-	public ArrayList<Appart> getApparts() {
-		return apparts;
+	public List<Appart> getApparts() {
+		return Collections.unmodifiableList(apparts);
 	}
 
 	public void setApparts(ArrayList<Appart> apparts) {
@@ -74,8 +80,9 @@ public class Batiment extends BObject implements HasPrice, NameDesc {
 		return typeBatiment;
 	}
 
-	public void setTypeBatiment(TypeBatiment typeBatiment) {
+	public final void setTypeBatiment(TypeBatiment typeBatiment) {
 		this.typeBatiment = typeBatiment;
+		typeBatiment.addParents(this);
 	}
 
 	@Override
@@ -87,6 +94,13 @@ public class Batiment extends BObject implements HasPrice, NameDesc {
 		}
 
 		return prixBatiment;
+	}
+
+	@Override
+	public void calculerPrix(Devis.DevisCalculator calculator) {
+		for (Niveau each: niveaux){
+			calculator.addObject(each);
+		}
 	}
 
 	@Override
@@ -134,5 +148,37 @@ public class Batiment extends BObject implements HasPrice, NameDesc {
 		}
 
 		return out + "EOS:Entry";
+	}
+
+	@Override
+	public void clearChildren() {
+		apparts.clear();
+		niveaux.clear();
+	}
+
+	@Override
+	public final void addChildren(BObject... objects) {
+		for (BObject object: objects) {
+			switch (object) {
+				case Appart known -> apparts.add(known);
+				case Niveau known -> niveaux.add(known);
+
+				default -> throw new IllegalArgumentException("Unknown children type for batiment: " + object.getClass().getSimpleName());
+			}
+			object.addParents(this);
+		}
+	}
+
+	@Override
+	public void removeChildren(BObject... objects) {
+		for (BObject object: objects) {
+			switch (object) {
+				case Appart known -> apparts.remove(known);
+				case Niveau known -> niveaux.remove(known);
+
+				default -> throw new IllegalArgumentException("Unknown children type for batiment: " + object.getClass().getSimpleName());
+			}
+			object.removeParents(this);
+		}
 	}
 }

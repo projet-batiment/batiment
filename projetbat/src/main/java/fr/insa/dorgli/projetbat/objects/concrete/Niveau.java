@@ -1,15 +1,21 @@
 package fr.insa.dorgli.projetbat.objects.concrete;
 
+import fr.insa.dorgli.projetbat.objects.BObject;
 import fr.insa.dorgli.projetbat.objects.Objects;
 import fr.insa.dorgli.projetbat.utils.FancyToStrings;
 import fr.insa.dorgli.projetbat.objects.Deserialize;
+import fr.insa.dorgli.projetbat.objects.Devis;
+import fr.insa.dorgli.projetbat.objects.HasInnerPrice;
+import fr.insa.dorgli.projetbat.objects.HasPrice;
 import fr.insa.dorgli.projetbat.objects.NameDesc;
 import fr.insa.dorgli.projetbat.ui.gui.DrawingContext;
 import java.util.ArrayList;
 import java.util.Collection;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
+import java.util.Collections;
+import java.util.List;
 
-public class Niveau extends DrawableRoot implements NameDesc {
+public class Niveau extends DrawableRoot implements NameDesc, HasInnerPrice {
 	private String nom;
 	private String description;
 	private double hauteur;
@@ -29,23 +35,31 @@ public class Niveau extends DrawableRoot implements NameDesc {
 		this.nom = nom;
 		this.description = description;
 		this.hauteur = hauteur;
-		this.pieces = pieces;
-		this.apparts = apparts;
-		this.orpheans = orpheans;
+
+		this.pieces = new ArrayList<>();
+		this.apparts = new ArrayList<>();
+		this.orpheans = new ArrayList<>();
+		addChildren((BObject[]) pieces.toArray(BObject[]::new));
+		addChildren((BObject[]) apparts.toArray(BObject[]::new));
+		addChildren((BObject[]) orpheans.toArray(BObject[]::new));
 	}
 
+	@Override
 	public String getNom() {
 		return nom;
 	}
 
+	@Override
 	public void setNom(String nom) {
 		this.nom = nom;
 	}
 
+	@Override
 	public String getDescription() {
 		return description;
 	}
 
+	@Override
 	public void setDescription(String description) {
 		this.description = description;
 	}
@@ -58,24 +72,24 @@ public class Niveau extends DrawableRoot implements NameDesc {
 		this.hauteur = hauteur;
 	}
 
-	public ArrayList<Piece> getPieces() {
-		return pieces;
+	public List<Piece> getPieces() {
+		return Collections.unmodifiableList(pieces);
 	}
 
 	public void setPieces(ArrayList<Piece> pieces) {
 		this.pieces = pieces;
 	}
 
-	public ArrayList<Appart> getApparts() {
-		return apparts;
+	public List<Appart> getApparts() {
+		return Collections.unmodifiableList(apparts);
 	}
 
 	public void setApparts(ArrayList<Appart> apparts) {
 		this.apparts = apparts;
 	}
 
-	public ArrayList<Drawable> getOrpheans() {
-		return orpheans;
+	public List<Drawable> getOrpheans() {
+		return Collections.unmodifiableList(orpheans);
 	}
 
 	public void setOrpheans(ArrayList<Drawable> orpheans) {
@@ -99,6 +113,7 @@ public class Niveau extends DrawableRoot implements NameDesc {
 		dcx.tui().popWhere();
 	}
 
+	@Override
 	public double calculerPrix() {
 		double prixNiveau = 0;
 
@@ -106,6 +121,18 @@ public class Niveau extends DrawableRoot implements NameDesc {
 			prixNiveau += eachPiece.calculerPrix();
 		}
 		return prixNiveau;
+	}
+
+	@Override
+	public void calculerPrix(Devis.DevisCalculator calc) {
+		for (Piece eachPiece: pieces){
+			calc.addObject(eachPiece);
+		}
+
+		for (Drawable each: orpheans){
+			if (each instanceof HasPrice priced)
+				calc.addObject(priced);
+		}
 	}
 
 	@Override
@@ -159,5 +186,40 @@ public class Niveau extends DrawableRoot implements NameDesc {
 		}
 
 		return out + "EOS:Entry";
+	}
+
+	@Override
+	public void clearChildren() {
+		apparts.clear();
+		pieces.clear();
+		orpheans.clear();
+	}
+
+	@Override
+	public final void addChildren(BObject... objects) {
+		for (BObject object: objects) {
+			switch (object) {
+				case Piece known -> pieces.add(known);
+				case Appart known -> apparts.add(known);
+				case Drawable known -> orpheans.add(known);
+
+				default -> throw new IllegalArgumentException("Unknown children type for niveau: " + object.getClass().getSimpleName());
+			}
+			object.addParents(this);
+		}
+	}
+
+	@Override
+	public void removeChildren(BObject... objects) {
+		for (BObject object: objects) {
+			switch (object) {
+				case Piece known -> pieces.remove(known);
+				case Appart known -> apparts.remove(known);
+				case Drawable known -> orpheans.remove(known);
+
+				default -> throw new IllegalArgumentException("Unknown children type for niveau: " + object.getClass().getSimpleName());
+			}
+			object.removeParents(this);
+		}
 	}
 }

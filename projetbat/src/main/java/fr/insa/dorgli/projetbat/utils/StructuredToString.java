@@ -88,11 +88,17 @@ public class StructuredToString {
 		}
 
 		public OfFancyToStrings fieldShortCollection(String name, Collection<FancyToStrings> arr) {
-			String value = arr.size() + " [ ";
-			for (FancyToStrings object: arr) {
-				value += object.toStringShort() + ", ";
+			String value;
+
+			if (arr == null) {
+				value = "(null)";
+			} else {
+				value = arr.size() + " [ ";
+				for (FancyToStrings object: arr) {
+					value += object.toStringShort() + ", ";
+				}
+				value += " ]";
 			}
-			value += " ]";
 
 			super.field(name, value);
 			return this;

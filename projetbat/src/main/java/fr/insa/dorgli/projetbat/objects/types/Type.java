@@ -4,6 +4,7 @@ import fr.insa.dorgli.projetbat.objects.BObject;
 import fr.insa.dorgli.projetbat.objects.Deserialize;
 import fr.insa.dorgli.projetbat.objects.NameDesc;
 import fr.insa.dorgli.projetbat.objects.Objects;
+import fr.insa.dorgli.projetbat.objects.SelectableId;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 
 public abstract class Type extends BObject implements NameDesc {
@@ -60,5 +61,22 @@ public abstract class Type extends BObject implements NameDesc {
 		    Deserialize.escapeString(nom),
 		    Deserialize.escapeString(description)
 		);
+	}
+
+	@Override
+	public void clearChildren() {
+		for (SelectableId each: super.getParents()) {
+			each.removeChildren(this);
+		}
+	}
+
+	@Override
+	public final void addChildren(BObject... objects) {
+		throw new IllegalAccessError("Shouldn't call Type.addChildren()");
+	}
+
+	@Override
+	public void removeChildren(BObject... objects) {
+		throw new IllegalAccessError("Shouldn't call Type.removeChildren()");
 	}
 }

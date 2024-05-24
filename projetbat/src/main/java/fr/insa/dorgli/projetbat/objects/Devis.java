@@ -7,6 +7,7 @@ import java.util.HashSet;
 public class Devis extends SelectableId implements NameDesc, HasPrice {
 	private String nom;
 	private String description;
+	private double prixDevis; // potentiel prix des charges du devis
 	private HashSet<HasPrice> studiedObjects;
 
 	private HashSet<FancyToStrings> asFancyToStrings() {
@@ -26,7 +27,6 @@ public class Devis extends SelectableId implements NameDesc, HasPrice {
 
 	public Devis(String nom, String description, HasPrice studiedObject) throws IllegalArgumentException {
 		HashSet<HasPrice> tmpStudiedObjects = new HashSet<>();
-		System.out.println(studiedObject.toString());
 		tmpStudiedObjects.add(studiedObject);
 
 		// this could potentially fail
@@ -34,6 +34,7 @@ public class Devis extends SelectableId implements NameDesc, HasPrice {
 
 		this.nom = nom;
 		this.description = description;
+		this.prixDevis = 0;
 	}
 
 	public Devis(String nom, String description, HashSet<HasPrice> studiedObjects) throws IllegalArgumentException {
@@ -42,6 +43,7 @@ public class Devis extends SelectableId implements NameDesc, HasPrice {
 
 		this.nom = nom;
 		this.description = description;
+		this.prixDevis = 0;
 	}
 
 	@Override
@@ -76,12 +78,12 @@ public class Devis extends SelectableId implements NameDesc, HasPrice {
 			    .map(each -> each.toStringShort())
 			    .reduce(", ", String::concat);
 
-			String thierShortStrings = asFancyToStrings(studiedObjects).stream()
+			String theirShortStrings = asFancyToStrings(studiedObjects).stream()
 			    .map(each -> each.toStringShort())
 			    .reduce(", ", String::concat);
 
 			throw new IllegalArgumentException("Already got a studiedObjects: [ "
-			    + ourShortStrings + " ] != null ( [ " + thierShortStrings + " ] )");
+			    + ourShortStrings + " ] != null ( [ " + theirShortStrings + " ] )");
 		}
 
 		for (HasPrice studiedObject: studiedObjects) {
@@ -107,18 +109,53 @@ public class Devis extends SelectableId implements NameDesc, HasPrice {
 		throw new UnsupportedOperationException("TODO!!!");
 	}
 
+	public class DevisCalculator {
+		private double prix = 0;
+		private final HashSet<HasPrice> processedObjects = new HashSet<>();
+
+		public void addObject(HasPrice object) {
+			if (! processedObjects.contains(object)) {
+				if (object instanceof HasInnerPrice parent)
+					parent.calculerPrix(this);
+				else
+					prix += object.calculerPrix();
+
+				processedObjects.add(object);
+			}
+		}
+
+		public double getPrix() {
+			return prix;
+		}
+	}
+
 	@Override
 	public double calculerPrix() {
-		var prixWrapper = new Object(){ double prix = 0; };
+		DevisCalculator calculator = new DevisCalculator();
 
-		studiedObjects.stream()
-		    .forEach((HasPrice each) -> prixWrapper.prix += each.calculerPrix())
-		;
+		for (HasPrice each: studiedObjects) {
+			calculator.addObject(each);
+		}
 
-		return prixWrapper.prix;
+		return calculator.getPrix() + prixDevis;
 	}
 
 	public String prixToString() {
 		return Math.round(this.calculerPrix() * 100 ) / 100 + "€";
+	}
+
+	@Override
+	public void clearChildren() {
+		throw new IllegalAccessError("Shouldn't call Devis.clearChildren()");
+	}
+
+	@Override
+	public final void addChildren(BObject... objects) {
+		throw new IllegalAccessError("Shouldn't call Devis.addChildren()");
+	}
+
+	@Override
+	public void removeChildren(BObject... objects) {
+		throw new IllegalAccessError("Shouldn't call Devis.removeChildren()");
 	}
 }

@@ -1,5 +1,6 @@
 package fr.insa.dorgli.projetbat.objects.concrete;
 
+import fr.insa.dorgli.projetbat.objects.BObject;
 import fr.insa.dorgli.projetbat.objects.HasPrice;
 import fr.insa.dorgli.projetbat.objects.Objects;
 import fr.insa.dorgli.projetbat.utils.FancyToStrings;
@@ -18,8 +19,12 @@ public class PlafondSol extends Drawable implements HasPrice {
 	}
 	public PlafondSol(int id, ArrayList<RevetementPlafondSol> revetements, ArrayList<OuvertureNiveaux> ouvertures) {
 		super(id);
-		this.revetements = revetements;
-		this.ouvertures = ouvertures;
+
+		this.revetements = new ArrayList<>();
+		this.ouvertures = new ArrayList<>();
+
+		addChildren((BObject[]) revetements.toArray(BObject[]::new));
+		addChildren((BObject[]) ouvertures.toArray(BObject[]::new));
 	}
 
 	public ArrayList<RevetementPlafondSol> getRevetements() {
@@ -38,7 +43,12 @@ public class PlafondSol extends Drawable implements HasPrice {
 		this.ouvertures = ouvertures;
 	}
 
-	public double calculerPrix(double airePiece) {
+	@Override
+	public double calculerPrix() {
+		if (super.parents.size() != 1)
+			return 0;
+
+		double airePiece = ((Piece) parents.iterator().next()).aire();
 		double prixPlafondSol = 0;
 
 		/// TODO!!! implement java.awt.Area -> interset the revetements' surfaces with the ouvertures' surfaces
@@ -53,12 +63,6 @@ public class PlafondSol extends Drawable implements HasPrice {
 		}
 
 		return prixPlafondSol;
-	}
-
-	@Override
-	public double calculerPrix() {
-		// TODO: besoin de la surface !
-		return 0;
 	}
 
 	@Override
@@ -96,5 +100,37 @@ public class PlafondSol extends Drawable implements HasPrice {
 		}
 
 		return out + "EOS:Entry";
+	}
+
+	@Override
+	public void clearChildren() {
+		ouvertures.clear();
+		revetements.clear();
+	}
+
+	@Override
+	public final void addChildren(BObject... objects) {
+		for (BObject object: objects) {
+			switch (object) {
+				case OuvertureNiveaux known -> ouvertures.add(known);
+				case RevetementPlafondSol known -> revetements.add(known);
+
+				default -> throw new IllegalArgumentException("Unknown children type for plafondSol: " + object.getClass().getSimpleName());
+			}
+			object.addParents(this);
+		}
+	}
+
+	@Override
+	public void removeChildren(BObject... objects) {
+		for (BObject object: objects) {
+			switch (object) {
+				case OuvertureNiveaux known -> ouvertures.remove(known);
+				case RevetementPlafondSol known -> revetements.remove(known);
+
+				default -> throw new IllegalArgumentException("Unknown children type for plafondSol: " + object.getClass().getSimpleName());
+			}
+			object.removeParents(this);
+		}
 	}
 }

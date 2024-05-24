@@ -3,15 +3,18 @@ package fr.insa.dorgli.projetbat.objects.concrete;
 import fr.insa.dorgli.projetbat.objects.Objects;
 import fr.insa.dorgli.projetbat.objects.BObject;
 import fr.insa.dorgli.projetbat.objects.Deserialize;
-import fr.insa.dorgli.projetbat.objects.HasPrice;
+import fr.insa.dorgli.projetbat.objects.Devis;
+import fr.insa.dorgli.projetbat.objects.HasInnerPrice;
 import fr.insa.dorgli.projetbat.objects.NameDesc;
 import fr.insa.dorgli.projetbat.objects.types.TypeAppart;
 import fr.insa.dorgli.projetbat.utils.FancyToStrings;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
-public class Appart extends BObject implements HasPrice, NameDesc {
+public class Appart extends BObject implements HasInnerPrice, NameDesc {
 	private String nom;
 	private String description;
 	private ArrayList<Piece> pieces;
@@ -26,28 +29,40 @@ public class Appart extends BObject implements HasPrice, NameDesc {
 		super(id);
 		this.nom = nom;
 		this.description = description;
-		this.pieces = pieces;
-		this.typeAppart = typeAppart;
+
+		setTypeAppart(typeAppart);
+
+		this.pieces = new ArrayList<>();
+		addChildren((BObject[]) pieces.toArray(BObject[]::new));
 	}
 
+	@Override
 	public String getNom() {
 		return nom;
 	}
 
+	@Override
 	public void setNom(String nom) {
 		this.nom = nom;
 	}
 
+	@Override
 	public String getDescription() {
 		return description;
 	}
 
+	@Override
 	public void setDescription(String description) {
 		this.description = description;
 	}
 
-	public ArrayList<Piece> getPieces() {
-		return pieces;
+	public List<Piece> getPieces() {
+		return Collections.unmodifiableList(pieces);
+	}
+
+	public final void removePiece(Piece piece) {
+		pieces.remove(piece);
+		piece.removeParents(this);
 	}
 
 	public void setPieces(ArrayList<Piece> pieces) {
@@ -58,8 +73,9 @@ public class Appart extends BObject implements HasPrice, NameDesc {
 		return typeAppart;
 	}
 
-	public void setTypeAppart(TypeAppart typeAppart) {
+	public final void setTypeAppart(TypeAppart typeAppart) {
 		this.typeAppart = typeAppart;
+		typeAppart.addParents(this);
 	}
 
 	@Override
@@ -99,6 +115,7 @@ public class Appart extends BObject implements HasPrice, NameDesc {
 		return out + "EOS:Entry";
 	}
 
+	@Override
 	public double calculerPrix() {
 		double prixAppart = 0;
 
@@ -106,5 +123,41 @@ public class Appart extends BObject implements HasPrice, NameDesc {
 			prixAppart += eachPiece.calculerPrix();
 		}
 		return prixAppart;
+	}
+
+	@Override
+	public void calculerPrix(Devis.DevisCalculator calculator) {
+		for (Piece eachPiece: pieces){
+			calculator.addObject(eachPiece);
+		}
+	}
+
+	@Override
+	public void clearChildren() {
+		pieces.clear();
+	}
+
+	@Override
+	public final void addChildren(BObject... objects) {
+		for (BObject object: objects) {
+			switch (object) {
+				case Piece known -> pieces.add(known);
+
+				default -> throw new IllegalArgumentException("Unknown children type for appart: " + object.getClass().getSimpleName());
+			}
+			object.addParents(this);
+		}
+	}
+
+	@Override
+	public void removeChildren(BObject... objects) {
+		for (BObject object: objects) {
+			switch (object) {
+				case Piece known -> pieces.remove(known);
+
+				default -> throw new IllegalArgumentException("Unknown children type for appart: " + object.getClass().getSimpleName());
+			}
+			object.removeParents(this);
+		}
 	}
 }

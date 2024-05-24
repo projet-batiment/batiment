@@ -1,5 +1,6 @@
 package fr.insa.dorgli.projetbat.objects.concrete;
 
+import fr.insa.dorgli.projetbat.objects.BObject;
 import fr.insa.dorgli.projetbat.objects.HasPrice;
 import fr.insa.dorgli.projetbat.objects.Objects;
 import fr.insa.dorgli.projetbat.utils.FancyToStrings;
@@ -8,6 +9,8 @@ import fr.insa.dorgli.projetbat.utils.StructuredToString;
 import fr.insa.dorgli.projetbat.ui.gui.DrawingContext;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import javafx.scene.paint.Color;
 
 public class Mur extends DrawableLine implements HasPrice {
@@ -33,20 +36,33 @@ public class Mur extends DrawableLine implements HasPrice {
 			    + pointDebut.getNiveau().toStringShort() + "' != '" + pointFin.getNiveau().toStringShort() + "'");
 		}
 
-		this.pointDebut = pointDebut;
-		this.pointFin = pointFin;
 		this.hauteur = hauteur;
-		this.typeMur = typeMur;
-		this.revetements1 = revetements1;
-		this.revetements2 = revetements2;
-		this.ouvertures = ouvertures;
+
+		setPointDebut(pointDebut);
+		setPointFin(pointFin);
+		setTypeMur(typeMur);
+
+		this.revetements1 = new ArrayList<>();
+		for (RevetementMur each: revetements1)
+			addRevetement1(each);
+
+		this.revetements1 = new ArrayList<>();
+		for (RevetementMur each: revetements1)
+			addRevetement1(each);
+
+		this.ouvertures = new ArrayList<>();
+		for (OuvertureMur each: ouvertures)
+			addOuverture(each);
 	}
 
 	public Point getPointDebut() {
 		return pointDebut;
 	}
 
-	public void setPointDebut(Point pointDebut) {
+	public final void setPointDebut(Point pointDebut) {
+		if (this.pointDebut instanceof Point oldPoint)
+			oldPoint.removeParents(this);
+
 		this.pointDebut = pointDebut;
 	}
 
@@ -54,7 +70,10 @@ public class Mur extends DrawableLine implements HasPrice {
 		return pointFin;
 	}
 
-	public void setPointFin(Point pointFin) {
+	public final void setPointFin(Point pointFin) {
+		if (this.pointFin instanceof Point oldPoint)
+			oldPoint.removeParents(this);
+
 		this.pointFin = pointFin;
 	}
 
@@ -70,20 +89,36 @@ public class Mur extends DrawableLine implements HasPrice {
 		return this.typeMur;
 	}
 
-	public void setTypeMur(TypeMur typeMur) {
+	public final void setTypeMur(TypeMur typeMur) {
 		this.typeMur = typeMur;
+		typeMur.addParents(this);
 	}
 
-	public ArrayList<RevetementMur> getRevetements1() {
-		return this.revetements1;
+	public List<RevetementMur> getRevetements1() {
+		return Collections.unmodifiableList(revetements1);
 	}
 
-	public ArrayList<RevetementMur> getRevetements2() {
-		return this.revetements2;
+	public final void addRevetement1(RevetementMur object) {
+		revetements1.add(object);
+		object.addParents(this);
 	}
 
-	public ArrayList<OuvertureMur> getOuvertures() {
-		return this.ouvertures;
+	public List<RevetementMur> getRevetements2() {
+		return Collections.unmodifiableList(revetements2);
+	}
+
+	public void addRevetement2(RevetementMur object) {
+		revetements2.add(object);
+		object.addParents(this);
+	}
+
+	public List<OuvertureMur> getOuvertures() {
+		return Collections.unmodifiableList(ouvertures);
+	}
+
+	public final void addOuverture(OuvertureMur object) {
+		ouvertures.add(object);
+		object.addParents(this);
 	}
 
 	private double longueur() {
@@ -175,5 +210,35 @@ public class Mur extends DrawableLine implements HasPrice {
 		}
 
 		return out + "EOS:Entry";
+	}
+
+	@Override
+	public void clearChildren() {
+		revetements1.clear();
+		revetements2.clear();
+		ouvertures.clear();
+		pointDebut = null;
+		pointFin = null;
+	}
+
+	@Override
+	public final void addChildren(BObject... objects) {
+		throw new IllegalAccessError("Shouldn't call Mur.addChildren()");
+	}
+
+	@Override
+	public void removeChildren(BObject... objects) {
+		for (BObject object: objects) {
+			switch (object) {
+				case RevetementMur known -> {
+					revetements1.remove(known);
+					revetements2.remove(known);
+				}
+				case OuvertureMur known -> ouvertures.remove(known);
+
+				default -> throw new IllegalArgumentException("Unknown children type for mur: " + object.getClass().getSimpleName());
+			}
+			object.removeParents(this);
+		}
 	}
 }

@@ -46,7 +46,7 @@ public class AppartEditor extends NameDescEditor {
 		Button removePiece = new Button("Enlever...");
 		removePiece.setOnAction(eh -> {
 			Set objects = new HashSet(appart.getPieces());
-			appart.getPieces().remove((Piece) config.controller.chooseFromList("pièce", objects));
+			appart.removePiece((Piece) config.controller.chooseFromList("pièce", objects));
 		});
 
 		Button addPiece = new Button("Ajouter...");

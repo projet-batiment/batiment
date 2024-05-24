@@ -1,5 +1,6 @@
 package fr.insa.dorgli.projetbat.objects.concrete;
 
+import fr.insa.dorgli.projetbat.objects.BObject;
 import fr.insa.dorgli.projetbat.objects.Objects;
 import fr.insa.dorgli.projetbat.objects.types.TypeOuvertureNiveau;
 import fr.insa.dorgli.projetbat.ui.gui.DrawingContext;
@@ -16,7 +17,7 @@ public class OuvertureNiveaux extends Drawable {
 	}
 	public OuvertureNiveaux(int id, TypeOuvertureNiveau typeOuverture, double posL, double posH) {
 		super(id);
-		this.typeOuverture = typeOuverture;
+		setTypeOuverture(typeOuverture);
 		this.posL = posL;
 		this.posH = posH;
 	}
@@ -25,8 +26,9 @@ public class OuvertureNiveaux extends Drawable {
 		return typeOuverture;
 	}
 
-	public void setTypeOuverture(TypeOuvertureNiveau typeOuverture) {
+	public final void setTypeOuverture(TypeOuvertureNiveau typeOuverture) {
 		this.typeOuverture = typeOuverture;
+		typeOuverture.addParents(this);
 	}
 
 	public double getPosL() {
@@ -73,5 +75,20 @@ public class OuvertureNiveaux extends Drawable {
 		    String.valueOf(posL),
 		    String.valueOf(posH)
 		);
+	}
+
+	@Override
+	public void clearChildren() {
+		typeOuverture = null;
+	}
+
+	@Override
+	public final void addChildren(BObject... objects) {
+		throw new IllegalAccessError("Shouldn't call OuvertureNiveau.addChildren()");
+	}
+
+	@Override
+	public void removeChildren(BObject... objects) {
+		throw new IllegalAccessError("Shouldn't call OuvertureNiveau.addChildren()");
 	}
 }

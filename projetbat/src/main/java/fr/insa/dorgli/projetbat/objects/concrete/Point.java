@@ -1,5 +1,6 @@
 package fr.insa.dorgli.projetbat.objects.concrete;
 
+import fr.insa.dorgli.projetbat.objects.BObject;
 import fr.insa.dorgli.projetbat.objects.Objects;
 import fr.insa.dorgli.projetbat.ui.gui.DrawingContext;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
@@ -82,5 +83,18 @@ public class Point extends DrawablePoint {
 		    String.valueOf(point.getY()),
 		    String.valueOf(niveau.getId())
 		);
+	}
+
+	@Override
+	public void clearChildren() { }
+
+	@Override
+	public final void addChildren(BObject... objects) {
+		throw new IllegalAccessError("Shouldn't call Point.addChildren()");
+	}
+
+	@Override
+	public void removeChildren(BObject... objects) {
+		throw new IllegalAccessError("Shouldn't call Point.removeChildren()");
 	}
 }

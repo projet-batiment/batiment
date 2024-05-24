@@ -1,5 +1,6 @@
 package fr.insa.dorgli.projetbat.objects.concrete;
 
+import fr.insa.dorgli.projetbat.objects.BObject;
 import fr.insa.dorgli.projetbat.objects.HasPrice;
 import fr.insa.dorgli.projetbat.objects.Objects;
 import fr.insa.dorgli.projetbat.objects.types.TypeRevetement;
@@ -21,7 +22,7 @@ public class RevetementMur extends Drawable implements HasPrice {
 	}
 	public RevetementMur(int id, TypeRevetement typeRevetement, double pos1L, double pos1H, double pos2L, double pos2H) {
 		super(id);
-		this.typeRevetement = typeRevetement;
+		setTypeRevetement(typeRevetement);
 		this.pos1L = pos1L;
 		this.pos1H = pos1H;
 		this.pos2L = pos2L;
@@ -32,8 +33,9 @@ public class RevetementMur extends Drawable implements HasPrice {
 		return typeRevetement;
 	}
 
-	public void setTypeRevetement(TypeRevetement typeRevetement) {
+	public final void setTypeRevetement(TypeRevetement typeRevetement) {
 		this.typeRevetement = typeRevetement;
+		typeRevetement.addParents(this);
 	}
 
 	public double getPos1L() {
@@ -130,5 +132,20 @@ public class RevetementMur extends Drawable implements HasPrice {
 		    String.valueOf(pos2L),
 		    String.valueOf(pos2H)
 		);
+	}
+
+	@Override
+	public void clearChildren() {
+		typeRevetement = null;
+	}
+
+	@Override
+	public final void addChildren(BObject... objects) {
+		throw new IllegalAccessError("Shouldn't call RevetementMur.addChildren()");
+	}
+
+	@Override
+	public void removeChildren(BObject... objects) {
+		throw new IllegalAccessError("Shouldn't call RevetementMur.removeChildren()");
 	}
 }

@@ -31,4 +31,8 @@ public abstract class SelectableId extends FancyToStrings {
 	public String toStringShort() {
 		return this.getClass().getSimpleName() + "#" + id;
 	}
+
+	public abstract void clearChildren();
+	public abstract void addChildren(BObject... objects);
+	public abstract void removeChildren(BObject... objects);
 }
