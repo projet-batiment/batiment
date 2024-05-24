@@ -120,7 +120,13 @@ public class Objects {
 	///// idCounter generator + setter
 
 	public int generateId() {
-		idCounter++;
+		while (all.get(idCounter) != null) {
+			idCounter++;
+
+			if (idCounter < 0) // in case of overflow
+				idCounter = 1;
+		}
+
 		return idCounter;
 	}
 

@@ -2,6 +2,7 @@ package fr.insa.dorgli.projetbat.objects.concrete;
 
 import fr.insa.dorgli.projetbat.objects.BObject;
 import fr.insa.dorgli.projetbat.objects.Objects;
+import fr.insa.dorgli.projetbat.objects.Serialize;
 import fr.insa.dorgli.projetbat.objects.types.TypeOuvertureNiveau;
 import fr.insa.dorgli.projetbat.ui.gui.DrawingContext;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
@@ -66,6 +67,10 @@ public class OuvertureNiveaux extends Drawable {
 	@Override
 	public void draw(DrawingContext ctxt, boolean isFocused) {
 		ctxt.tui().error("ouvertureNiveaux.draw: cannot draw ouvertureNiveaux");
+	}
+
+	@Override
+	public void serialize(Serialize serializer) {
 	}
 
 	public String serialize(Objects objects) {

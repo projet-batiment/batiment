@@ -2,6 +2,7 @@ package fr.insa.dorgli.projetbat.objects.types;
 
 import fr.insa.dorgli.projetbat.objects.Deserialize;
 import fr.insa.dorgli.projetbat.objects.Objects;
+import fr.insa.dorgli.projetbat.utils.EscapeStrings;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 
 public class TypeRevetement extends Type {
@@ -36,8 +37,8 @@ public class TypeRevetement extends Type {
 	public String serialize(Objects objects) {
 		return String.join(",",
 		    String.valueOf(super.getId()),
-		    Deserialize.escapeString(nom),
-		    Deserialize.escapeString(description),
+		    EscapeStrings.escapeString(nom),
+		    EscapeStrings.escapeString(description),
 		    String.valueOf(prixUnitaire)
 		);
 	}

@@ -2,11 +2,12 @@ package fr.insa.dorgli.projetbat.objects.concrete;
 
 import fr.insa.dorgli.projetbat.objects.BObject;
 import fr.insa.dorgli.projetbat.objects.Objects;
-import fr.insa.dorgli.projetbat.objects.Deserialize;
 import fr.insa.dorgli.projetbat.objects.Devis;
 import fr.insa.dorgli.projetbat.objects.HasInnerPrice;
 import fr.insa.dorgli.projetbat.objects.NameDesc;
+import fr.insa.dorgli.projetbat.objects.Serialize;
 import fr.insa.dorgli.projetbat.objects.types.TypeBatiment;
+import fr.insa.dorgli.projetbat.utils.EscapeStrings;
 import fr.insa.dorgli.projetbat.utils.FancyToStrings;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -122,11 +123,15 @@ public class Batiment extends BObject implements HasInnerPrice, NameDesc {
 	}
 
 	@Override
+	public void serialize(Serialize serializer) {
+	}
+
+	@Override
 	public String serialize(Objects objects) {
 		String out = String.join(",",
 		    String.valueOf(super.getId()),
-		    Deserialize.escapeString(nom),
-		    Deserialize.escapeString(description),
+		    EscapeStrings.escapeString(nom),
+		    EscapeStrings.escapeString(description),
 		    String.valueOf(typeBatiment.getId())
 		) + "\n";
 

@@ -3,6 +3,7 @@ package fr.insa.dorgli.projetbat.objects.concrete;
 import fr.insa.dorgli.projetbat.objects.BObject;
 import fr.insa.dorgli.projetbat.objects.HasPrice;
 import fr.insa.dorgli.projetbat.objects.Objects;
+import fr.insa.dorgli.projetbat.objects.Serialize;
 import fr.insa.dorgli.projetbat.objects.types.TypeRevetement;
 import fr.insa.dorgli.projetbat.ui.gui.DrawingContext;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
@@ -121,6 +122,10 @@ public class RevetementMur extends Drawable implements HasPrice {
 	@Override
 	public void draw(DrawingContext ctxt, boolean isFocused) {
 		ctxt.tui().error("revetementMur.draw: cannot draw revetementMur");
+	}
+
+	@Override
+	public void serialize(Serialize serializer) {
 	}
 
 	public String serialize(Objects objects) {

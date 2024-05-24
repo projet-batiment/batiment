@@ -3,6 +3,7 @@ package fr.insa.dorgli.projetbat.objects;
 import fr.insa.dorgli.projetbat.utils.FancyToStrings;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 import java.util.HashSet;
+import java.util.stream.Collectors;
 
 public class Devis extends SelectableId implements NameDesc, HasPrice {
 	private String nom;
@@ -76,11 +77,11 @@ public class Devis extends SelectableId implements NameDesc, HasPrice {
 		} else {
 			String ourShortStrings = asFancyToStrings().stream()
 			    .map(each -> each.toStringShort())
-			    .reduce(", ", String::concat);
+			    .collect(Collectors.joining(","));
 
 			String theirShortStrings = asFancyToStrings(studiedObjects).stream()
 			    .map(each -> each.toStringShort())
-			    .reduce(", ", String::concat);
+			    .collect(Collectors.joining(","));
 
 			throw new IllegalArgumentException("Already got a studiedObjects: [ "
 			    + ourShortStrings + " ] != null ( [ " + theirShortStrings + " ] )");
@@ -102,6 +103,10 @@ public class Devis extends SelectableId implements NameDesc, HasPrice {
 		    .fieldShortCollection("studiedObject", asFancyToStrings())
 		    .field("studiedObject price", prixToString())
         	    .getValue();
+	}
+
+	@Override
+	public void serialize(Serialize serializer) {
 	}
 
 	@Override

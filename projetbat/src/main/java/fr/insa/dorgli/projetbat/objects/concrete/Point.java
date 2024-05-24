@@ -2,6 +2,7 @@ package fr.insa.dorgli.projetbat.objects.concrete;
 
 import fr.insa.dorgli.projetbat.objects.BObject;
 import fr.insa.dorgli.projetbat.objects.Objects;
+import fr.insa.dorgli.projetbat.objects.Serialize;
 import fr.insa.dorgli.projetbat.ui.gui.DrawingContext;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 import java.awt.geom.Point2D;
@@ -74,6 +75,10 @@ public class Point extends DrawablePoint {
 		    .field("y", String.valueOf(point.getY()))
 		    .field("niveau", niveau == null ? "(null)" : niveau.toString(depth + 1))
         	    .getValue();
+	}
+
+	@Override
+	public void serialize(Serialize serializer) {
 	}
 
 	public String serialize(Objects objects) {

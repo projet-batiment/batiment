@@ -3,6 +3,7 @@ package fr.insa.dorgli.projetbat.objects.concrete;
 import fr.insa.dorgli.projetbat.objects.BObject;
 import fr.insa.dorgli.projetbat.objects.HasPrice;
 import fr.insa.dorgli.projetbat.objects.Objects;
+import fr.insa.dorgli.projetbat.objects.Serialize;
 import fr.insa.dorgli.projetbat.utils.FancyToStrings;
 import fr.insa.dorgli.projetbat.ui.gui.DrawingContext;
 import java.util.ArrayList;
@@ -81,6 +82,10 @@ public class PlafondSol extends Drawable implements HasPrice {
 		    .fieldShortCollection("revetements", (Collection<FancyToStrings>) ((ArrayList<?>) revetements))
 		    .fieldShortCollection("ouvertures", (Collection<FancyToStrings>) ((ArrayList<?>) ouvertures))
         	    .getValue();
+	}
+
+	@Override
+	public void serialize(Serialize serializer) {
 	}
 
 	public String serialize(Objects objects) {

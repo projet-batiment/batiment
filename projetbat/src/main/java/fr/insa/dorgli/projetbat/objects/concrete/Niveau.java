@@ -8,7 +8,9 @@ import fr.insa.dorgli.projetbat.objects.Devis;
 import fr.insa.dorgli.projetbat.objects.HasInnerPrice;
 import fr.insa.dorgli.projetbat.objects.HasPrice;
 import fr.insa.dorgli.projetbat.objects.NameDesc;
+import fr.insa.dorgli.projetbat.objects.Serialize;
 import fr.insa.dorgli.projetbat.ui.gui.DrawingContext;
+import fr.insa.dorgli.projetbat.utils.EscapeStrings;
 import java.util.ArrayList;
 import java.util.Collection;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
@@ -152,11 +154,15 @@ public class Niveau extends DrawableRoot implements NameDesc, HasInnerPrice {
         	    .getValue();
 	}
 
+	@Override
+	public void serialize(Serialize serializer) {
+	}
+
 	public String serialize(Objects objects) {
 		String out = String.join(",",
 		    String.valueOf(super.getId()),
-		    Deserialize.escapeString(nom),
-		    Deserialize.escapeString(description),
+		    EscapeStrings.escapeString(nom),
+		    EscapeStrings.escapeString(description),
 		    String.valueOf(hauteur)
 		) + "\n";
 

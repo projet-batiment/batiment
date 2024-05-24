@@ -1,12 +1,14 @@
 package fr.insa.dorgli.projetbat.core;
 
 import fr.insa.dorgli.projetbat.objects.BObject;
+import fr.insa.dorgli.projetbat.objects.Deserialize;
 import fr.insa.dorgli.projetbat.objects.Devis;
 import fr.insa.dorgli.projetbat.objects.concrete.Batiment;
 import fr.insa.dorgli.projetbat.objects.HasInnerPrice;
 import fr.insa.dorgli.projetbat.objects.NameDesc;
 import fr.insa.dorgli.projetbat.objects.Objects;
 import fr.insa.dorgli.projetbat.objects.SelectableId;
+import fr.insa.dorgli.projetbat.objects.Serialize;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 
 public class Project extends SelectableId implements HasInnerPrice, NameDesc {
@@ -75,9 +77,19 @@ public class Project extends SelectableId implements HasInnerPrice, NameDesc {
 	}
 
 	@Override
+	public void serialize(Serialize serializer) {
+	}
+
+	@Override
 	public String serialize(Objects objects) {
-		// TODO
-		throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+		String out = "FILE\n"
+		    + "version:" + Config.maximumSavefileVersion + "\n"
+		    + "projectName:" + projectName + "\n"
+		    + "projectDescription:" + projectDescription + "\n"
+		    + "EOS:FILE\n\n"
+		;
+
+		return out;
 	}
 
 	@Override

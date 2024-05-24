@@ -6,13 +6,16 @@ import fr.insa.dorgli.projetbat.objects.Deserialize;
 import fr.insa.dorgli.projetbat.objects.Devis;
 import fr.insa.dorgli.projetbat.objects.HasInnerPrice;
 import fr.insa.dorgli.projetbat.objects.NameDesc;
+import fr.insa.dorgli.projetbat.objects.Serialize;
 import fr.insa.dorgli.projetbat.objects.types.TypeAppart;
+import fr.insa.dorgli.projetbat.utils.EscapeStrings;
 import fr.insa.dorgli.projetbat.utils.FancyToStrings;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Appart extends BObject implements HasInnerPrice, NameDesc {
 	private String nom;
@@ -90,24 +93,26 @@ public class Appart extends BObject implements HasInnerPrice, NameDesc {
 		    .getValue();
 	}
 
+	@Override
 	public String serialize(Objects objects) {
-		String out = String.join(",",
-		    String.valueOf(super.getId()),
-		    Deserialize.escapeString(nom),
-		    Deserialize.escapeString(description),
-		    String.valueOf(typeAppart.getId())
-		) + "\n";
+		return "";
+	}
+
+	@Override
+	public void serialize(Serialize serializer) {
+		serializer.csv(
+		    super.getId(),
+		    nom,
+		    description,
+		    typeAppart.getId()
+		);
 
 		if (!pieces.isEmpty()) {
-			out += "PROP:pieces\n";
-			String[] pieceIds = new String[pieces.size()];
-			for (int i = 0; i < pieceIds.length; i++) {
-				pieceIds[i] = String.valueOf(pieces.get(i).getId());
-			}
-			out += String.join(",", pieceIds) + "\n";
+			serializer.prop("pieces");
+			serializer.csv(pieces.stream().map(each -> each.getId()).collect(Collectors.toList()));
 		}
 
-		return out + "EOS:Entry";
+		serializer.eoEntry();
 	}
 
 	@Override

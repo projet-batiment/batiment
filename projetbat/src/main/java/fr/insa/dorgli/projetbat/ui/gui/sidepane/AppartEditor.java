@@ -1,6 +1,7 @@
 package fr.insa.dorgli.projetbat.ui.gui.sidepane;
 import fr.insa.dorgli.projetbat.core.Config;
 import fr.insa.dorgli.projetbat.objects.SelectableId;
+import fr.insa.dorgli.projetbat.objects.Serialize;
 import fr.insa.dorgli.projetbat.objects.concrete.Appart;
 import fr.insa.dorgli.projetbat.objects.concrete.Piece;
 import fr.insa.dorgli.projetbat.objects.types.TypeAppart;
@@ -15,10 +16,13 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import fr.insa.dorgli.projetbat.ui.gui.sidepane.components.WrapLabel;
+import java.io.File;
+import java.io.IOException;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.stage.FileChooser;
 import javafx.util.Callback;
 
 public class AppartEditor extends NameDescEditor {
@@ -43,6 +47,17 @@ public class AppartEditor extends NameDescEditor {
 		typeAppartCombo.setCellFactory(callback);
 
 		ButtonnedListComponent pieces = new ButtonnedListComponent(config, this, (Collection<SelectableId>) (Collection<?>) appart.getPieces(), "pièces");
+		Button ser = new Button("Sérializer");
+		ser.setOnAction(eh -> {
+			FileChooser fileChooser = new FileChooser();
+			File f = fileChooser.showSaveDialog(config.getMainStage());
+			try {
+				Serialize serializer = new Serialize(f, config);
+				appart.serialize(serializer);
+			} catch (IOException ex) {
+				config.tui.error("failed to create serializer");
+			}
+		});
 
 		pieces.setRemoveObject(() -> {
 			Set objects = new HashSet(appart.getPieces());
@@ -105,6 +120,7 @@ public class AppartEditor extends NameDescEditor {
 					typeAppartCombo
 				),
 
+				ser,
 				pieces
 			)
 		);
