@@ -50,13 +50,12 @@ public class Point extends DrawablePoint {
 	}
 
 	@Override
-	public void draw(DrawingContext dcx, boolean isFocused) {
+	public void draw(DrawingContext dcx, DrawingContext.ObjectState ostate) {
 		// TODO: amnesic debug dive
-		dcx.tui().debug("Point: drawing " + (isFocused ? "focused " : "") + "point " + this.toStringShort());
-		if (isFocused) {
-			dcx.drawPoint(this, 10, Color.NAVAJOWHITE, true);
-		} else {
-			dcx.drawPoint(this, 7.5, Color.LIGHTSKYBLUE, false);
+		switch (ostate) {
+			case NORMAL -> dcx.drawPoint(this, 7.5, Color.LIGHTSKYBLUE, false);
+			case SELECTED -> dcx.drawPoint(this, 10, Color.web("8AA5E4"), true);
+			case MEMBER -> dcx.drawPoint(this, 7.5, Color.web("ccb18a"), true);
 		}
 	}
 

@@ -4,9 +4,9 @@ import fr.insa.dorgli.projetbat.objects.BObject;
 import fr.insa.dorgli.projetbat.ui.gui.DrawingContext;
 
 public abstract class Drawable extends BObject {
-	public abstract void draw(DrawingContext ctxt, boolean isFocused);
+	public abstract void draw(DrawingContext ctxt, DrawingContext.ObjectState ostate);
 	public void draw(DrawingContext ctxt) {
-		draw(ctxt, false);
+		draw(ctxt, DrawingContext.ObjectState.NORMAL);
 	};
 
 	public Drawable(int id) {

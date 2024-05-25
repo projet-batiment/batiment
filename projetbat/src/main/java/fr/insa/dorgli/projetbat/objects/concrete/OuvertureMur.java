@@ -64,7 +64,7 @@ public class OuvertureMur extends Drawable {
 	}
 
 	@Override
-	public void draw(DrawingContext ctxt, boolean isFocused) {
+	public void draw(DrawingContext ctxt, DrawingContext.ObjectState ostate) {
 		ctxt.tui().error("ouvertureMur.draw: cannot draw ouvertureMur");
 	}
 

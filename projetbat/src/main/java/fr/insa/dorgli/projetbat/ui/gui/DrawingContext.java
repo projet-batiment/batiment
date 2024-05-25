@@ -21,8 +21,12 @@ public class DrawingContext {
 	private CanvasContainer cc;
 
 	private HashSet<Drawable> drawnObjects;
-//	private Drawable rootObject; // l'objet principal lde la vue actuelle
-//	private Drawable selectedObject; // l'objet sélectionné avec un clic / menu
+
+	public enum ObjectState {
+		NORMAL,
+		SELECTED,
+		MEMBER // the parent object is selected
+	}
 
 	public DrawingContext(Config config, CanvasContainer cc) {
 		this.config = config;
@@ -75,9 +79,17 @@ public class DrawingContext {
 //			 TODO!! amnesic debug
 //			config.tui.debug("DrawingContext/draw: skipping already drawn object " + object.toString());
 //		} else {
-			config.tui.debug("DrawingContext/draw: drawing object " + object.toStringShort());
+			ObjectState ostate;
+			if (config.controller.state.isSelectedElement(object))
+				ostate = ObjectState.SELECTED;
+			else if ( object.getParents().contains(config.controller.state.getTheSelectedElement()) )
+				ostate = ObjectState.MEMBER;
+			else
+				ostate = ObjectState.NORMAL;
+
+			config.tui.debug("DrawingContext/draw: drawing " + ostate + " object " + object.toStringShort());
 			drawnObjects.add(object);
-			object.draw(this, config.controller.state.isSelectedElement(object));
+			object.draw(this, ostate);
 //		}
 	}
 

@@ -117,7 +117,7 @@ public class RevetementPlafondSol extends Drawable implements HasPrice {
 	}
 
 	@Override
-	public void draw(DrawingContext ctxt, boolean isFocused) {
+	public void draw(DrawingContext ctxt, DrawingContext.ObjectState ostate) {
 		ctxt.tui().error("revetementMur.draw: cannot draw revetementMur");
 	}
 

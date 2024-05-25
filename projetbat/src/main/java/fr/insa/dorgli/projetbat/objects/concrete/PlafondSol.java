@@ -66,7 +66,7 @@ public class PlafondSol extends Drawable implements HasPrice {
 	}
 
 	@Override
-	public void draw(DrawingContext ctxt, boolean isFocused) {
+	public void draw(DrawingContext ctxt, DrawingContext.ObjectState ostate) {
 		ctxt.tui().error("plafondSol.draw: cannot draw plafondSol");
 	}
 

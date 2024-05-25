@@ -64,7 +64,7 @@ public class OuvertureNiveaux extends Drawable {
 	}
 
 	@Override
-	public void draw(DrawingContext ctxt, boolean isFocused) {
+	public void draw(DrawingContext ctxt, DrawingContext.ObjectState ostate) {
 		ctxt.tui().error("ouvertureNiveaux.draw: cannot draw ouvertureNiveaux");
 	}
 

@@ -86,6 +86,12 @@ public class State {
 		config.getMainWindow().getCanvasContainer().moveView(Direction.FIT); // implies redraw
 	}
 
+	public SelectableId getTheSelectedElement() {
+		if (selectedElements.size() != 1)
+			return null;
+
+		return selectedElements.iterator().next();
+	}
 	public HashSet<SelectableId> getSelectedElements() {
 		return selectedElements;
 	}
