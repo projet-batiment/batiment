@@ -124,6 +124,23 @@ public class Batiment extends BObject implements HasInnerPrice, NameDesc {
 
 	@Override
 	public void serialize(Serialize serializer) {
+		serializer.csv(
+		    super.getId(),
+		    nom,
+		    description,
+		    typeBatiment.getId()
+		);
+
+		if (!niveaux.isEmpty()) {
+			serializer.prop("niveaux");
+			serializer.csv(niveaux.stream().map(each -> (int) each.getId()));
+		}
+		if (!apparts.isEmpty()) {
+			serializer.prop("apparts");
+			serializer.csv(apparts.stream().map(each -> (int) each.getId()));
+		}
+
+		serializer.eoEntry();
 	}
 
 	@Override

@@ -47,9 +47,9 @@ public class Mur extends DrawableLine implements HasPrice {
 		for (RevetementMur each: revetements1)
 			addRevetement1(each);
 
-		this.revetements1 = new ArrayList<>();
-		for (RevetementMur each: revetements1)
-			addRevetement1(each);
+		this.revetements2 = new ArrayList<>();
+		for (RevetementMur each: revetements2)
+			addRevetement2(each);
 
 		this.ouvertures = new ArrayList<>();
 		for (OuvertureMur each: ouvertures)
@@ -110,7 +110,7 @@ public class Mur extends DrawableLine implements HasPrice {
 		return Collections.unmodifiableList(revetements2);
 	}
 
-	public void addRevetement2(RevetementMur object) {
+	public final void addRevetement2(RevetementMur object) {
 		revetements2.add(object);
 		object.addParents(this);
 	}
@@ -156,7 +156,7 @@ public class Mur extends DrawableLine implements HasPrice {
 	public void draw(DrawingContext dcx, DrawingContext.ObjectState ostate) {
 		switch (ostate) {
 			case NORMAL -> dcx.drawLine(this, pointDebut, pointFin, 10, Color.DIMGRAY);
-			case SELECTED -> dcx.drawLine(this, pointDebut, pointFin, 15, Color.web("9c896c"));
+			case SELECTED -> dcx.drawLine(this, pointDebut, pointFin, 20, Color.web("8AA5E4"));
 			case MEMBER -> dcx.drawLine(this, pointDebut, pointFin, 10, Color.web("7f6f56"));
 		}
 	}
@@ -184,6 +184,34 @@ public class Mur extends DrawableLine implements HasPrice {
 
 	@Override
 	public void serialize(Serialize serializer) {
+		serializer.csv(
+		    super.getId(),
+		    pointDebut.getId(),
+		    pointFin.getId(),
+		    hauteur,
+		    typeMur.getId()
+		);
+
+		if (!revetements1.isEmpty()) {
+			serializer.innerProp("revetements1");
+			for (RevetementMur r: revetements1)
+				r.serialize(serializer);
+			serializer.eos();
+		}
+		if (!revetements2.isEmpty()) {
+			serializer.innerProp("revetements2");
+			for (RevetementMur r: revetements2)
+				r.serialize(serializer);
+			serializer.eos();
+		}
+		if (!ouvertures.isEmpty()) {
+			serializer.innerProp("ouvertures");
+			for (OuvertureMur r: ouvertures)
+				r.serialize(serializer);
+			serializer.eos();
+		}
+
+		serializer.eoEntry();
 	}
 
 	public String serialize(Objects objects) {

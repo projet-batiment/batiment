@@ -86,6 +86,20 @@ public class PlafondSol extends Drawable implements HasPrice {
 
 	@Override
 	public void serialize(Serialize serializer) {
+		serializer.csv(
+		    super.getId()
+		);
+
+		if (!revetements.isEmpty()) {
+			serializer.prop("revetements");
+			serializer.csv(revetements.stream().map(each -> (int) each.getId()));
+		}
+		if (!ouvertures.isEmpty()) {
+			serializer.prop("ouvertures");
+			serializer.csv(ouvertures.stream().map(each -> (int) each.getId()));
+		}
+
+		serializer.eoEntry();
 	}
 
 	public String serialize(Objects objects) {

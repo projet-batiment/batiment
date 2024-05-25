@@ -10,11 +10,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.SequencedCollection;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Serialize {
 	public final Config config;
 	private final BufferedWriter writer;
 	private final ArrayList<String> sections;
+
+	private boolean closed;
 
 	private int ioErrorCounter = 0;
 
@@ -22,9 +25,15 @@ public class Serialize {
 		this.config = config;
 		this.writer = new BufferedWriter(new FileWriter(file));
 		this.sections = new ArrayList<>();
+
+		this.closed = false;
 	}
 
 	private void line(String line) {
+		if (closed) {
+			config.tui.error("serialize/line: the writer is already closed!");
+		}
+
 		try {
 			writer.write(line);
 			writer.newLine();
@@ -49,15 +58,16 @@ public class Serialize {
 	 * @param objectsType
 	 */
 	public void objectsSection(String objectsType) {
-		section("OBJECTS:" + objectsType);
+		sections.add("OBJECTS:" + objectsType);
+		line(objectsType);
 	}
 
 	/**
-	 * adds a new INNER section and updates section path
+	 * adds a new INNER-PROP section and updates section path
 	 * @param objectsType
 	 */
-	public void innerSection(String objectsType) {
-		section("INNER:" + objectsType);
+	public void innerProp(String objectsType) {
+		section("PROP:" + objectsType);
 	}
 
 	/**
@@ -118,6 +128,28 @@ public class Serialize {
 		    .map(each -> EscapeStrings.escapeString(String.valueOf(each)) )
 		    .collect(Collectors.joining(","))
 		);
+	}
+
+	/**
+	 * adds a line composed of the CSV-combined escaped strings of the given objects
+	 * @param stream a strem of Integers
+	 */
+	public void csv(Stream<Integer> stream) {
+		line(stream
+		    .map(each -> EscapeStrings.escapeString(String.valueOf(each)) )
+		    .collect(Collectors.joining(","))
+		);
+	}
+
+	public void end() {
+		try {
+			closed = true;
+			writer.close();
+			config.tui.debug("serialize: successfully closed the writer");
+		} catch (IOException ex) {
+			ioErrorCounter++;
+			config.tui.warn("serialize: IOException occured when closing file");
+		}
 	}
 
 	public int getIoErrorCounter() {

@@ -1,7 +1,7 @@
 package fr.insa.dorgli.projetbat.objects.types;
 
-import fr.insa.dorgli.projetbat.objects.Deserialize;
 import fr.insa.dorgli.projetbat.objects.Objects;
+import fr.insa.dorgli.projetbat.objects.Serialize;
 import fr.insa.dorgli.projetbat.utils.EscapeStrings;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 
@@ -55,6 +55,18 @@ public class TypeOuvertureMur extends Type {
 		    .field("hauteur", String.valueOf(hauteur))
 		    .field("prixOuverture", String.valueOf(prixOuverture))
         	    .getValue();
+	}
+
+	@Override
+	public void serialize(Serialize serializer) {
+		serializer.csv(
+		    super.getId(),
+		    nom,
+		    description,
+		    hauteur,
+		    largeur,
+		    prixOuverture
+		);
 	}
 
 	@Override

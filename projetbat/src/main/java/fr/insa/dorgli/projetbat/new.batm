@@ -1,0 +1,303 @@
+FILE
+version,6
+projectName,Maisonnette
+projectDescription,Exemple de sauvegarde simple mais complète qui contient tout ce que notre programme sait gérer;&nIl permet aussi de faire tests en tous genres sur le bon fonctionnement de notre logiciel
+EOS:FILE
+OBJECTS:TypeBatiment
+298,Dépendence,Une petite maison de jardin
+EOS:TypeBatiment
+OBJECTS:TypeAppart
+299,Intérieur,Partie intérieure de la maison
+EOS:TypeAppart
+OBJECTS:TypeMur
+202,Mur intérieur porteur,En brique,0.25,157.8
+201,Mur intérieur,En placo,0.1,35.0
+203,Barrière,Barrière de mezzanine,0.07,32.0
+200,Mur extérieur,En brique,0.35,180.0
+EOS:TypeMur
+OBJECTS:TypeRevetement
+211,Parquet 1,Pour le salon,53.33
+218,Crépi extérieur,Nuance de lila,12.0
+215,Peinture murale blanche,,36.0
+214,Parquet 2,Pour la mezzanine,65.0
+217,Plafond en bois,Sous la mezzanine ; techniquement&c il n'y a pas de revêtement puisque le bois est nu&c mais il est plus cher,0.0
+210,Peinture murale,Couleurs diverses (prix unique),39.56
+212,Carrelage sombre,Pour la cuisine,42.0
+213,Carrelage clair,Entrée et chambres,38.95
+216,Peinture plafond blanche,,39.87
+EOS:TypeRevetement
+OBJECTS:TypeOuvertureNiveaux
+241,Escalier en colimaçon,,2.0,2.0,680.0
+240,Escalier d'angle,,4.2,1.0,950.0
+EOS:TypeOuvertureNiveaux
+OBJECTS:TypeOuvertureMur
+233,Porte d'entrée,,2.15,0.9,439.0
+231,Porte-fenêtre,Baie vitrée coulissante,2.15,2.4,739.0
+232,Petite fenêtre,,0.75,0.6,89.9
+230,Fenêtre normale,Oscillo-battant PVC,0.995,0.65,109.0
+234,Porte d'intérieur,,2.05,80.0,110.0
+EOS:TypeOuvertureMur
+OBJECTS:Point
+106,2.0,3.0,751
+101,0.0,0.0,751
+113,4.0,3.0,752
+110,4.0,1.0,751
+111,2.0,0.0,752
+112,4.0,0.0,752
+108,0.0,2.0,751
+107,0.0,3.0,751
+102,2.0,0.0,751
+109,2.0,2.0,751
+104,7.0,1.0,751
+114,2.0,3.0,752
+105,7.0,3.0,751
+115,4.0,3.0,751
+103,4.0,0.0,751
+EOS:Point
+OBJECTS:Mur
+162,103,104,4.4,200
+PROP:revetements1
+1620
+PROP:revetements2
+1621,1622
+PROP:ouvertures
+1623
+EOS:Entry
+175,114,111,2.2,202
+PROP:revetements1
+1750
+PROP:revetements2
+1751
+PROP:ouvertures
+1752
+EOS:Entry
+166,107,108,2.4,200
+PROP:revetements1
+1660
+PROP:revetements2
+1661
+EOS:Entry
+169,106,109,2.4,202
+PROP:revetements1
+1690
+PROP:revetements2
+1691
+EOS:Entry
+164,105,115,4.4,200
+PROP:revetements1
+1640
+PROP:revetements2
+1641,1642
+PROP:ouvertures
+1643
+EOS:Entry
+168,108,109,2.4,201
+PROP:revetements1
+1680
+PROP:revetements2
+1681
+PROP:ouvertures
+1682
+EOS:Entry
+170,109,102,2.4,202
+PROP:revetements1
+1700
+PROP:revetements2
+1701
+PROP:ouvertures
+1702
+EOS:Entry
+160,101,102,2.4,200
+PROP:revetements1
+1600
+PROP:revetements2
+1601
+EOS:Entry
+163,104,105,4.4,200
+PROP:revetements1
+1630
+PROP:revetements2
+1631
+EOS:Entry
+171,103,110,4.4,201
+PROP:revetements1
+1710
+PROP:revetements2
+1711
+EOS:Entry
+173,112,113,2.2,203
+EOS:Entry
+172,111,112,2.2,201
+PROP:revetements1
+1720
+PROP:revetements2
+1721
+EOS:Entry
+174,113,114,2.2,201
+PROP:revetements1
+1740
+PROP:revetements2
+1741
+PROP:ouvertures
+1742
+EOS:Entry
+161,102,103,2.2,200
+PROP:revetements1
+1610
+PROP:revetements2
+1611
+EOS:Entry
+176,115,106,2.2,200
+PROP:revetements1
+1760
+PROP:revetements2
+1761
+PROP:ouvertures
+1762,1763
+EOS:Entry
+165,106,107,2.4,200
+PROP:revetements1
+1650
+PROP:revetements2
+1651
+EOS:Entry
+167,108,101,2.4,200
+PROP:revetements1
+1670
+PROP:revetements2
+1671
+PROP:ouvertures
+1672
+EOS:Entry
+EOS:Mur
+OBJECTS:Piece
+251,Salon,Fait aussi salle à manger
+PROP:murs
+162,163,164,171
+PROP:points
+103,104,104,105,105,115,103,110,103,104,105,115,110
+PROP:plafond
+603
+PROP:revetements
+6030
+EOS:Entry
+EOS:PROP:plafond
+PROP:sol
+604
+PROP:revetements
+6040
+PROP:ouvertures
+6041
+EOS:Entry
+EOS:PROP:sol
+EOS:Entry
+253,Espace d'eau,Salle de bain de la chambre
+PROP:murs
+165,166,168,169
+PROP:points
+106,107,107,108,108,109,106,109,108,109,106,107
+PROP:plafond
+607
+PROP:revetements
+6070
+EOS:Entry
+EOS:PROP:plafond
+PROP:sol
+608
+PROP:revetements
+6080
+EOS:Entry
+EOS:PROP:sol
+EOS:Entry
+254,Mezzanine,Fait à la fois une sorte de bureau et de salle de jour
+PROP:murs
+172,173,174,175
+PROP:points
+111,112,112,113,113,114,114,111,111,112,113,114
+PROP:plafond
+609
+PROP:revetements
+6090
+EOS:Entry
+EOS:PROP:plafond
+PROP:sol
+610
+PROP:revetements
+6100
+PROP:ouvertures
+6101
+EOS:Entry
+EOS:PROP:sol
+EOS:Entry
+252,Chambre,Unique chambre à coucher de la maisonnette
+PROP:murs
+160,170,168,167
+PROP:points
+101,102,109,102,108,109,108,101,101,102,109,108
+PROP:plafond
+605
+PROP:revetements
+6050
+EOS:Entry
+EOS:PROP:plafond
+PROP:sol
+606
+PROP:revetements
+6060
+EOS:Entry
+EOS:PROP:sol
+EOS:Entry
+250,Pièce principale,Entrée&c cuisine
+PROP:murs
+161,171,176,169,170
+PROP:points
+102,103,103,110,115,106,106,109,109,102,102,103,110,115,106,109
+PROP:plafond
+601
+PROP:revetements
+6010
+PROP:ouvertures
+6011
+EOS:Entry
+EOS:PROP:plafond
+PROP:sol
+602
+PROP:revetements
+6020,6021
+EOS:Entry
+EOS:PROP:sol
+EOS:Entry
+EOS:Piece
+OBJECTS:Appart
+701,La nouvelle maisonnette du jardin,Un projet qui se réalisera peut être un jour,299
+PROP:pieces
+250,251,252,253,254
+EOS:Entry
+EOS:Appart
+OBJECTS:Niveau
+751,Rez de chaussée,L'étage des pièces de vie et des chambres,2.4
+PROP:apparts
+701
+PROP:pieces
+250,251,252,253
+EOS:Entry
+752,Premier étage,Mezzanine,2.2
+PROP:apparts
+701
+PROP:pieces
+254
+EOS:Entry
+EOS:Niveau
+OBJECTS:Batiment
+501,Mon batiment,Contient quelques pièces de vie ainsi qu'un garage basique,298
+PROP:niveaux
+751,752
+PROP:apparts
+701
+EOS:Entry
+EOS:Batiment
+OBJECTS:Devis
+EOS:Devis
+FILE
+last view,501,751
+EOS:FILE

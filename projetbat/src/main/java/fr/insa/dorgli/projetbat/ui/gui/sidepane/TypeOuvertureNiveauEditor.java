@@ -1,7 +1,7 @@
 package fr.insa.dorgli.projetbat.ui.gui.sidepane;
 
 import fr.insa.dorgli.projetbat.core.Config;
-import fr.insa.dorgli.projetbat.objects.types.TypeOuvertureNiveau;
+import fr.insa.dorgli.projetbat.objects.types.TypeOuvertureNiveaux;
 import java.util.Arrays;
 import javafx.event.ActionEvent;
 import fr.insa.dorgli.projetbat.ui.gui.sidepane.components.WrapLabel;
@@ -11,7 +11,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 
 public class TypeOuvertureNiveauEditor extends NameDescEditor {
-	public TypeOuvertureNiveauEditor(Config config, TypeOuvertureNiveau typeOuvertureNiveau) {
+	public TypeOuvertureNiveauEditor(Config config, TypeOuvertureNiveaux typeOuvertureNiveau) {
 		super(config, "TypeOuvertureNiveau", typeOuvertureNiveau);
 
 		TextField hauteur = new TextField();

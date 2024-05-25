@@ -178,6 +178,32 @@ public class Piece extends DrawablePath implements HasInnerPrice, NameDesc {
 
 	@Override
 	public void serialize(Serialize serializer) {
+		serializer.csv(
+		    super.getId(),
+		    nom,
+		    description
+		);
+
+		if (!murs.isEmpty()) {
+			serializer.prop("murs");
+			serializer.csv(murs.stream().map(each -> (int) each.getId()));
+		}
+		if (!points.isEmpty()) {
+			serializer.prop("points");
+			serializer.csv(points.stream().map(each -> (int) each.getId()));
+		}
+		if (plafond != null) {
+			serializer.innerProp("plafond");
+			plafond.serialize(serializer);
+			serializer.eos();
+		}
+		if (sol != null) {
+			serializer.innerProp("sol");
+			sol.serialize(serializer);
+			serializer.eos();
+		}
+
+		serializer.eoEntry();
 	}
 
 	public String serialize(Objects objects) {

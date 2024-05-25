@@ -19,8 +19,8 @@ public class Config {
 	public static String applicationName = "ProjetBat";
 
 	public static int version = 5;
-	public static int minimumSavefileVersion = 5;
-	public static int maximumSavefileVersion = 5;
+	public static int minimumSavefileVersion = 6;
+	public static int maximumSavefileVersion = 6;
 
 	// propriétés constantes
 	// TODO: classe UI (abstraite??) pour gérer les logs tui/gui

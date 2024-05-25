@@ -107,6 +107,18 @@ public class Devis extends SelectableId implements NameDesc, HasPrice {
 
 	@Override
 	public void serialize(Serialize serializer) {
+		serializer.csv(
+		    super.getId(),
+		    nom,
+		    description
+		);
+
+		if (!studiedObjects.isEmpty()) {
+			serializer.prop("objects");
+			serializer.csv(studiedObjects.stream().map(each -> (int) ((SelectableId) each).getId()));
+		}
+
+		serializer.eoEntry();
 	}
 
 	@Override

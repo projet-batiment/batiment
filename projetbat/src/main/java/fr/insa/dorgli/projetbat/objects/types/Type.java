@@ -58,15 +58,16 @@ public abstract class Type extends BObject implements NameDesc {
 
 	@Override
 	public void serialize(Serialize serializer) {
+		serializer.csv(
+		    super.getId(),
+		    nom,
+		    description
+		);
 	}
 
 	@Override
 	public String serialize(Objects objects) {
-		return String.join(",",
-		    String.valueOf(super.getId()),
-		    EscapeStrings.escapeString(nom),
-		    EscapeStrings.escapeString(description)
-		);
+		return "";
 	}
 
 	@Override

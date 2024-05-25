@@ -1,11 +1,11 @@
 package fr.insa.dorgli.projetbat.objects.types;
 
-import fr.insa.dorgli.projetbat.objects.Deserialize;
 import fr.insa.dorgli.projetbat.objects.Objects;
+import fr.insa.dorgli.projetbat.objects.Serialize;
 import fr.insa.dorgli.projetbat.utils.EscapeStrings;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 
-public class TypeOuvertureNiveau extends Type {
+public class TypeOuvertureNiveaux extends Type {
 	// j'ai pris le parti d'utiliser "largeur" et "hauteur" pour mieux distinguer
 	//   les deux directions (largeur et longueurs peuvent prêter à confusion)
 	// Si on ne change plus les TypeOuvertureNiveau ni les TypeOuvertureMur,
@@ -15,12 +15,12 @@ public class TypeOuvertureNiveau extends Type {
 	private double largeur;
 	public double prixOuverture;
 
-	public TypeOuvertureNiveau() {
+	public TypeOuvertureNiveaux() {
 		this.hauteur = 0;
 		this.largeur = 0;
 		this.prixOuverture = 0;
 	}
-	public TypeOuvertureNiveau(int id, String nom, String description, double hauteur, double largeur, double prixOuverture) {
+	public TypeOuvertureNiveaux(int id, String nom, String description, double hauteur, double largeur, double prixOuverture) {
 		super(id, nom, description);
 		this.hauteur = hauteur;
 		this.largeur = largeur;
@@ -60,6 +60,18 @@ public class TypeOuvertureNiveau extends Type {
 		    .field("hauteur", String.valueOf(hauteur))
 		    .field("prixOuverture", String.valueOf(prixOuverture))
         	    .getValue();
+	}
+
+	@Override
+	public void serialize(Serialize serializer) {
+		serializer.csv(
+		    super.getId(),
+		    nom,
+		    description,
+		    hauteur,
+		    largeur,
+		    prixOuverture
+		);
 	}
 
 	@Override

@@ -3,12 +3,12 @@ package fr.insa.dorgli.projetbat.objects.concrete;
 import fr.insa.dorgli.projetbat.objects.BObject;
 import fr.insa.dorgli.projetbat.objects.Objects;
 import fr.insa.dorgli.projetbat.objects.Serialize;
-import fr.insa.dorgli.projetbat.objects.types.TypeOuvertureNiveau;
+import fr.insa.dorgli.projetbat.objects.types.TypeOuvertureNiveaux;
 import fr.insa.dorgli.projetbat.ui.gui.DrawingContext;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 
 public class OuvertureNiveaux extends Drawable {
-	TypeOuvertureNiveau typeOuverture;
+	TypeOuvertureNiveaux typeOuverture;
 	double posL;
 	double posH;
 
@@ -16,18 +16,18 @@ public class OuvertureNiveaux extends Drawable {
 		posL = 0;
 		posH = 0;
 	}
-	public OuvertureNiveaux(int id, TypeOuvertureNiveau typeOuverture, double posL, double posH) {
+	public OuvertureNiveaux(int id, TypeOuvertureNiveaux typeOuverture, double posL, double posH) {
 		super(id);
 		setTypeOuverture(typeOuverture);
 		this.posL = posL;
 		this.posH = posH;
 	}
 
-	public TypeOuvertureNiveau getTypeOuverture() {
+	public TypeOuvertureNiveaux getTypeOuverture() {
 		return typeOuverture;
 	}
 
-	public final void setTypeOuverture(TypeOuvertureNiveau typeOuverture) {
+	public final void setTypeOuverture(TypeOuvertureNiveaux typeOuverture) {
 		this.typeOuverture = typeOuverture;
 		typeOuverture.addParents(this);
 	}

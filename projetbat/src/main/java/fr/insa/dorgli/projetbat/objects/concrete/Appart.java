@@ -109,7 +109,7 @@ public class Appart extends BObject implements HasInnerPrice, NameDesc {
 
 		if (!pieces.isEmpty()) {
 			serializer.prop("pieces");
-			serializer.csv(pieces.stream().map(each -> each.getId()).collect(Collectors.toList()));
+			serializer.csv(pieces.stream().map(each -> (int) each.getId()));
 		}
 
 		serializer.eoEntry();

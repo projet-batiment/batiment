@@ -3,7 +3,6 @@ package fr.insa.dorgli.projetbat.objects.concrete;
 import fr.insa.dorgli.projetbat.objects.BObject;
 import fr.insa.dorgli.projetbat.objects.Objects;
 import fr.insa.dorgli.projetbat.utils.FancyToStrings;
-import fr.insa.dorgli.projetbat.objects.Deserialize;
 import fr.insa.dorgli.projetbat.objects.Devis;
 import fr.insa.dorgli.projetbat.objects.HasInnerPrice;
 import fr.insa.dorgli.projetbat.objects.HasPrice;
@@ -156,6 +155,27 @@ public class Niveau extends DrawableRoot implements NameDesc, HasInnerPrice {
 
 	@Override
 	public void serialize(Serialize serializer) {
+		serializer.csv(
+		    super.getId(),
+		    nom,
+		    description,
+		    hauteur
+		);
+
+		if (!apparts.isEmpty()) {
+			serializer.prop("apparts");
+			serializer.csv(apparts.stream().map(each -> (int) each.getId()));
+		}
+		if (!pieces.isEmpty()) {
+			serializer.prop("pieces");
+			serializer.csv(pieces.stream().map(each -> (int) each.getId()));
+		}
+		if (!orpheans.isEmpty()) {
+			serializer.prop("orpheans");
+			serializer.csv(orpheans.stream().map(each -> (int) each.getId()));
+		}
+
+		serializer.eoEntry();
 	}
 
 	public String serialize(Objects objects) {

@@ -52,7 +52,6 @@ public class Point extends DrawablePoint {
 
 	@Override
 	public void draw(DrawingContext dcx, DrawingContext.ObjectState ostate) {
-		// TODO: amnesic debug dive
 		switch (ostate) {
 			case NORMAL -> dcx.drawPoint(this, 7.5, Color.LIGHTSKYBLUE, false);
 			case SELECTED -> dcx.drawPoint(this, 10, Color.web("8AA5E4"), true);
@@ -78,6 +77,12 @@ public class Point extends DrawablePoint {
 
 	@Override
 	public void serialize(Serialize serializer) {
+		serializer.csv(
+		    super.getId(),
+		    point.getX(),
+		    point.getY(),
+		    niveau.getId()
+		);
 	}
 
 	public String serialize(Objects objects) {

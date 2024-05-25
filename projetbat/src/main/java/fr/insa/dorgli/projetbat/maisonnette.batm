@@ -1,5 +1,5 @@
 FILE
-version:5
+version:6
 projectName:Maisonnette
 projectDescription:Exemple de sauvegarde simple mais complète qui contient tout ce que notre programme sait gérer;&nIl permet aussi de faire tests en tous genres sur le bon fonctionnement de notre logiciel
 EOS:FILE
@@ -42,10 +42,10 @@ OBJECTS:TypeOuvertureMur
 234,Porte d'intérieur,,2.05,80,110
 EOS:TypeOuvertureMur
 
-OBJECTS:TypeOuvertureNiveau
+OBJECTS:TypeOuvertureNiveaux
 240,Escalier d'angle,,4.2,1,950
 241,Escalier en colimaçon,,2,2,680
-EOS:TypeOuvertureNiveau
+EOS:TypeOuvertureNiveaux
 
 OBJECTS:TypeMur
 200,Mur extérieur,En brique,0.35,180
@@ -418,5 +418,5 @@ EOS:Entry
 EOS:Batiment
 
 FILE
-last viewRootElement:501:751
+last view:501:751
 EOS:FILE
