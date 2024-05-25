@@ -124,6 +124,14 @@ public class RevetementPlafondSol extends Drawable implements HasPrice {
 
 	@Override
 	public void serialize(Serialize serializer) {
+		serializer.csv(
+			super.getId(),
+			typeRevetement.getId(),
+			pos1L,
+			pos1H,
+			pos2L,
+			pos2H
+		);
 	}
 
 	public String serialize(Objects objects) {

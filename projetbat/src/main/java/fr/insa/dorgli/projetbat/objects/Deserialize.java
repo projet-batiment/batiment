@@ -864,7 +864,7 @@ public class Deserialize {
 		config.tui.begin();
 		ArrayList<OuvertureNiveaux> ouvertureNiveaux = new ArrayList<>();
 
-		CsvRegexMatcher matcher = idCsvRegexMatcher("iii");
+		CsvRegexMatcher matcher = idCsvRegexMatcher("idd");
 		debug("regex: '" + matcher.regex + "'");
 		for (
 			SmartReader.ReadResult result = sreader.readLine();
