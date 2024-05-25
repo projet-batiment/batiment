@@ -58,8 +58,8 @@ public class Serialize {
 	 * @param objectsType
 	 */
 	public void objectsSection(String objectsType) {
-		sections.add("OBJECTS:" + objectsType);
-		line(objectsType);
+		sections.add(objectsType);
+		line("OBJECTS:" + objectsType);
 	}
 
 	/**
@@ -67,7 +67,8 @@ public class Serialize {
 	 * @param objectsType
 	 */
 	public void innerProp(String objectsType) {
-		section("PROP:" + objectsType);
+		sections.add(objectsType);
+		line("PROP:" + objectsType);
 	}
 
 	/**

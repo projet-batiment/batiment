@@ -42,10 +42,10 @@ OBJECTS:TypeOuvertureMur
 234,Porte d'intérieur,,2.05,80,110
 EOS:TypeOuvertureMur
 
-OBJECTS:TypeOuvertureNiveaux
+OBJECTS:TypeOuvertureNiveau
 240,Escalier d'angle,,4.2,1,950
 241,Escalier en colimaçon,,2,2,680
-EOS:TypeOuvertureNiveaux
+EOS:TypeOuvertureNiveau
 
 OBJECTS:TypeMur
 200,Mur extérieur,En brique,0.35,180
@@ -418,5 +418,5 @@ EOS:Entry
 EOS:Batiment
 
 FILE
-last view:501:751
+last viewRootElement:501:751
 EOS:FILE

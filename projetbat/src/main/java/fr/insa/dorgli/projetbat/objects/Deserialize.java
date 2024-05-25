@@ -63,9 +63,8 @@ public class Deserialize {
 		config.tui.warn(sreader.getLineNumber() + ": " + text);
 	}
 	private void error(String text) {
-		String line = sreader.getLineNumber() + ": " + text;
-		config.tui.error(line);
-		errorMessages.add(line);
+		config.tui.error(sreader.getLineNumber() + ": " + text);
+		errorMessages.add(text);
 	}
 
 	private void errorParse(String text, Exception e) {
@@ -124,16 +123,12 @@ public class Deserialize {
 		public Batiment currentBatiment; 
 		public Niveau currentNiveau; 
 		public DrawableRoot viewRootElement; 
-
-		public int loadedVersion = -1;
 	}
 
 	public class Result {
 		public enum Status {
 			SUCCESS,
 			FILE_NOT_FOUND,
-			FILE_TOO_OLD,
-			FILE_TOO_RECENT,
 			PARSE_ERROR,
 			UNEXPECTED_ERROR,
 		}
@@ -208,7 +203,7 @@ public class Deserialize {
 							case "Point" -> 		pseudoPoints = pointsFromString(newLoadedProject.objects);
 							case "TypeRevetement" -> 	typeRevetementsFromString(newLoadedProject.objects);
 							case "TypeOuvertureMur" -> 	typeOuvertureMursFromString(newLoadedProject.objects);
-							case "TypeOuvertureNiveaux" -> 	typeOuvertureNiveauxFromString(newLoadedProject.objects);
+							case "TypeOuvertureNiveau" -> 	typeOuvertureNiveauxFromString(newLoadedProject.objects);
 							case "TypeMur" -> 		typeMursFromString(newLoadedProject.objects);
 							case "TypeAppart" -> 		typeAppartsFromString(newLoadedProject.objects);
 							case "TypeBatiment" -> 		typeBatimentsFromString(newLoadedProject.objects);
@@ -243,9 +238,9 @@ public class Deserialize {
 				}
 			}
 
-			if (config.tui.getErrCounter() == 0)
-				for (PseudoPoint p: pseudoPoints)
-					p.setNiveau(newLoadedProject.objects);
+			for (PseudoPoint p: pseudoPoints) {
+				p.setNiveau(newLoadedProject.objects);
+			}
 
 		} catch (Exception e) {
 			error("erreur inattendue lors de la lecture du fichier '" + file.getPath() + "': " + e.getMessage());
@@ -256,25 +251,10 @@ public class Deserialize {
 
 		if (config.tui.getErrCounter() > 0) {
 			config.tui.ended(TUI.red(config.tui.getErrCounter() + " errors"));
-
-			if (newLoadedProject.loadedVersion < 0)
- 				// version has not been read => parsing errored
-				return config.tui.popWhere( new Result(Result.Status.PARSE_ERROR, errorMessages.toArray(String[]::new)) );
-
-			if (newLoadedProject.loadedVersion < Config.minimumSavefileVersion)
- 				// too old
-				return config.tui.popWhere( new Result(Result.Status.FILE_TOO_OLD, errorMessages.toArray(String[]::new)) );
-
-			else if (newLoadedProject.loadedVersion > Config.maximumSavefileVersion)
- 				// too recent
-				return config.tui.popWhere( new Result(Result.Status.FILE_TOO_RECENT, errorMessages.toArray(String[]::new)) );
-
-			else
- 				// good version but parsing errored
-				return config.tui.popWhere( new Result(Result.Status.PARSE_ERROR, errorMessages.toArray(String[]::new)) );
+			return config.tui.popWhere( new Result(Result.Status.PARSE_ERROR, errorMessages.toArray(String[]::new)) );
 		} else {
 			config.tui.ended(TUI.green("success"));
-		}
+	}
 
 		return config.tui.popWhere( new Result(newLoadedProject) );
 	}
@@ -292,18 +272,15 @@ public class Deserialize {
 		) {
 			debug(result.toString());
 			String line = result.getText();
-			command = line.split(",");
+			command = line.split(":", 2);
 			switch (command[0]) {
 				case "version" -> {
 					try {
 						int savefileVersion = Integer.parseInt(command[1]);
-						newLoadedProject.loadedVersion = savefileVersion;
 						if (savefileVersion < Config.minimumSavefileVersion) {
 							error("savefile is too old (v" + savefileVersion + " < min " + Config.minimumSavefileVersion + ")");
-							return;
 						} else if (savefileVersion > Config.maximumSavefileVersion) {
 							error("savefile is too recent (v" + savefileVersion + " > max " + Config.maximumSavefileVersion + ")");
-							return;
 						} else {
 							debug("savefile is of correct version " + savefileVersion);
 						}
@@ -324,40 +301,33 @@ public class Deserialize {
 					debug("set projectDescription = '" + unescaped + "'");
 				}
 
-				case "last view" -> {
-					if (command.length == 3) {
-						try {
-							int batimentId = Integer.parseInt(command[1]);
-							int rootId = Integer.parseInt(command[2]);
+				case "last viewRootElement" -> {
+					try {
+						String[] splitted = command[1].split(":");
+						int batimentId = Integer.parseInt(splitted[0]);
+						int rootId = Integer.parseInt(splitted[1]);
 
-							if (batimentId > 0) {
-								SelectableId batimentObject = newLoadedProject.objects.get(batimentId);
-								if (batimentObject instanceof Batiment batiment) {
-									debug("last batiment read: " + batiment);
-									newLoadedProject.currentBatiment = batiment;
-								} else if (batimentObject == null) {
-									errorIdNone("Batiment", batimentId);
-								} else {
-									errorIdWrongType("Batiment", batimentId);
-								}
-
-								if (rootId > 0) {
-									SelectableId rootObject = newLoadedProject.objects.get(rootId);
-									if (rootObject instanceof DrawableRoot drawable) {
-										debug("last viewRootElement read: " + drawable);
-										newLoadedProject.viewRootElement = drawable;
-									} else if (rootObject == null) {
-										errorIdNone("DrawableRoot", rootId);
-									} else {
-										errorIdWrongType("DrawableRoot", rootId);
-									}
-								}
-							}
-						} catch (NumberFormatException e) {
-							errorParse(line, e);
+						SelectableId batimentObject = newLoadedProject.objects.get(batimentId);
+						if (batimentObject instanceof Batiment batiment) {
+							debug("last batiment read: " + batiment);
+							newLoadedProject.currentBatiment = batiment;
+						} else if (batimentObject == null) {
+							errorIdNone("Batiment", batimentId);
+						} else {
+							errorIdWrongType("Batiment", batimentId);
 						}
-					} else {
-						errorSyntax(line);
+
+						SelectableId rootObject = newLoadedProject.objects.get(rootId);
+						if (rootObject instanceof DrawableRoot drawable) {
+							debug("last viewRootElement read: " + drawable);
+							newLoadedProject.viewRootElement = drawable;
+						} else if (rootObject == null) {
+							errorIdNone("DrawableRoot", rootId);
+						} else {
+							errorIdWrongType("DrawableRoot", rootId);
+						}
+					} catch (NumberFormatException e) {
+						errorParse(line, e);
 					}
 				}
 
@@ -582,9 +552,9 @@ public class Deserialize {
 						objects.put(object);
 						debug("read " + object);
 					} else if (propObject == null) {
-						errorIdNone("TypeOuvertureNiveaux", trId);
+						errorIdNone("TypeOuvertureNiveau", trId);
 					} else {
-						errorIdWrongType("TypeOuvertureNiveaux", trId);
+						errorIdWrongType("TypeOuvertureNiveau", trId);
 					}
 				} catch (NumberFormatException e) {
 					errorParse(line, e);
@@ -634,9 +604,9 @@ public class Deserialize {
 						objects.put(object);
 						debug("read " + object);
 					} else if (propObject == null) {
-						errorIdNone("TypeOuvertureMur", toId);
+						errorIdNone("TypeOuvertureNiveau", toId);
 					} else {
-						errorIdWrongType("TypeOuvertureMur", toId);
+						errorIdWrongType("TypeOuvertureNiveau", toId);
 					}
 				} catch (NumberFormatException e) {
 					errorParse(line, e);
@@ -725,13 +695,13 @@ public class Deserialize {
 							String propType = propResult.getText().replaceFirst("PROP:", "");
 							debug("reading mur prop '" + TUI.blue(propType) + "'");
 							switch (propType) {
-								case "revetements1" -> {
+								case "RevetementMur:1" -> {
 									r1_list = revetementMursFromString(objects);
 								}
-								case "revetements2" -> {
+								case "RevetementMur:2" -> {
 									r2_list = revetementMursFromString(objects);
 								}
-								case "ouvertures" -> {
+								case "OuvertureMur" -> {
 									o_list = ouvertureMursFromString(objects);
 								}
 								default -> error("propriété du mur inconnue: '" + propResult.getText() + "'");
@@ -757,7 +727,7 @@ public class Deserialize {
 		return murs;
 	}
 
-	/// TypeOuvertureNiveaux
+	/// TypeOuvertureNiveau
 	private ArrayList<TypeOuvertureNiveaux> typeOuvertureNiveauxFromString(Objects objects) throws IOException {
 		config.tui.diveWhere("TypeOuvertureNiveaux");
 		config.tui.begin();
@@ -839,9 +809,9 @@ public class Deserialize {
 						objects.put(object);
 						debug("read " + object);
 					} else if (propObject == null) {
-						errorIdNone("TypeRevetement", trId);
+						errorIdNone("TypeOuvertureNiveau", trId);
 					} else {
-						errorIdWrongType("TypeRevetement", trId);
+						errorIdWrongType("TypeOuvertureNiveau", trId);
 					}
 				} catch (NumberFormatException e) {
 					errorParse(line, e);
@@ -891,9 +861,9 @@ public class Deserialize {
 						objects.put(object);
 						debug("read " + object);
 					} else if (propObject == null) {
-						errorIdNone("TypeOuvertureNiveaux", toId);
+						errorIdNone("TypeOuvertureNiveau", toId);
 					} else {
-						errorIdWrongType("TypeOuvertureNiveaux", toId);
+						errorIdWrongType("TypeOuvertureNiveau", toId);
 					}
 				} catch (NumberFormatException e) {
 					errorParse(line, e);
@@ -944,10 +914,10 @@ public class Deserialize {
 						String propType = propResult.getText().replaceFirst("PROP:", "");
 						debug("reading plafondSol prop '" + TUI.blue(propType) + "'");
 						switch (propType) {
-							case "revetements" -> {
+							case "RevetementPlafondSol" -> {
 								r_list = revetementPlafondSolsFromString(objects);
 							}
-							case "ouvertures" -> {
+							case "OuvertureNiveaux" -> {
 								o_list = ouvertureNiveauxFromString(objects);
 							}
 							default -> error("propriété du plafondSol inconnue: '" + propResult.getText() + "'");

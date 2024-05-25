@@ -79,23 +79,6 @@ public class Controller {
 					alert.showAndWait();
 				}
 
-				case FILE_TOO_OLD -> {
-					Alert alert = new Alert(AlertType.ERROR);
-					alert.setTitle("Fichier incompatible");
-					alert.setHeaderText("Le fichier '" + saveFile.getName() + "' utilise un format trop ancien !");
-					alert.setContentText("C'est un problème... Essayez de réinstaller une version plus ancienne de " + Config.applicationName + ".\n(" + result.project.loadedVersion + " < " + Config.minimumSavefileVersion + ")");
-
-					alert.showAndWait();
-				}
-				case FILE_TOO_RECENT -> {
-					Alert alert = new Alert(AlertType.ERROR);
-					alert.setTitle("Fichier incompatible");
-					alert.setHeaderText("Le fichier '" + saveFile.getName() + "' utilise un format trop récent !");
-					alert.setContentText("Mettez " + Config.applicationName + " à jour pour utiliser ce fichier.\n(" + result.project.loadedVersion + " > " + Config.maximumSavefileVersion + ")");
-
-					alert.showAndWait();
-				}
-
 				case PARSE_ERROR -> {
 					Alert alert = new Alert(AlertType.ERROR);
 					alert.setTitle("Erreur de lecture");

@@ -71,6 +71,12 @@ public class OuvertureMur extends Drawable {
 
 	@Override
 	public void serialize(Serialize serializer) {
+		serializer.csv(
+			super.getId(),
+			typeOuverture.getId(),
+			posL,
+			posH
+		);
 	}
 
 	public String serialize(Objects objects) {

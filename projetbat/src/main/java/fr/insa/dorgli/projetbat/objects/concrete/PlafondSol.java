@@ -91,12 +91,16 @@ public class PlafondSol extends Drawable implements HasPrice {
 		);
 
 		if (!revetements.isEmpty()) {
-			serializer.prop("revetements");
-			serializer.csv(revetements.stream().map(each -> (int) each.getId()));
+			serializer.innerProp("revetements");
+			for (RevetementPlafondSol r: revetements)
+				r.serialize(serializer);
+			serializer.eos();
 		}
 		if (!ouvertures.isEmpty()) {
-			serializer.prop("ouvertures");
-			serializer.csv(ouvertures.stream().map(each -> (int) each.getId()));
+			serializer.innerProp("ouvertures");
+			for (OuvertureNiveaux r: ouvertures)
+				r.serialize(serializer);
+			serializer.eos();
 		}
 
 		serializer.eoEntry();
