@@ -64,6 +64,7 @@ public class Mur extends DrawableLine implements HasPrice {
 		if (this.pointDebut instanceof Point oldPoint)
 			oldPoint.removeParents(this);
 
+		pointDebut.addParents(this);
 		this.pointDebut = pointDebut;
 	}
 
@@ -75,6 +76,7 @@ public class Mur extends DrawableLine implements HasPrice {
 		if (this.pointFin instanceof Point oldPoint)
 			oldPoint.removeParents(this);
 
+		pointFin.addParents(this);
 		this.pointFin = pointFin;
 	}
 
@@ -151,13 +153,11 @@ public class Mur extends DrawableLine implements HasPrice {
 	}
 
 	@Override
-	public void draw(DrawingContext dcx, boolean isFocused) {
-		// TODO: amnesic debug dive
-		dcx.tui().debug("Mur: drawing " + (isFocused ? "focused " : "") + "Mur " + this.toStringShort());
-		if (isFocused) {
-			dcx.drawLine(this, pointDebut, pointFin, 15, Color.web("CCB18A"));
-		} else {
-			dcx.drawLine(this, pointDebut, pointFin, 10, Color.DIMGRAY);
+	public void draw(DrawingContext dcx, DrawingContext.ObjectState ostate) {
+		switch (ostate) {
+			case NORMAL -> dcx.drawLine(this, pointDebut, pointFin, 10, Color.DIMGRAY);
+			case SELECTED -> dcx.drawLine(this, pointDebut, pointFin, 15, Color.web("9c896c"));
+			case MEMBER -> dcx.drawLine(this, pointDebut, pointFin, 10, Color.web("7f6f56"));
 		}
 	}
 

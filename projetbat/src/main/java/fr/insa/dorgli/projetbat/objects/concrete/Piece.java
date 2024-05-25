@@ -136,14 +136,18 @@ public class Piece extends DrawablePath implements HasInnerPrice, NameDesc {
 	}
 
 	@Override
-	public void draw(DrawingContext dcx, boolean isFocused) {
+	public void draw(DrawingContext dcx, DrawingContext.ObjectState ostate) {
 		dcx.tui().diveWhere("piece.draw");
 
-		dcx.tui().debug("in" + (isFocused ? " focused" : "") + " Piece " + this.toStringShort());
-
 		// dessiner la pièce elle même
-		dcx.drawPolygon(this, points.toArray(Point[]::new), isFocused ? Color.NAVAJOWHITE : Color.CORAL);
+		Color color = Color.NAVAJOWHITE;
+		switch (ostate) {
+			case SELECTED -> color = Color.web("8AA5E4");
+			case MEMBER -> color = Color.web("ccb18a");
+		}
+		dcx.drawPolygon(this, points.toArray(Point[]::new), color);
 
+		// dessiner les murs
 		dcx.tui().debug("drawing " + murs.size() + " murs objects");
 		for (int i = 0; i < murs.size(); i++) {
 			dcx.draw(murs.get(i));
