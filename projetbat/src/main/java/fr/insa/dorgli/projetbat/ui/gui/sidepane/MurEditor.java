@@ -2,12 +2,23 @@ package fr.insa.dorgli.projetbat.ui.gui.sidepane;
 
 import fr.insa.dorgli.projetbat.ui.gui.sidepane.components.PointComponent;
 import fr.insa.dorgli.projetbat.core.Config;
+import fr.insa.dorgli.projetbat.objects.SelectableId;
 import fr.insa.dorgli.projetbat.objects.concrete.Mur;
+import fr.insa.dorgli.projetbat.objects.concrete.Niveau;
+import fr.insa.dorgli.projetbat.objects.concrete.OuvertureMur;
+import fr.insa.dorgli.projetbat.objects.concrete.Piece;
+import fr.insa.dorgli.projetbat.objects.concrete.RevetementMur;
 import fr.insa.dorgli.projetbat.objects.types.TypeMur;
+import fr.insa.dorgli.projetbat.ui.gui.sidepane.components.ButtonnedListComponent;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.ComboBox;
 import fr.insa.dorgli.projetbat.ui.gui.sidepane.components.WrapLabel;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
@@ -38,6 +49,121 @@ public class MurEditor extends Editor {
 		};
 		typeMurCombo.setButtonCell(callback.call(null));
 		typeMurCombo.setCellFactory(callback);
+
+		Button addToPiece = new Button("Ajouter à une pièce...");
+		addToPiece.setOnAction(eh -> {
+			if (mur.getParents().stream().filter(each -> each instanceof Piece).count() < 2) {
+				Set objects = new HashSet(mur.getPointDebut().getNiveau().getPieces());
+				Piece piece = (Piece) config.controller.chooseFromList("pièce", objects);
+				if (piece != null) {
+					mur.addToPiece(piece);
+					config.controller.refreshUI();
+				}
+			} else {
+				new Alert(Alert.AlertType.INFORMATION, "Ce mur appartient déjà à deux pièces.").showAndWait();
+			}
+		});
+
+		Button removeFromPiece = new Button("Supprimer d'une pièce...");
+		removeFromPiece.setOnAction(eh -> {
+			if (mur.getParents().stream().filter(each -> each instanceof Piece).count() > 0) {
+				Set objects = new HashSet(mur.getPointDebut().getNiveau().getPieces());
+				var choosen = config.controller.chooseFromList("pièce", objects);
+				if (choosen instanceof Piece piece) {
+					mur.removeFromPiece(piece, (Niveau) config.controller.state.getViewRootElement());
+					config.controller.refreshUI();
+				}
+			} else {
+				new Alert(Alert.AlertType.INFORMATION, "Ce mur n'appartient à aucune pièce !").showAndWait();
+			}
+		});
+
+		ButtonnedListComponent revetements1 = new ButtonnedListComponent(config, this, (Collection<SelectableId>) (Collection<?>) mur.getRevetements1(), "Revêtements (1)");
+		revetements1.setAddObject(() -> {
+			Set objects = new HashSet(config.project.objects.getRevetementsMur());
+			config.tui.println(String.valueOf(config.project.objects.getRevetementsMur()));
+			var choosen = config.controller.chooseFromList("revêtement", objects);
+			if (choosen instanceof RevetementMur r) {
+				mur.addRevetement1(r);
+				revetements1.update();
+			}
+		});
+
+		revetements1.setRemoveObject(() -> {
+			Set objects = new HashSet(mur.getRevetements1());
+			var choosen = config.controller.chooseFromList("revêtement", objects);
+			if (choosen instanceof RevetementMur r) {
+				mur.removeChildren(r);
+				revetements1.update();
+			}
+		});
+
+		revetements1.setEditObject(() -> {
+			Set objects = new HashSet(mur.getRevetements1());
+			var selected = config.controller.chooseFromList("revêtement", objects);
+			if (selected != null) {
+				config.controller.state.setSelectedElement(selected);
+				revetements1.update();
+			}
+		});
+
+		ButtonnedListComponent revetements2 = new ButtonnedListComponent(config, this, (Collection<SelectableId>) (Collection<?>) mur.getRevetements2(), "Revêtements (2)");
+
+		revetements2.setAddObject(() -> {
+			Set objects = new HashSet(config.project.objects.getRevetementsMur());
+			var choosen = config.controller.chooseFromList("revêtement", objects);
+			if (choosen instanceof RevetementMur r) {
+				mur.addRevetement2(r);
+				revetements2.update();
+			}
+		});
+
+		revetements2.setRemoveObject(() -> {
+			Set objects = new HashSet(mur.getRevetements2());
+			var choosen = config.controller.chooseFromList("revêtement", objects);
+			if (choosen instanceof RevetementMur r) {
+				mur.removeChildren(r);
+				revetements2.update();
+			}
+		});
+
+		revetements2.setEditObject(() -> {
+			Set objects = new HashSet(mur.getRevetements2());
+			var selected = config.controller.chooseFromList("revêtement", objects);
+			if (selected != null) {
+				config.controller.state.setSelectedElement(selected);
+				revetements2.update();
+			}
+		});
+
+		ButtonnedListComponent ouvertures = new ButtonnedListComponent(config, this, (Collection<SelectableId>) (Collection<?>) mur.getRevetements2(), "Ouvertures");
+
+		ouvertures.setAddObject(() -> {
+			Set objects = new HashSet(config.project.objects.getOuverturesMur());
+			var choosen = config.controller.chooseFromList("ouverture", objects);
+			if (choosen instanceof OuvertureMur o) {
+				mur.addOuverture(o);
+				ouvertures.update();
+			}
+		});
+
+		ouvertures.setRemoveObject(() -> {
+			Set objects = new HashSet(mur.getRevetements2());
+			var choosen = config.controller.chooseFromList("ouverture", objects);
+			if (choosen instanceof OuvertureMur o) {
+				mur.removeChildren(o);
+				ouvertures.update();
+			}
+		});
+
+		ouvertures.setEditObject(() -> {
+			Set objects = new HashSet(mur.getRevetements2());
+			var selected = config.controller.chooseFromList("ouverture", objects);
+			if (selected != null) {
+				config.controller.state.setSelectedElement(selected);
+				ouvertures.update();
+			}
+		});
 
 		super.prependSaveFunction((ActionEvent eh) -> {
 			try {
@@ -86,7 +212,14 @@ public class MurEditor extends Editor {
 				new HBox(
 					new WrapLabel("Hauteur :"),
 					hauteur
-				)
+				),
+
+				addToPiece,
+				removeFromPiece,
+
+				revetements1,
+				revetements2,
+				ouvertures
 			)
 		);
 

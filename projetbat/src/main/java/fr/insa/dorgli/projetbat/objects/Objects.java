@@ -208,7 +208,7 @@ public class Objects {
 		}
 
 		if (all.get(object.getId()) != null) {
-			return -1;
+			throw new IllegalArgumentException("ID " + object.getId() + " is already held by " + all.get(object.getId()));
 		}
 
 		switch (object) {

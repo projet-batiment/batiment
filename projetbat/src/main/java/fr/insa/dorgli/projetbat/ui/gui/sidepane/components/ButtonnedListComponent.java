@@ -41,9 +41,9 @@ public class ButtonnedListComponent extends IcedListComponent {
 		Button editButton = new Button("Éditer");
 		editButton.setOnAction(eh -> editObject.function());
 
-		super.getChildren().add(
+		super.getChildren().addAll(
+			new WrapLabel("Gérer" + (title == null ? "" : " les " + title) + " :"),
 			new HBox(
-				new WrapLabel("Gérer" + (title == null ? "" : " les " + title) + " :"),
 				addButton,
 				editButton,
 				removeButton

@@ -5,7 +5,7 @@ import fr.insa.dorgli.projetbat.core.Config;
 import fr.insa.dorgli.projetbat.objects.concrete.Point;
 import javafx.scene.layout.Pane;
 
-class PointEditor extends Editor {
+public class PointEditor extends Editor {
 	public PointEditor(Config config, Point point) {
 		super(config, "Point");
 

@@ -1,10 +1,10 @@
 package fr.insa.dorgli.projetbat.objects;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 
 public abstract class BObject extends SelectableId {
-	protected final HashSet<SelectableId> parents = new HashSet<>();
+	protected final ArrayList<SelectableId> parents = new ArrayList<>();
 	// est ce que l'objet en construction est prêt?
 	public abstract boolean ready();
 
@@ -13,7 +13,7 @@ public abstract class BObject extends SelectableId {
 	}
 	public BObject() { }
 
-	public HashSet<SelectableId> getParents() {
+	public ArrayList<SelectableId> getParents() {
 		return parents;
 	}
 

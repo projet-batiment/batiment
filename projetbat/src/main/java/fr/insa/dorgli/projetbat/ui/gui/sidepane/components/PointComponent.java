@@ -4,7 +4,7 @@ import fr.insa.dorgli.projetbat.core.Config;
 import fr.insa.dorgli.projetbat.objects.concrete.Point;
 import fr.insa.dorgli.projetbat.ui.gui.sidepane.Editor;
 import javafx.event.ActionEvent;
-import fr.insa.dorgli.projetbat.ui.gui.sidepane.components.WrapLabel;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -21,6 +21,11 @@ public class PointComponent extends VBox {
 
 		HBox.setHgrow(x, Priority.ALWAYS);
 		HBox.setHgrow(y, Priority.ALWAYS);
+
+		Button edit = new Button("Sélectionner...");
+		edit.setOnAction(eh -> {
+			config.controller.state.setSelectedElement(point);
+		});
 
 		editor.prependSaveFunction((ActionEvent eh) -> {
 			try {
@@ -45,7 +50,7 @@ public class PointComponent extends VBox {
 		}
 
 		super.getChildren().add(
-			new HBox(x, y)
+			new HBox(edit, x, y)
 		);
 	}
 }

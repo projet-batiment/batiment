@@ -557,10 +557,10 @@ public class OutilsTop extends MenuBar {
 			config.getMainWindow().getCanvasContainer().clearFancy();
 		});
 
-		buttonFancyRedraw = new MenuItem("Redraw");
+		buttonFancyRedraw = new MenuItem("Force redraw");
 		buttonFancyRedraw.setOnAction(event -> {
 			config.tui.log("clicked: redraw");
-			config.getMainWindow().getCanvasContainer().redraw();
+			config.controller.refreshUI();
 		});
 
 		menuOptions = new Menu("Options", null,

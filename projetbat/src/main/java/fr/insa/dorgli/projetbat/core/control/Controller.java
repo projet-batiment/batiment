@@ -400,22 +400,19 @@ public class Controller {
 						}
 
 						if (allMursAndPoints) {
-							HashSet<Mur> murs = new HashSet<>();
 							HashSet<Point> points = new HashSet<>();
 
 							for (SelectableId each: state.getSelectedElements()) {
 								if (each instanceof Mur mur) {
-									murs.add(mur);
+									mur.addToPiece(piece);
 									points.add(mur.getPointDebut());
 									points.add(mur.getPointFin());
-									currentNiveau.removeChildren(mur);
 								} else if (each instanceof Point point) {
 									points.add(point);
 									currentNiveau.removeChildren(point);
 								}
 							}
 
-							piece.setMurs(new ArrayList(murs));
 							piece.setPoints(new ArrayList(points));
 
 							config.project.objects.put(piece);
@@ -575,6 +572,11 @@ public class Controller {
 		state.setSelectedElement(config.project);
 	}
 
+	public void refreshUI() {
+		redrawCanvas();
+		updateSidePaneSelection();
+		updateBottomBar();
+	}
 	public void redrawCanvas() {
 		config.getMainWindow().getCanvasContainer().redraw();
 	}

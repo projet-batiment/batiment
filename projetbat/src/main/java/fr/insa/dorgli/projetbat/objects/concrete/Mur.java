@@ -124,6 +124,20 @@ public class Mur extends DrawableLine implements HasPrice {
 		object.addParents(this);
 	}
 
+	public void addToPiece(Piece piece) {
+		if (super.getParents().size() == 1 && super.getParents().iterator().next() instanceof Niveau adopterNiveau) {
+			adopterNiveau.removeChildren(this);
+		}
+		piece.addChildren(this);
+	}
+
+	public void removeFromPiece(Piece piece, Niveau adopterNiveau) {
+		piece.removeChildren(this);
+		if (super.getParents().isEmpty()) {
+			adopterNiveau.addChildren(this);
+		}
+	}
+
 	private double longueur() {
 		double dcx = pointDebut.getX() - pointFin.getX();
 		double dy = pointFin.getY() - pointDebut.getY();
