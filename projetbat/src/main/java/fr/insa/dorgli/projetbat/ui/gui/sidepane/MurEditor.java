@@ -17,14 +17,18 @@ import fr.insa.dorgli.projetbat.ui.gui.sidepane.components.WrapLabel;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.util.Callback;
 
 public class MurEditor extends Editor {
@@ -50,6 +54,13 @@ public class MurEditor extends Editor {
 		typeMurCombo.setButtonCell(callback.call(null));
 		typeMurCombo.setCellFactory(callback);
 
+		WrapLabel prixMur = new WrapLabel();
+		WrapLabel aireMur = new WrapLabel();
+
+		WrapLabel notReady = new WrapLabel("Ce mur n'est pas prêt");
+		notReady.managedProperty().bind(notReady.visibleProperty());
+		notReady.setTextFill(Color.RED);
+
 		Button addToPiece = new Button("Ajouter à une pièce...");
 		addToPiece.setOnAction(eh -> {
 			if (mur.getParents().stream().filter(each -> each instanceof Piece).count() < 2) {
@@ -66,8 +77,9 @@ public class MurEditor extends Editor {
 
 		Button removeFromPiece = new Button("Supprimer d'une pièce...");
 		removeFromPiece.setOnAction(eh -> {
-			if (mur.getParents().stream().filter(each -> each instanceof Piece).count() > 0) {
-				Set objects = new HashSet(mur.getPointDebut().getNiveau().getPieces());
+			Stream parentPieces = mur.getParents().stream().filter(each -> each instanceof Piece);
+			if (parentPieces.count() > 0) {
+				Set objects = (Set) parentPieces.collect(Collectors.toSet());
 				var choosen = config.controller.chooseFromList("pièce", objects);
 				if (choosen instanceof Piece piece) {
 					mur.removeFromPiece(piece, (Niveau) config.controller.state.getViewRootElement());
@@ -78,15 +90,11 @@ public class MurEditor extends Editor {
 			}
 		});
 
-		ButtonnedListComponent revetements1 = new ButtonnedListComponent(config, this, (Collection<SelectableId>) (Collection<?>) mur.getRevetements1(), "Revêtements (1)");
+		ButtonnedListComponent revetements1 = new ButtonnedListComponent(config, this, (Collection<SelectableId>) (Collection<?>) mur.getRevetements1(), "Revêtements (1/2)");
 		revetements1.setAddObject(() -> {
-			Set objects = new HashSet(config.project.objects.getRevetementsMur());
-			config.tui.println(String.valueOf(config.project.objects.getRevetementsMur()));
-			var choosen = config.controller.chooseFromList("revêtement", objects);
-			if (choosen instanceof RevetementMur r) {
-				mur.addRevetement1(r);
-				revetements1.update();
-			}
+			RevetementMur r = new RevetementMur();
+			mur.addRevetement1(r);
+			config.controller.menuButtonCreateOne(r);
 		});
 
 		revetements1.setRemoveObject(() -> {
@@ -107,15 +115,12 @@ public class MurEditor extends Editor {
 			}
 		});
 
-		ButtonnedListComponent revetements2 = new ButtonnedListComponent(config, this, (Collection<SelectableId>) (Collection<?>) mur.getRevetements2(), "Revêtements (2)");
+		ButtonnedListComponent revetements2 = new ButtonnedListComponent(config, this, (Collection<SelectableId>) (Collection<?>) mur.getRevetements2(), "Revêtements (2/2)");
 
 		revetements2.setAddObject(() -> {
-			Set objects = new HashSet(config.project.objects.getRevetementsMur());
-			var choosen = config.controller.chooseFromList("revêtement", objects);
-			if (choosen instanceof RevetementMur r) {
-				mur.addRevetement2(r);
-				revetements2.update();
-			}
+			RevetementMur r = new RevetementMur();
+			mur.addRevetement2(r);
+			config.controller.menuButtonCreateOne(r);
 		});
 
 		revetements2.setRemoveObject(() -> {
@@ -136,19 +141,16 @@ public class MurEditor extends Editor {
 			}
 		});
 
-		ButtonnedListComponent ouvertures = new ButtonnedListComponent(config, this, (Collection<SelectableId>) (Collection<?>) mur.getRevetements2(), "Ouvertures");
+		ButtonnedListComponent ouvertures = new ButtonnedListComponent(config, this, (Collection<SelectableId>) (Collection<?>) mur.getOuvertures(), "Ouvertures");
 
 		ouvertures.setAddObject(() -> {
-			Set objects = new HashSet(config.project.objects.getOuverturesMur());
-			var choosen = config.controller.chooseFromList("ouverture", objects);
-			if (choosen instanceof OuvertureMur o) {
-				mur.addOuverture(o);
-				ouvertures.update();
-			}
+			OuvertureMur o = new OuvertureMur();
+			mur.addOuverture(o);
+			config.controller.menuButtonCreateOne(o);
 		});
 
 		ouvertures.setRemoveObject(() -> {
-			Set objects = new HashSet(mur.getRevetements2());
+			Set objects = new HashSet(mur.getOuvertures());
 			var choosen = config.controller.chooseFromList("ouverture", objects);
 			if (choosen instanceof OuvertureMur o) {
 				mur.removeChildren(o);
@@ -157,7 +159,7 @@ public class MurEditor extends Editor {
 		});
 
 		ouvertures.setEditObject(() -> {
-			Set objects = new HashSet(mur.getRevetements2());
+			Set objects = new HashSet(mur.getOuvertures());
 			var selected = config.controller.chooseFromList("ouverture", objects);
 			if (selected != null) {
 				config.controller.state.setSelectedElement(selected);
@@ -195,10 +197,16 @@ public class MurEditor extends Editor {
 			if (mur.getTypeMur() != null) {
 				typeMurCombo.setValue(mur.getTypeMur());
 			}
+
+			prixMur.setText(String.valueOf(mur.calculerPrix()));
+			aireMur.setText(String.valueOf(mur.aire()));
+
+			notReady.setVisible(! mur.ready());
 		});
 
 		super.prependInitFunction((Pane pane) ->
-			pane.getChildren().addAll(new VBox(
+			pane.getChildren().addAll(
+				new VBox(
 					new WrapLabel("Coordonnées :"),
 					new PointComponent(config, this, mur.getPointDebut(), "Début :"),
 					new PointComponent(config, this, mur.getPointFin(), "Fin :")
@@ -214,11 +222,32 @@ public class MurEditor extends Editor {
 					hauteur
 				),
 
-				addToPiece,
-				removeFromPiece,
+				new HBox(
+					new WrapLabel("Prix :"),
+					prixMur,
+					new WrapLabel("€")
+				),
 
+				new HBox(
+					new WrapLabel("Aire :"),
+					aireMur
+				),
+
+				notReady,
+
+				new Separator(),
+				new HBox(
+					addToPiece,
+					removeFromPiece
+				),
+
+				new Separator(),
 				revetements1,
+
+				new Separator(),
 				revetements2,
+
+				new Separator(),
 				ouvertures
 			)
 		);

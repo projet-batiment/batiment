@@ -1,13 +1,15 @@
 package fr.insa.dorgli.projetbat.objects.concrete;
 
 import fr.insa.dorgli.projetbat.objects.BObject;
+import fr.insa.dorgli.projetbat.objects.HasPrice;
+import fr.insa.dorgli.projetbat.objects.Name;
 import fr.insa.dorgli.projetbat.objects.Objects;
 import fr.insa.dorgli.projetbat.objects.Serialize;
 import fr.insa.dorgli.projetbat.objects.types.TypeOuvertureNiveaux;
 import fr.insa.dorgli.projetbat.ui.gui.DrawingContext;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 
-public class OuvertureNiveaux extends Drawable {
+public class OuvertureNiveaux extends Drawable implements Name, HasPrice {
 	TypeOuvertureNiveaux typeOuverture;
 	double posL;
 	double posH;
@@ -101,5 +103,24 @@ public class OuvertureNiveaux extends Drawable {
 	@Override
 	public void removeChildren(BObject... objects) {
 		throw new IllegalAccessError("Shouldn't call OuvertureNiveau.addChildren()");
+	}
+
+	@Override
+	public String getNom() {
+		return typeOuverture.getNom();
+	}
+
+	@Override
+	public void setNom(String nom) {
+		// exists though shouldn't be called
+		typeOuverture.setNom(nom);
+	}
+
+	@Override
+	public double calculerPrix() {
+		if (typeOuverture == null)
+			return 0;
+
+		return typeOuverture.getPrixOuverture();
 	}
 }

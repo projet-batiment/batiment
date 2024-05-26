@@ -4,6 +4,7 @@ import fr.insa.dorgli.projetbat.core.Config;
 import fr.insa.dorgli.projetbat.ui.gui.sidepane.components.WrapLabel;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
+import javafx.scene.control.Separator;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 
@@ -17,6 +18,7 @@ public abstract class Editor extends SmartTab {
 		save = new Button("Valider");
 		save.setOnAction((ActionEvent event) -> {
 			save(event);
+			reset();
 		});
 
 		cancel = new Button("Annuler");
@@ -26,19 +28,13 @@ public abstract class Editor extends SmartTab {
 
 		WrapLabel parents = new WrapLabel();
 
-		super.prependResetFunction(() -> {
-			// TODO!!
-			parents.setText("Parents : " + "TODO");
-		});
-
 		super.prependInitFunction((Pane pane) ->
 			pane.getChildren().addAll(
+				new Separator(),
 				new HBox(
 					save,
 					cancel
-				),
-
-				parents
+				)
 			)
 		);
 

@@ -324,7 +324,7 @@ public class OutilsTop extends MenuBar {
 
 		buttonTypeOuvertureMurEdit = new MenuItem("Un Type Ouverture Mur...");
 		buttonTypeOuvertureMurEdit.setOnAction(event -> {
-			Set objects = config.project.objects.getTypesOuverturesNiveau();
+			Set objects = config.project.objects.getTypesOuverturesMur();
 			config.controller.selectFromList("type d'ouverture-mur", objects);
 		});
 

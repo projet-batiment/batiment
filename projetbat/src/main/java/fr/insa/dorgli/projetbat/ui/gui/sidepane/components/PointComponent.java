@@ -19,8 +19,8 @@ public class PointComponent extends VBox {
 		TextField x = new TextField();
 		TextField y = new TextField();
 
-		HBox.setHgrow(x, Priority.ALWAYS);
-		HBox.setHgrow(y, Priority.ALWAYS);
+//		HBox.setHgrow(x, Priority.ALWAYS);
+//		HBox.setHgrow(y, Priority.ALWAYS);
 
 		Button edit = new Button("Sélectionner...");
 		edit.setOnAction(eh -> {

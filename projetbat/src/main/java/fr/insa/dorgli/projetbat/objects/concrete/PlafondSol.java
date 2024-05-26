@@ -54,13 +54,13 @@ public class PlafondSol extends Drawable implements HasPrice {
 
 		/// TODO!!! implement java.awt.Area -> interset the revetements' surfaces with the ouvertures' surfaces
 		for (RevetementPlafondSol each: revetements) {
-			prixPlafondSol += each.calculerPrix(airePiece);
+			prixPlafondSol += each.calculerPrix();
 		}
 		for (RevetementPlafondSol each: revetements) {
-			prixPlafondSol += each.calculerPrix(airePiece);
+			prixPlafondSol += each.calculerPrix();
 		}
 		for (OuvertureNiveaux each: ouvertures) {
-			prixPlafondSol += each.getTypeOuverture().getPrixOuverture();
+			prixPlafondSol += each.calculerPrix();
 		}
 
 		return prixPlafondSol;

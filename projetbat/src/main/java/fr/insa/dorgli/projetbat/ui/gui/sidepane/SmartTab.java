@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.function.Consumer;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -36,7 +37,12 @@ public abstract class SmartTab extends Tab {
 
 		initialized = true;
 		initFunctions.stream().forEach((Consumer<Pane> each) -> each.accept((Pane) ourVBox));
-		super.setContent(ourVBox);
+
+		ScrollPane scroll = new ScrollPane(ourVBox);
+		scroll.setFitToWidth(true);
+		scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+		scroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+		super.setContent(scroll);
 
 		reset();
 	};

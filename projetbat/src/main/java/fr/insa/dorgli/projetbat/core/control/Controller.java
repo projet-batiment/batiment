@@ -64,10 +64,9 @@ public class Controller {
 
 					state.setViewRootElement(result.project.viewRootElement);
 					state.setCurrentBatiment(result.project.currentBatiment);
+					state.setSelectedElement(config.project);
 
-					redrawCanvasFit();
-					updateBottomBar();
-					updateSidePaneSelection();
+					refreshUI();
 				}
 
 				case FILE_NOT_FOUND -> {
@@ -196,9 +195,8 @@ public class Controller {
 		}
 
 		config.project = new Project();
-		redrawCanvasFit();
-		updateBottomBar();
-		updateSidePaneSelection();
+		state.setSelectedElement(config.project);
+		refreshUI();
 	}
 
 	public void moveCanvasView(Direction direction) {
@@ -247,15 +245,14 @@ public class Controller {
 								newMur.setPointFin(point);
 								config.tui.debug("created mur: " + newMur);
 
-								config.project.objects.put(newMur.getPointDebut());
+								config.project.objects.put(newMur.getPointDebut(), true);
 								currentNiveau.removeChildren(newMur.getPointDebut());
-								config.project.objects.put(newMur.getPointFin());
+								config.project.objects.put(newMur.getPointFin(), true);
 								currentNiveau.removeChildren(newMur.getPointFin());
 								config.project.objects.put(newMur);
 								currentNiveau.addChildren(newMur);
 
 								config.tui.debug("created mur is set as orphean of " + currentNiveau.toStringShort());
-
 
 								state.endCreation();
 								updateSidePaneSelection();
@@ -492,7 +489,6 @@ public class Controller {
 
 				config.project.objects.put(object);
 				state.setSelectedElement(object);
-//				state.create(object);
 
 				redrawCanvas();
 			}
@@ -520,8 +516,8 @@ public class Controller {
 			ChooseFromList<SelectableId> chooser = new ChooseFromList(defaultItem, list, new Function<SelectableId, String>() {
 				@Override
 				public String apply(SelectableId object) {
-					if (object instanceof NameDesc nameDesc)
-						return nameDesc.getNom();
+					if (object instanceof Name name)
+						return name.getNom();
 					else
 						return object.toStringShort();
 				}

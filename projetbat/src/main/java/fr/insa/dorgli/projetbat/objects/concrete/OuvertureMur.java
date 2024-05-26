@@ -1,13 +1,15 @@
 package fr.insa.dorgli.projetbat.objects.concrete;
 
 import fr.insa.dorgli.projetbat.objects.BObject;
+import fr.insa.dorgli.projetbat.objects.HasPrice;
+import fr.insa.dorgli.projetbat.objects.Name;
 import fr.insa.dorgli.projetbat.objects.Objects;
 import fr.insa.dorgli.projetbat.objects.Serialize;
 import fr.insa.dorgli.projetbat.objects.types.TypeOuvertureMur;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 import fr.insa.dorgli.projetbat.ui.gui.DrawingContext;
 
-public class OuvertureMur extends Drawable {
+public class OuvertureMur extends Drawable implements Name, HasPrice {
 	TypeOuvertureMur typeOuverture;
 	double posL;
 	double posH;
@@ -101,5 +103,24 @@ public class OuvertureMur extends Drawable {
 	@Override
 	public void removeChildren(BObject... objects) {
 		throw new IllegalAccessError("Shouldn't call OuvertureMur.addChildren()");
+	}
+
+	@Override
+	public String getNom() {
+		return typeOuverture.getNom();
+	}
+
+	@Override
+	public void setNom(String nom) {
+		// exists though shouldn't be called
+		typeOuverture.setNom(nom);
+	}
+
+	@Override
+	public double calculerPrix() {
+		if (typeOuverture == null)
+			return 0;
+
+		return typeOuverture.getPrixOuverture();
 	}
 }

@@ -1,7 +1,7 @@
 package fr.insa.dorgli.projetbat.ui.gui.sidepane.components;
 
 import fr.insa.dorgli.projetbat.core.Config;
-import fr.insa.dorgli.projetbat.objects.NameDesc;
+import fr.insa.dorgli.projetbat.objects.Name;
 import fr.insa.dorgli.projetbat.objects.SelectableId;
 import fr.insa.dorgli.projetbat.ui.gui.sidepane.Editor;
 import java.util.Collection;
@@ -21,8 +21,8 @@ public class IcedListComponent extends VBox {
 		} else {
 			for (SelectableId each: objects) {
 				String eachName;
-				if (each instanceof NameDesc nameDesc)
-					eachName = nameDesc.getNom();
+				if (each instanceof Name named)
+					eachName = named.getNom();
 				else
 					eachName = each.toStringShort();
 

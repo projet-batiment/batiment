@@ -203,12 +203,19 @@ public class Objects {
 	 * @return the id given to the object, or -1 if the id is already held by another object 
 	 */
 	public int put(SelectableId object) {
+		return put(object, false);
+	}
+	public int put(SelectableId object, boolean nofail) {
 		if (object.getId() <= 0) {
 			object.setId(generateId());
 		}
 
 		if (all.get(object.getId()) != null) {
-			throw new IllegalArgumentException("ID " + object.getId() + " is already held by " + all.get(object.getId()));
+			if (nofail) {
+				return object.getId();
+			} else {
+				throw new IllegalArgumentException("ID " + object.getId() + " is already held by " + all.get(object.getId()));
+			}
 		}
 
 		switch (object) {

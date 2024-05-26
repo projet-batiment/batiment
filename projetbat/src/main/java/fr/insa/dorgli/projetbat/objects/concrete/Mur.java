@@ -150,18 +150,21 @@ public class Mur extends DrawableLine implements HasPrice {
 
 	@Override
 	public double calculerPrix() {
-		double prixMur = typeMur.getPrixUnitaire() * aire();
+		double prixMur = 0;
+
+		if (typeMur != null)
+			prixMur += typeMur.getPrixUnitaire() * aire();
 
 		double longueur = longueur();
 		/// TODO!!! implement java.awt.Area -> interset the revetements' surfaces with the ouvertures' surfaces
 		for (RevetementMur r: this.revetements1){
-			prixMur += r.calculerPrix(longueur, hauteur);
+			prixMur += r.calculerPrix();
 		}
 		for (RevetementMur r: this.revetements2){
-			prixMur += r.calculerPrix(longueur, hauteur);
+			prixMur += r.calculerPrix();
 		}
 		for (OuvertureMur o: this.ouvertures){
-			prixMur += o.getTypeOuverture().getPrixOuverture();
+			prixMur += o.calculerPrix();
 		}
 		return prixMur;
 	}
@@ -181,6 +184,7 @@ public class Mur extends DrawableLine implements HasPrice {
 			pointDebut != null
 			&& pointFin != null
 			&& typeMur != null
+			&& hauteur > 0
 		);
 	}
 

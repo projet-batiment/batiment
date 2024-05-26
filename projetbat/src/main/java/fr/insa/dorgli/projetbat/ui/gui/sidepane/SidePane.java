@@ -70,6 +70,20 @@ public class SidePane extends TabPane {
 					setSelectionTab(new PointEditor(config, point));
 				}
 
+				case RevetementMur revetement -> {
+					setSelectionTab(new RevetementEditor(config, revetement));
+				}
+				case RevetementPlafondSol revetement -> {
+					setSelectionTab(new RevetementEditor(config, revetement));
+				}
+
+				case OuvertureMur o -> {
+					setSelectionTab(new OuvertureMurEditor(config, o));
+				}
+				case OuvertureNiveaux o -> {
+					setSelectionTab(new OuvertureNiveauxEditor(config, o));
+				}
+
 				case TypeAppart typeAppart -> {
 					setSelectionTab(new TypeAppartEditor(config, typeAppart));
 				}
