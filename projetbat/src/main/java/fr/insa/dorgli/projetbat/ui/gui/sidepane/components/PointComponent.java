@@ -22,7 +22,7 @@ public class PointComponent extends VBox {
 //		HBox.setHgrow(x, Priority.ALWAYS);
 //		HBox.setHgrow(y, Priority.ALWAYS);
 
-		Button edit = new Button("Sélectionner...");
+		Button edit = new Button("Éditer...");
 		edit.setOnAction(eh -> {
 			config.controller.state.setSelectedElement(point);
 		});

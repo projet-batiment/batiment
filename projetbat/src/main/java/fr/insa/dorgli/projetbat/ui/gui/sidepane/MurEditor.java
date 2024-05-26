@@ -57,7 +57,7 @@ public class MurEditor extends Editor {
 		WrapLabel prixMur = new WrapLabel();
 		WrapLabel aireMur = new WrapLabel();
 
-		WrapLabel notReady = new WrapLabel("Ce mur n'est pas prêt");
+		WrapLabel notReady = new WrapLabel("Ce mur n'est pas prêt.");
 		notReady.managedProperty().bind(notReady.visibleProperty());
 		notReady.setTextFill(Color.RED);
 
@@ -167,6 +167,15 @@ public class MurEditor extends Editor {
 			}
 		});
 
+		Button editParent = new Button("Éditer un objet parent");
+		editParent.setOnAction(eh -> {
+			Set objects = new HashSet(mur.getParents());
+			var selected = config.controller.chooseFromList("pièce", objects);
+			if (selected != null) {
+				config.controller.state.setSelectedElement(selected);
+			}
+		});
+
 		super.prependSaveFunction((ActionEvent eh) -> {
 			try {
 				double hauteur_value = Double.parseDouble(hauteur.getText());
@@ -240,6 +249,8 @@ public class MurEditor extends Editor {
 					addToPiece,
 					removeFromPiece
 				),
+
+				editParent,
 
 				new Separator(),
 				revetements1,

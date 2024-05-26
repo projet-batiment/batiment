@@ -59,7 +59,7 @@ public class RevetementEditor extends Editor {
 		typeRevetementCombo.setButtonCell(callback.call(null));
 		typeRevetementCombo.setCellFactory(callback);
 
-		Button becomeReactive = new Button("Position auto.");
+		Button becomeReactive = new Button("Pos. auto.");
 		becomeReactive.setOnAction(eh -> {
 			revetement.setPos1L(0);
 			revetement.setPos1H(0);
@@ -73,6 +73,16 @@ public class RevetementEditor extends Editor {
 		editParent.setOnAction(eh -> {
 			config.controller.state.setSelectedElement(revetement.getParents().getFirst());
 		});
+
+		Button editType = new Button("Éditer");
+		editType.setOnAction(eh -> {
+			if (typeRevetementCombo.getValue() instanceof TypeRevetement tr)
+				config.controller.state.setSelectedElement(tr);
+		});
+
+		WrapLabel notReady = new WrapLabel("Ce revêtement n'est pas prêt.");
+		notReady.managedProperty().bind(notReady.visibleProperty());
+		notReady.setTextFill(Color.RED);
 
 		super.prependSaveFunction((ActionEvent eh) -> {
 			try {
@@ -117,6 +127,8 @@ public class RevetementEditor extends Editor {
 			pos1H.setText(String.valueOf(revetement.getPos1H()));
 			pos2L.setText(String.valueOf(revetement.getPos2L()));
 			pos2H.setText(String.valueOf(revetement.getPos2H()));
+
+			notReady.setVisible(! revetement.ready());
 		});
 
 		super.prependInitFunction((Pane pane) ->
@@ -139,7 +151,8 @@ public class RevetementEditor extends Editor {
 
 				new HBox(
 					new WrapLabel("Type :"),
-					typeRevetementCombo
+					typeRevetementCombo,
+					editType
 				),
 
 				new HBox(
@@ -148,6 +161,7 @@ public class RevetementEditor extends Editor {
 					new WrapLabel("€")
 				),
 
+				notReady,
 				reactive,
 
 				new HBox(

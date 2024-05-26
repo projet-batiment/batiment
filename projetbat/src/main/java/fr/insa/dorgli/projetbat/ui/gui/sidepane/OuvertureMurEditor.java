@@ -13,6 +13,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.util.Callback;
 
 public class OuvertureMurEditor extends Editor {
@@ -45,6 +46,16 @@ public class OuvertureMurEditor extends Editor {
 		editParent.setOnAction(eh -> {
 			config.controller.state.setSelectedElement(ouverture.getParents().getFirst());
 		});
+
+		Button editType = new Button("Éditer");
+		editType.setOnAction(eh -> {
+			if (typeOuvertureMurCombo.getValue() instanceof TypeOuvertureMur to)
+				config.controller.state.setSelectedElement(to);
+		});
+
+		WrapLabel notReady = new WrapLabel("Cette ouverture n'est pas prête.");
+		notReady.managedProperty().bind(notReady.visibleProperty());
+		notReady.setTextFill(Color.RED);
 
 		super.prependSaveFunction((ActionEvent eh) -> {
 			try {
@@ -80,6 +91,8 @@ public class OuvertureMurEditor extends Editor {
 
 			posL.setText(String.valueOf(ouverture.getPosL()));
 			posH.setText(String.valueOf(ouverture.getPosH()));
+
+			notReady.setVisible(! ouverture.ready());
 		});
 
 		super.prependInitFunction((Pane pane) ->
@@ -91,7 +104,8 @@ public class OuvertureMurEditor extends Editor {
 
 				new HBox(
 					new WrapLabel("Type :"),
-					typeOuvertureMurCombo
+					typeOuvertureMurCombo,
+					editType
 				),
 
 				new HBox(
@@ -100,6 +114,7 @@ public class OuvertureMurEditor extends Editor {
 					new WrapLabel("€")
 				),
 
+				notReady,
 				editParent
 			)
 		);

@@ -66,6 +66,9 @@ public class SidePane extends TabPane {
 				case Mur mur -> {
 					setSelectionTab(new MurEditor(config, mur));
 				}
+				case PlafondSol ps -> {
+					setSelectionTab(new PlafondSolEditor(config, ps));
+				}
 				case Point point -> {
 					setSelectionTab(new PointEditor(config, point));
 				}

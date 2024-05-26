@@ -15,12 +15,12 @@ public class RevetementPlafondSol extends Revetement {
 
 	@Override
 	public double aire() {
-		if (super.getParents().getFirst() instanceof Piece piece) {
+		if (super.getParents().getFirst() instanceof PlafondSol ps) {
 			// comme les pièces ne sont pas rectangulaires, soit le revêtement occupe tout, soit seulement un carré
 			// il aurait fallu que le revetement de sol aie ses propres Points pour pouvoir tout calculer comme il faut
 			// mais bon...
 			if (isReactive())
-				return piece.aire();
+				return ps.aire();
 			else
 				return (this.pos1L - this.pos2L) * (this.pos1H - this.pos2H);
 		} else

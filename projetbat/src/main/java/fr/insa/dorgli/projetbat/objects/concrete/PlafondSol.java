@@ -44,6 +44,10 @@ public class PlafondSol extends Drawable implements HasPrice {
 		this.ouvertures = ouvertures;
 	}
 
+	public double aire() {
+		return ((Piece) super.getParents().getFirst()).aire();
+	}
+
 	@Override
 	public double calculerPrix() {
 		if (super.parents.size() != 1)
