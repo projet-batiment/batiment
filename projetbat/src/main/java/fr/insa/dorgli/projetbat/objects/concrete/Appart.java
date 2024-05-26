@@ -140,6 +140,9 @@ public class Appart extends BObject implements HasInnerPrice, NameDesc {
 	@Override
 	public final void addChildren(BObject... objects) {
 		for (BObject object: objects) {
+			if (object.getParents().contains(this))
+				continue;
+
 			switch (object) {
 				case Piece known -> pieces.add(known);
 

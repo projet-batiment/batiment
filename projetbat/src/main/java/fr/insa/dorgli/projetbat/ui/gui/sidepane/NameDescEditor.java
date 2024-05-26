@@ -5,6 +5,7 @@ import fr.insa.dorgli.projetbat.objects.NameDesc;
 import javafx.beans.Observable;
 import javafx.event.ActionEvent;
 import fr.insa.dorgli.projetbat.ui.gui.sidepane.components.WrapLabel;
+import javafx.scene.control.Separator;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
@@ -42,6 +43,8 @@ public abstract class NameDescEditor extends Editor {
 			});
 
 			pane.getChildren().addAll(
+				new Separator(),
+
 				new HBox(
 					new WrapLabel("Nom :"),
 					nom

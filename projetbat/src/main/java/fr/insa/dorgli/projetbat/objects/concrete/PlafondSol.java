@@ -138,6 +138,9 @@ public class PlafondSol extends Drawable implements HasPrice {
 	@Override
 	public final void addChildren(BObject... objects) {
 		for (BObject object: objects) {
+			if (object.getParents().contains(this))
+				continue;
+
 			switch (object) {
 				case OuvertureNiveaux known -> ouvertures.add(known);
 				case RevetementPlafondSol known -> revetements.add(known);

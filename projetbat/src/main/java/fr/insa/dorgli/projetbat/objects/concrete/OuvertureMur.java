@@ -107,7 +107,10 @@ public class OuvertureMur extends Drawable implements Name, HasPrice {
 
 	@Override
 	public String getNom() {
-		return typeOuverture.getNom();
+		if (typeOuverture != null)
+			return typeOuverture.getNom();
+		else
+			return "";
 	}
 
 	@Override

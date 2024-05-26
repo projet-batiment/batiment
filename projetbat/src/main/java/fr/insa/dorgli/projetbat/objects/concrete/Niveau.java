@@ -22,16 +22,16 @@ public class Niveau extends DrawableRoot implements NameDesc, HasInnerPrice {
 	private double hauteur;
 	private ArrayList<Piece> pieces;
 	private ArrayList<Appart> apparts;
-	private ArrayList<Drawable> orpheans;
+	private ArrayList<Drawable> orphans;
 
 	public Niveau() {
 		nom = "Nouveau niveau";
 		description = new String();
 		pieces = new ArrayList<>();
 		apparts = new ArrayList<>();
-		orpheans = new ArrayList<>();
+		orphans = new ArrayList<>();
 	}
-	public Niveau(int id, String nom, String description, double hauteur, ArrayList<Piece> pieces, ArrayList<Appart> apparts, ArrayList<Drawable> orpheans) {
+	public Niveau(int id, String nom, String description, double hauteur, ArrayList<Piece> pieces, ArrayList<Appart> apparts, ArrayList<Drawable> orphans) {
 		super(id);
 		this.nom = nom;
 		this.description = description;
@@ -39,10 +39,10 @@ public class Niveau extends DrawableRoot implements NameDesc, HasInnerPrice {
 
 		this.pieces = new ArrayList<>();
 		this.apparts = new ArrayList<>();
-		this.orpheans = new ArrayList<>();
+		this.orphans = new ArrayList<>();
 		addChildren((BObject[]) pieces.toArray(BObject[]::new));
 		addChildren((BObject[]) apparts.toArray(BObject[]::new));
-		addChildren((BObject[]) orpheans.toArray(BObject[]::new));
+		addChildren((BObject[]) orphans.toArray(BObject[]::new));
 	}
 
 	@Override
@@ -89,12 +89,12 @@ public class Niveau extends DrawableRoot implements NameDesc, HasInnerPrice {
 		this.apparts = apparts;
 	}
 
-	public List<Drawable> getOrpheans() {
-		return Collections.unmodifiableList(orpheans);
+	public List<Drawable> getOrphans() {
+		return Collections.unmodifiableList(orphans);
 	}
 
-	public void setOrpheans(ArrayList<Drawable> orpheans) {
-		this.orpheans = orpheans;
+	public void setOrphans(ArrayList<Drawable> orphans) {
+		this.orphans = orphans;
 	}
 
 	@Override
@@ -106,9 +106,9 @@ public class Niveau extends DrawableRoot implements NameDesc, HasInnerPrice {
 		for (Piece piece: pieces) {
 			dcx.draw(piece);
 		}
-		dcx.tui().debug("drawing " + orpheans.size() + " orpheanMurs objects");
-		for (Drawable orphean: orpheans) {
-			dcx.draw(orphean);
+		dcx.tui().debug("drawing " + orphans.size() + " orphanMurs objects");
+		for (Drawable orphan: orphans) {
+			dcx.draw(orphan);
 		}
 
 		dcx.tui().popWhere();
@@ -130,7 +130,7 @@ public class Niveau extends DrawableRoot implements NameDesc, HasInnerPrice {
 			calc.addObject(eachPiece);
 		}
 
-		for (Drawable each: orpheans){
+		for (Drawable each: orphans){
 			if (each instanceof HasPrice priced)
 				calc.addObject(priced);
 		}
@@ -149,7 +149,7 @@ public class Niveau extends DrawableRoot implements NameDesc, HasInnerPrice {
 		    .field("hauteur", String.valueOf(hauteur))
 		    .fieldShortCollection("pieces", (Collection<FancyToStrings>) ((ArrayList<?>) pieces))
 		    .fieldShortCollection("apparts", (Collection<FancyToStrings>) ((ArrayList<?>) apparts))
-		    .fieldShortCollection("orpheans", (Collection<FancyToStrings>) ((ArrayList<?>) orpheans))
+		    .fieldShortCollection("orphans", (Collection<FancyToStrings>) ((ArrayList<?>) orphans))
         	    .getValue();
 	}
 
@@ -170,9 +170,9 @@ public class Niveau extends DrawableRoot implements NameDesc, HasInnerPrice {
 			serializer.prop("pieces");
 			serializer.csv(pieces.stream().map(each -> (int) each.getId()));
 		}
-		if (!orpheans.isEmpty()) {
-			serializer.prop("orpheans");
-			serializer.csv(orpheans.stream().map(each -> (int) each.getId()));
+		if (!orphans.isEmpty()) {
+			serializer.prop("orphans");
+			serializer.csv(orphans.stream().map(each -> (int) each.getId()));
 		}
 
 		serializer.eoEntry();
@@ -202,13 +202,13 @@ public class Niveau extends DrawableRoot implements NameDesc, HasInnerPrice {
 			}
 			out += String.join(",", appartIds) + "\n";
 		}
-		if (!orpheans.isEmpty()) {
-			out += "PROP:orpheans\n";
-			String[] orpheanIds = new String[orpheans.size()];
-			for (int i = 0; i < orpheanIds.length; i++) {
-				orpheanIds[i] = String.valueOf(orpheans.get(i).getId());
+		if (!orphans.isEmpty()) {
+			out += "PROP:orphans\n";
+			String[] orphanIds = new String[orphans.size()];
+			for (int i = 0; i < orphanIds.length; i++) {
+				orphanIds[i] = String.valueOf(orphans.get(i).getId());
 			}
-			out += String.join(",", orpheanIds) + "\n";
+			out += String.join(",", orphanIds) + "\n";
 		}
 
 		return out + "EOS:Entry";
@@ -218,7 +218,7 @@ public class Niveau extends DrawableRoot implements NameDesc, HasInnerPrice {
 	public void clearChildren() {
 		apparts.clear();
 		pieces.clear();
-		orpheans.clear();
+		orphans.clear();
 	}
 
 	@Override
@@ -227,7 +227,7 @@ public class Niveau extends DrawableRoot implements NameDesc, HasInnerPrice {
 			switch (object) {
 				case Piece known -> pieces.add(known);
 				case Appart known -> apparts.add(known);
-				case Drawable known -> orpheans.add(known);
+				case Drawable known -> orphans.add(known);
 
 				default -> throw new IllegalArgumentException("Unknown children type for niveau: " + object.getClass().getSimpleName());
 			}
@@ -241,7 +241,7 @@ public class Niveau extends DrawableRoot implements NameDesc, HasInnerPrice {
 			switch (object) {
 				case Piece known -> pieces.remove(known);
 				case Appart known -> apparts.remove(known);
-				case Drawable known -> orpheans.remove(known);
+				case Drawable known -> orphans.remove(known);
 
 				default -> throw new IllegalArgumentException("Unknown children type for niveau: " + object.getClass().getSimpleName());
 			}

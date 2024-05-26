@@ -24,7 +24,7 @@ public class PieceEditor extends NameDescEditor {
 		WrapLabel prix = new WrapLabel();
 		WrapLabel aire = new WrapLabel();
 
-		WrapLabel notReady = new WrapLabel("Ce mur n'est pas prêt.");
+		WrapLabel notReady = new WrapLabel("Cette pièce n'est pas prête.");
 		notReady.managedProperty().bind(notReady.visibleProperty());
 		notReady.setTextFill(Color.RED);
 

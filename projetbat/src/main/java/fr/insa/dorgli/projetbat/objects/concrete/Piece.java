@@ -118,8 +118,10 @@ public class Piece extends DrawablePath implements HasInnerPrice, NameDesc {
 			prixPiece += eachMur.calculerPrix();
 		}
 
-		prixPiece += plafond.calculerPrix();
-		prixPiece += sol.calculerPrix();
+		if (plafond != null)
+			prixPiece += plafond.calculerPrix();
+		if (sol != null)
+			prixPiece += sol.calculerPrix();
 
 		return prixPiece;
 	}
@@ -251,12 +253,14 @@ public class Piece extends DrawablePath implements HasInnerPrice, NameDesc {
 	@Override
 	public final void addChildren(BObject... objects) {
 		for (BObject object: objects) {
+			if (object.getParents().contains(this))
+				continue;
+
 			switch (object) {
 				case PlafondSol known -> throw new IllegalAccessError("Shoudn't call Piece.addChildren with object PlafondSol");
 				case Mur known -> {
 					murs.add(known);
-					points.add(known.getPointDebut());
-					points.add(known.getPointFin());
+					addChildren(known.getPointDebut(), known.getPointFin());
 				}
 				case Point known -> points.add(known);
 
@@ -273,8 +277,7 @@ public class Piece extends DrawablePath implements HasInnerPrice, NameDesc {
 				case PlafondSol known -> throw new IllegalAccessError("Shoudn't call Piece.removeChildren with object PlafondSol");
 				case Mur known -> {
 					murs.remove(known);
-					points.remove(known.getPointDebut());
-					points.remove(known.getPointFin());
+					removeChildren(known.getPointDebut(), known.getPointFin());
 				}
 				case Point known -> points.remove(known);
 

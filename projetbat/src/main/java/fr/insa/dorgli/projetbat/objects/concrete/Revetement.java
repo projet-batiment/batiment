@@ -142,7 +142,10 @@ public abstract class Revetement extends Drawable implements HasPrice, Name {
 
 	@Override
 	public String getNom() {
-		return typeRevetement.getNom();
+		if (typeRevetement != null)
+			return typeRevetement.getNom();
+		else
+			return "";
 	}
 
 	@Override

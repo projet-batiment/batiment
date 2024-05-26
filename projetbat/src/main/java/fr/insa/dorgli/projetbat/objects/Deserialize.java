@@ -1283,10 +1283,10 @@ public class Deserialize {
 					// lire les propriétés directes du niveau
 					double hauteur = Double.parseDouble(splitted[3]);
 
-					// lire les Pieces, Apparts et orpheanMurs
+					// lire les Pieces, Apparts et orphanMurs
 					ArrayList<Piece> pieces = new ArrayList<>();
 					ArrayList<Appart> apparts = new ArrayList<>();
-					ArrayList<Drawable> orpheans = new ArrayList<>();
+					ArrayList<Drawable> orphans = new ArrayList<>();
 					config.tui.diveWhere("props");
 					for (
 						SmartReader.ReadResult propResult = sreader.readLine();
@@ -1356,24 +1356,24 @@ public class Deserialize {
 									error("LINE expected but received " + result.getState() + " when reading pieces for Appart");
 								}
 							}
-							case "orpheans" -> {
-								SmartReader.ReadResult orpheansResult = sreader.readLine();
-								if (orpheansResult.getState() == SmartReader.ReadState.LINE) {
-									String text = orpheansResult.getText();
+							case "orphans" -> {
+								SmartReader.ReadResult orphansResult = sreader.readLine();
+								if (orphansResult.getState() == SmartReader.ReadState.LINE) {
+									String text = orphansResult.getText();
 									CsvRegexMatcher propMatcher = new CsvRegexMatcher("I");
-									debug("orpheans: regex: '" + propMatcher.regex + "'");
+									debug("orphans: regex: '" + propMatcher.regex + "'");
 									if (propMatcher.matches(text)) {
-										String[] orpheansIds = text.split(",");
-										for (String each: orpheansIds) {
+										String[] orphansIds = text.split(",");
+										for (String each: orphansIds) {
 											try {
-												int orpheanId = Integer.parseInt(each);
-												SelectableId propObject = objects.get(orpheanId);
-												if (propObject instanceof Drawable orphean) {
-													orpheans.add(orphean);
+												int orphanId = Integer.parseInt(each);
+												SelectableId propObject = objects.get(orphanId);
+												if (propObject instanceof Drawable orphan) {
+													orphans.add(orphan);
 												} else if (propObject == null) {
-													errorIdNone("Drawable", orpheanId);
+													errorIdNone("Drawable", orphanId);
 												} else {
-													errorIdWrongType("Drawable", orpheanId);
+													errorIdWrongType("Drawable", orphanId);
 												}
 											} catch (NumberFormatException e) {
 												errorParse(line, e);
@@ -1383,7 +1383,7 @@ public class Deserialize {
 										errorSyntax(text);
 									}
 								} else {
-									error("LINE expected but received " + result.getState() + " when reading orpheanMurs for Appart");
+									error("LINE expected but received " + result.getState() + " when reading orphanMurs for Appart");
 								}
 							}
 							default -> error("propriété du niveau inconnue: '" + propResult.getText() + "'");
@@ -1391,7 +1391,7 @@ public class Deserialize {
 					}
 					config.tui.popWhere();
 
-					Niveau object = new Niveau(id, EscapeStrings.unescapeString(splitted[1]), EscapeStrings.unescapeString(splitted[2]), hauteur, pieces, apparts, orpheans);
+					Niveau object = new Niveau(id, EscapeStrings.unescapeString(splitted[1]), EscapeStrings.unescapeString(splitted[2]), hauteur, pieces, apparts, orphans);
 					niveaux.add(object);
 					objects.put(object);
 					debug("read " + object);

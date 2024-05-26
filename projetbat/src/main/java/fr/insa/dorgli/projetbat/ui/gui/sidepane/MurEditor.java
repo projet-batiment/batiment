@@ -57,6 +57,12 @@ public class MurEditor extends Editor {
 		WrapLabel prixMur = new WrapLabel();
 		WrapLabel aireMur = new WrapLabel();
 
+		Button editType = new Button("Éditer");
+		editType.setOnAction(eh -> {
+			if (typeMurCombo.getValue() instanceof TypeMur tm)
+				config.controller.state.setSelectedElement(tm);
+		});
+
 		WrapLabel notReady = new WrapLabel("Ce mur n'est pas prêt.");
 		notReady.managedProperty().bind(notReady.visibleProperty());
 		notReady.setTextFill(Color.RED);
@@ -111,7 +117,6 @@ public class MurEditor extends Editor {
 			var selected = config.controller.chooseFromList("revêtement", objects);
 			if (selected != null) {
 				config.controller.state.setSelectedElement(selected);
-				revetements1.update();
 			}
 		});
 
@@ -137,7 +142,6 @@ public class MurEditor extends Editor {
 			var selected = config.controller.chooseFromList("revêtement", objects);
 			if (selected != null) {
 				config.controller.state.setSelectedElement(selected);
-				revetements2.update();
 			}
 		});
 
@@ -163,7 +167,6 @@ public class MurEditor extends Editor {
 			var selected = config.controller.chooseFromList("ouverture", objects);
 			if (selected != null) {
 				config.controller.state.setSelectedElement(selected);
-				ouvertures.update();
 			}
 		});
 
@@ -210,6 +213,10 @@ public class MurEditor extends Editor {
 			prixMur.setText(String.valueOf(mur.calculerPrix()));
 			aireMur.setText(String.valueOf(mur.aire()));
 
+			revetements1.update();
+			revetements2.update();
+			ouvertures.update();
+
 			notReady.setVisible(! mur.ready());
 		});
 
@@ -223,7 +230,8 @@ public class MurEditor extends Editor {
 
 				new HBox(
 					new WrapLabel("Type :"),
-					typeMurCombo
+					typeMurCombo,
+					editType
 				),
 
 				new HBox(

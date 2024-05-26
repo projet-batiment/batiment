@@ -22,6 +22,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Region;
 import javafx.stage.FileChooser;
 
 public class Controller {
@@ -252,7 +253,7 @@ public class Controller {
 								config.project.objects.put(newMur);
 								currentNiveau.addChildren(newMur);
 
-								config.tui.debug("created mur is set as orphean of " + currentNiveau.toStringShort());
+								config.tui.debug("created mur is set as orphan of " + currentNiveau.toStringShort());
 
 								state.endCreation();
 								updateSidePaneSelection();
@@ -277,7 +278,7 @@ public class Controller {
 							config.project.objects.put(newPoint);
 							currentNiveau.addChildren(newPoint);
 
-							config.tui.debug("created point is set as orphean of " + currentNiveau.toStringShort());
+							config.tui.debug("created point is set as orphan of " + currentNiveau.toStringShort());
 						}
 
 						state.setSelectedElement(newPoint);
@@ -358,19 +359,56 @@ public class Controller {
 		config.tui.error("controller: TODO: saveDevis");
 	}
 
-	public void menuClickedApropos() {
-		Alert alert = new Alert(AlertType.INFORMATION);
-		alert.setTitle("À propos");
-		alert.setHeaderText("À propos : " + Config.applicationName);
-		alert.setContentText("Veuillez poser votre question à l'un des créateurs de ce projet, il aura sûrement réponse à votre question !");
-
-		alert.showAndWait();
-	}
 	public void menuClickedHelp() {
 		Alert alert = new Alert(AlertType.INFORMATION);
 		alert.setTitle("Aide");
 		alert.setHeaderText("Aide");
 		alert.setContentText("Veuillez poser votre question à l'un des créateurs de ce projet, il aura sûrement réponse à votre question !");
+		alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+
+		alert.showAndWait();
+	}
+	public void menuClickedTutor() {
+		Alert alert = new Alert(AlertType.INFORMATION, "Mini-tutoriel : comment utiliser " + Config.applicationName + " ??", ButtonType.NEXT);
+		alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+		alert.setTitle("Mini-tutoriel");
+
+		ArrayList<String> etapes = new ArrayList<>();
+
+		etapes.add("Créez ou ouvrez un projet");
+		etapes.add("Créez un bâtiment puis un niveau");
+		etapes.add("Créez les composants de chaque niveau");
+
+		etapes.add("N'oubliez pas de créer et d'associer des types pour chaque objet typé");
+		etapes.add("Associez des murs et points en pièces, et des pièces en appartements");
+		etapes.add("Générez un devis grâce au menu \"Devis\"");
+
+		etapes.add("La fenêtre au milieu à gauche affiche le plan en vue de dessus");
+		etapes.add("La fenêtre à droite affiche l'éditeur de la sélection et des devis");
+		etapes.add("La barre d'état en bas affiche l'état actuel du programme");
+
+		etapes.add("La fenêtre au milieu à gauche affiche le plan en vue de dessus");
+		etapes.add("La fenêtre à droite affiche l'éditeur de la sélection et des devis");
+		etapes.add("La barre d'état en bas affiche l'état actuel du programme");
+
+		String etapesBase = "En quelques étapes :\n";
+		for (int i = 0; i < etapes.size() / 3; i++) {
+			String etapesOut = etapesBase;
+			for (int l = 0; l < Math.min(3, etapes.size() - i*3); l++)
+				etapesOut += "\n" + (i*3 + l + 1) + ") " + etapes.get(i*3 + l);
+
+			alert.setContentText(etapesOut);
+			alert.showAndWait();
+		}
+
+		menuClickedHelp();
+	}
+	public void menuClickedApropos() {
+		Alert alert = new Alert(AlertType.INFORMATION);
+		alert.setTitle("À propos");
+		alert.setHeaderText("À propos : " + Config.applicationName);
+		alert.setContentText(Config.applicationName + " est un logiciel permettant la saisie graphique interactive d'un plan architectural rudimentaire dans l'optique d'en calculer un devis.");
+		alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
 
 		alert.showAndWait();
 	}

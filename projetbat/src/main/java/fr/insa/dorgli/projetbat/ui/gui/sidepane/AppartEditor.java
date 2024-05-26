@@ -1,7 +1,6 @@
 package fr.insa.dorgli.projetbat.ui.gui.sidepane;
 import fr.insa.dorgli.projetbat.core.Config;
 import fr.insa.dorgli.projetbat.objects.SelectableId;
-import fr.insa.dorgli.projetbat.objects.Serialize;
 import fr.insa.dorgli.projetbat.objects.concrete.Appart;
 import fr.insa.dorgli.projetbat.objects.concrete.Piece;
 import fr.insa.dorgli.projetbat.objects.types.TypeAppart;
@@ -11,18 +10,15 @@ import java.util.HashSet;
 import java.util.Set;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import fr.insa.dorgli.projetbat.ui.gui.sidepane.components.WrapLabel;
-import java.io.File;
-import java.io.IOException;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Separator;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.stage.FileChooser;
+import javafx.scene.paint.Color;
 import javafx.util.Callback;
 
 public class AppartEditor extends NameDescEditor {
@@ -46,18 +42,19 @@ public class AppartEditor extends NameDescEditor {
 		typeAppartCombo.setButtonCell(callback.call(null));
 		typeAppartCombo.setCellFactory(callback);
 
-		ButtonnedListComponent pieces = new ButtonnedListComponent(config, this, (Collection<SelectableId>) (Collection<?>) appart.getPieces(), "pièces");
-		Button ser = new Button("Sérializer");
-		ser.setOnAction(eh -> {
-			FileChooser fileChooser = new FileChooser();
-			File f = fileChooser.showSaveDialog(config.getMainStage());
-			try {
-				Serialize serializer = new Serialize(f, config);
-				appart.serialize(serializer);
-			} catch (IOException ex) {
-				config.tui.error("failed to create serializer");
-			}
+		WrapLabel prix = new WrapLabel();
+
+		Button editType = new Button("Éditer");
+		editType.setOnAction(eh -> {
+			if (typeAppartCombo.getValue() instanceof TypeAppart ta)
+				config.controller.state.setSelectedElement(ta);
 		});
+
+		WrapLabel notReady = new WrapLabel("Cet appartement n'est pas prêt.");
+		notReady.managedProperty().bind(notReady.visibleProperty());
+		notReady.setTextFill(Color.RED);
+
+		ButtonnedListComponent pieces = new ButtonnedListComponent(config, this, (Collection<SelectableId>) (Collection<?>) appart.getPieces(), "Pièces");
 
 		pieces.setRemoveObject(() -> {
 			Set objects = new HashSet(appart.getPieces());
@@ -70,7 +67,11 @@ public class AppartEditor extends NameDescEditor {
 		});
 
 		pieces.setAddObject(() -> {
-			new Alert(AlertType.INFORMATION, "Pour ajouter une ou plusieurs pièces à cet appartement, sélectionnez les sur le plan.").showAndWait();
+			Set objects = config.project.objects.getPieces();
+			var selected = config.controller.chooseFromList("pièce", objects);
+			if (selected instanceof Piece piece) {
+				appart.addChildren(piece);
+			}
 		});
 
 		pieces.setEditObject(() -> {
@@ -79,7 +80,6 @@ public class AppartEditor extends NameDescEditor {
 
 			if (selected != null) {
 				config.controller.state.setSelectedElement(selected);
-				pieces.update();
 			}
 		});
 
@@ -111,16 +111,28 @@ public class AppartEditor extends NameDescEditor {
 			}
 
 			pieces.update();
+			prix.setText(String.valueOf(appart.calculerPrix()));
+
+			notReady.setVisible(! appart.ready());
 		});
 
 		super.prependInitFunction((Pane pane) ->
 			pane.getChildren().addAll(
 				new HBox(
 					new WrapLabel("Type d'appartement :"),
-					typeAppartCombo
+					typeAppartCombo,
+					editType
 				),
 
-				ser,
+				new HBox(
+					new WrapLabel("Prix total :"),
+					prix,
+					new WrapLabel("€")
+				),
+
+				notReady,
+
+				new Separator(),
 				pieces
 			)
 		);
@@ -128,4 +140,3 @@ public class AppartEditor extends NameDescEditor {
 		super.initialize();
 	}
 }
-

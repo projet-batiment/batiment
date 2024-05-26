@@ -328,14 +328,6 @@ public class OutilsTop extends MenuBar {
 			config.controller.selectFromList("type d'ouverture-mur", objects);
 		});
 
-		MenuItem buttonDevisEdit = new MenuItem("Un Devis...");
-		buttonDevisEdit.setOnAction(event -> {
-			Set objects = config.project.objects.getDevis();
-			config.controller.selectFromList("devis", objects);
-		});
-
-		SeparatorMenuItem separatorEdit3 = new SeparatorMenuItem();
-
 		Menu menuEditer = new Menu("Éditer", null,
 			buttonCurrentProjectEdit,
 			buttonCurrentBatimentEdit,
@@ -352,14 +344,12 @@ public class OutilsTop extends MenuBar {
 			buttonTypeMurEdit,
 			buttonTypeRevetementEdit,
 			buttonTypeOuvertureNiveauxEdit,
-			buttonTypeOuvertureMurEdit,
-			separatorEdit3,
-			buttonDevisEdit
+			buttonTypeOuvertureMurEdit
 		);
 		
 		///// Menu Sélectionner
 
-		MenuItem buttonSelect = new MenuItem("Outil sélection");
+		MenuItem buttonSelect = new MenuItem("Sélection (outil par défaut)");
 		buttonSelect.setOnAction(event -> {
 			config.tui.log("clicked: select");
 			config.controller.state.setActionState(State.ActionState.DEFAULT);
@@ -423,10 +413,17 @@ public class OutilsTop extends MenuBar {
 			controller.saveDevis();
 		});
 
+		MenuItem buttonDevisEdit = new MenuItem("Éditer un devis...");
+		buttonDevisEdit.setOnAction(event -> {
+			Set objects = config.project.objects.getDevis();
+			config.controller.selectFromList("devis", objects);
+		});
+
 		menuDevis = new Menu("Devis", null,
 			buttonDevisTotal,
 			buttonDevisSelection,
-			buttonSaveDevisAs
+			buttonSaveDevisAs,
+			buttonDevisEdit
 		);
 
 		///// Menu Afficher
@@ -589,6 +586,11 @@ public class OutilsTop extends MenuBar {
 			controller.menuClickedHelp();
 		});
 
+		MenuItem buttonTutor = new MenuItem("Mini-tutoriel");
+		buttonTutor.setOnAction(e -> {
+			controller.menuClickedTutor();
+		});
+
 		buttonApropos = new MenuItem("À propos de " + Config.applicationName);
 		buttonApropos.setOnAction(e -> {
 			controller.menuClickedApropos();
@@ -598,6 +600,7 @@ public class OutilsTop extends MenuBar {
 
 		menuAide = new Menu("Aide", null,
 			buttonAide,
+			buttonTutor,
 			separatorAide,
 			buttonApropos
 		);
