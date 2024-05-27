@@ -20,6 +20,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
@@ -197,6 +198,8 @@ public class Controller {
 
 		config.project = new Project();
 		state.setSelectedElement(config.project);
+		state.setCurrentBatiment(null);
+		state.setViewRootElement(null);
 		refreshUI();
 	}
 
@@ -404,13 +407,43 @@ public class Controller {
 		menuClickedHelp();
 	}
 	public void menuClickedApropos() {
-		Alert alert = new Alert(AlertType.INFORMATION);
+		ButtonType btElio = new ButtonType("Elio", ButtonBar.ButtonData.HELP);
+		ButtonType btNoah = new ButtonType("Noah", ButtonBar.ButtonData.HELP);
+		ButtonType btRayan = new ButtonType("Rayan", ButtonBar.ButtonData.HELP);
+
+		Alert alert = new Alert(AlertType.INFORMATION, "", ButtonType.CLOSE, btElio, btNoah, btRayan);
 		alert.setTitle("À propos");
 		alert.setHeaderText("À propos : " + Config.applicationName);
 		alert.setContentText(Config.applicationName + " est un logiciel permettant la saisie graphique interactive d'un plan architectural rudimentaire dans l'optique d'en calculer un devis.");
 		alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
 
-		alert.showAndWait();
+		Optional<ButtonType> result = alert.showAndWait();
+		boolean jeSuisDansLaBoucle = true;
+		while (jeSuisDansLaBoucle) {
+			if (result.isPresent()) {
+				if (result.get() == ButtonType.CLOSE) {
+				    jeSuisDansLaBoucle = false;
+
+				} else if (result.get() == btElio) {
+					alert.setContentText("Informaticien amateur. Fada de NeoVim, du shell, de la perfection et de la linguistique.\nOh & I use Arch btw.");
+					result = alert.showAndWait();
+
+				} else if (result.get() == btNoah) {
+					alert.setContentText("Ich sprech deutsch supa gut! Chef de projet en herbe.");
+					result = alert.showAndWait();
+
+				} else if (result.get() == btRayan) {
+					alert.setContentText("Le meilleur manager sûr de l'INSA !");
+					result = alert.showAndWait();
+
+				} else {
+					alert.setContentText(Config.applicationName + " est un logiciel permettant la saisie graphique interactive d'un plan architectural rudimentaire dans l'optique d'en calculer un devis.");
+					result = alert.showAndWait();
+				}
+			} else {
+				jeSuisDansLaBoucle = false;
+			}
+		}
 	}
 
 	public void menuButtonCreateSerie(BObject object) {
