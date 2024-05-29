@@ -45,12 +45,10 @@ public class DrawingContext {
 
 		reset();
 		if (config.controller.state.getViewRootElement() == null) {
-			// TODO!!! amnesic debug
 			config.tui.debug("no rootObjects");
 		} else {
 			config.tui.begin();
 
-			// TODO!! toStringShort
 			config.tui.debug("drawing from root object " + config.controller.state.getViewRootElement().toString());
 			DrawableRoot root = config.controller.state.getViewRootElement();
 			config.controller.state.getViewRootElement().drawRoot(this);
@@ -75,8 +73,11 @@ public class DrawingContext {
 	///// launch an object drawer
 
 	public void draw(Drawable object) {
+		// NOTE: ce qui est commenté ci-dessous permet de ne pas dessiner plusieurs fois un même objet
+		// cependant, d'autres objets peuvent être affichés par dessus
+		// nous n'avons pas eu le temps d'implémenter d'ordre d'importance de l'affichage
+		// donc ce bloc reste commenté
 //		if (drawnObjects.contains(object)) {
-//			 TODO!! amnesic debug
 //			config.tui.debug("DrawingContext/draw: skipping already drawn object " + object.toString());
 //		} else {
 			ObjectState ostate;

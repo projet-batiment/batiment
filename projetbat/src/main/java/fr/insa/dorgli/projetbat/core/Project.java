@@ -108,11 +108,6 @@ public class Project extends SelectableId implements HasInnerPrice, NameDesc {
 	}
 
 	@Override
-	public String serialize(Objects objects) {
-		return "";
-	}
-
-	@Override
 	public void clearChildren() {
 		throw new IllegalAccessError("Shouldn't call Project.clearChildren()");
 	}

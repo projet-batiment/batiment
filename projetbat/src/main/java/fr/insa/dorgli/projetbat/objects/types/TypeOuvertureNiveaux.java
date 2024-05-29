@@ -6,11 +6,7 @@ import fr.insa.dorgli.projetbat.utils.EscapeStrings;
 import fr.insa.dorgli.projetbat.utils.StructuredToString;
 
 public class TypeOuvertureNiveaux extends Type {
-	// j'ai pris le parti d'utiliser "largeur" et "hauteur" pour mieux distinguer
-	//   les deux directions (largeur et longueurs peuvent prêter à confusion)
-	// Si on ne change plus les TypeOuvertureNiveau ni les TypeOuvertureMur,
-	//   alors on pourrait même les rassembler en une seule classe puisqu'ils ont les même propriétés
-	/// TODO!!! (utile ici ?) implement java.awt.Area -> interset the revetements' surfaces with the ouvertures' surfaces
+	/// TODO!!! implement java.awt.Area -> interset the revetements' surfaces with the ouvertures' surfaces
 	private double hauteur;
 	private double largeur;
 	public double prixOuverture;
@@ -71,18 +67,6 @@ public class TypeOuvertureNiveaux extends Type {
 		    hauteur,
 		    largeur,
 		    prixOuverture
-		);
-	}
-
-	@Override
-	public String serialize(Objects objects) {
-		return String.join(",",
-		    String.valueOf(super.getId()),
-		    EscapeStrings.escapeString(nom),
-		    EscapeStrings.escapeString(description),
-		    String.valueOf(hauteur),
-		    String.valueOf(largeur),
-		    String.valueOf(prixOuverture)
 		);
 	}
 }

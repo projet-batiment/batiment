@@ -94,11 +94,6 @@ public class Appart extends BObject implements HasInnerPrice, NameDesc {
 	}
 
 	@Override
-	public String serialize(Objects objects) {
-		return "";
-	}
-
-	@Override
 	public void serialize(Serialize serializer) {
 		serializer.csv(
 		    super.getId(),

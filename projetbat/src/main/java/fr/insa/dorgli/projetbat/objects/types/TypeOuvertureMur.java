@@ -68,16 +68,4 @@ public class TypeOuvertureMur extends Type {
 		    prixOuverture
 		);
 	}
-
-	@Override
-	public String serialize(Objects objects) {
-		return String.join(",",
-		    String.valueOf(super.getId()),
-		    EscapeStrings.escapeString(nom),
-		    EscapeStrings.escapeString(description),
-		    String.valueOf(hauteur),
-		    String.valueOf(largeur),
-		    String.valueOf(prixOuverture)
-		);
-	}
 }

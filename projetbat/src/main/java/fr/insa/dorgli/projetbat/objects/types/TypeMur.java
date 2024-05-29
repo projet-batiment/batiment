@@ -54,9 +54,4 @@ public class TypeMur extends Type  {
 		    prixUnitaire
 		);
 	}
-
-	@Override
-	public String serialize(Objects objects) {
-		return "";
-	}
 }

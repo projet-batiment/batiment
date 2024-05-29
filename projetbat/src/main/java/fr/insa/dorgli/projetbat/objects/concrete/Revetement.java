@@ -115,16 +115,6 @@ public abstract class Revetement extends Drawable implements HasPrice, Name {
 		);
 	}
 
-	public String serialize(Objects objects) {
-		return String.join(",",
-		    String.valueOf(super.getId()),
-		    String.valueOf(typeRevetement.getId()),
-		    String.valueOf(pos1L),
-		    String.valueOf(pos1H),
-		    String.valueOf(pos2L),
-		    String.valueOf(pos2H));
-	}
-
 	@Override
 	public void clearChildren() {
 		typeRevetement = null;

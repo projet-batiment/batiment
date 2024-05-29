@@ -132,11 +132,6 @@ public class Devis extends SelectableId implements NameDesc, HasPrice {
 		serializer.eoEntry();
 	}
 
-	@Override
-	public String serialize(Objects objects) {
-		throw new UnsupportedOperationException("TODO!!!");
-	}
-
 	public class DevisCalculator {
 		private double prix = 0;
 		private final HashSet<HasPrice> processedObjects = new HashSet<>();

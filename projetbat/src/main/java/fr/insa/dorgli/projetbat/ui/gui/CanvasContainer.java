@@ -165,9 +165,6 @@ public class CanvasContainer extends Pane {
 		setIsFitted(false);
 
 		switch (direction) {
-			// TODO: mauvaise adaptation lors d'un changement de taille de fenêtre (bugs visuels lors de redraw, formes étirées
-			//       => à cause du bind des Properties width et height
-
 			case Direction.LEFT -> ctxt.translate(- scaledMoveFactor, 0);
 			case Direction.RIGHT -> ctxt.translate(scaledMoveFactor, 0);
 			case Direction.UP -> ctxt.translate(0, - scaledMoveFactor);

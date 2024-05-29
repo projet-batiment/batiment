@@ -66,11 +66,6 @@ public abstract class Type extends BObject implements NameDesc {
 	}
 
 	@Override
-	public String serialize(Objects objects) {
-		return "";
-	}
-
-	@Override
 	public void clearChildren() {
 		for (SelectableId each: super.getParents()) {
 			each.removeChildren(this);

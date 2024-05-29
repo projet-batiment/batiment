@@ -42,14 +42,4 @@ public class TypeRevetement extends Type {
 		    prixUnitaire
 		);
 	}
-
-	@Override
-	public String serialize(Objects objects) {
-		return String.join(",",
-		    String.valueOf(super.getId()),
-		    EscapeStrings.escapeString(nom),
-		    EscapeStrings.escapeString(description),
-		    String.valueOf(prixUnitaire)
-		);
-	}
 }

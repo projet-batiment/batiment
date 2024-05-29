@@ -144,35 +144,6 @@ public class Batiment extends BObject implements HasInnerPrice, NameDesc {
 	}
 
 	@Override
-	public String serialize(Objects objects) {
-		String out = String.join(",",
-		    String.valueOf(super.getId()),
-		    EscapeStrings.escapeString(nom),
-		    EscapeStrings.escapeString(description),
-		    String.valueOf(typeBatiment.getId())
-		) + "\n";
-
-		if (!niveaux.isEmpty()) {
-			out += "PROP:niveaux\n";
-			String[] niveauIds = new String[niveaux.size()];
-			for (int i = 0; i < niveauIds.length; i++) {
-				niveauIds[i] = String.valueOf(niveaux.get(i).getId());
-			}
-			out += String.join(",", niveauIds) + "\n";
-		}
-		if (!apparts.isEmpty()) {
-			out += "PROP:apparts\n";
-			String[] appartIds = new String[apparts.size()];
-			for (int i = 0; i < appartIds.length; i++) {
-				appartIds[i] = String.valueOf(apparts.get(i).getId());
-			}
-			out += String.join(",", appartIds) + "\n";
-		}
-
-		return out + "EOS:Entry";
-	}
-
-	@Override
 	public void clearChildren() {
 		apparts.clear();
 		niveaux.clear();

@@ -178,42 +178,6 @@ public class Niveau extends DrawableRoot implements NameDesc, HasInnerPrice {
 		serializer.eoEntry();
 	}
 
-	public String serialize(Objects objects) {
-		String out = String.join(",",
-		    String.valueOf(super.getId()),
-		    EscapeStrings.escapeString(nom),
-		    EscapeStrings.escapeString(description),
-		    String.valueOf(hauteur)
-		) + "\n";
-
-		if (!pieces.isEmpty()) {
-			out += "PROP:pieces\n";
-			String[] pieceIds = new String[pieces.size()];
-			for (int i = 0; i < pieceIds.length; i++) {
-				pieceIds[i] = String.valueOf(pieces.get(i).getId());
-			}
-			out += String.join(",", pieceIds) + "\n";
-		}
-		if (!apparts.isEmpty()) {
-			out += "PROP:apparts\n";
-			String[] appartIds = new String[apparts.size()];
-			for (int i = 0; i < appartIds.length; i++) {
-				appartIds[i] = String.valueOf(apparts.get(i).getId());
-			}
-			out += String.join(",", appartIds) + "\n";
-		}
-		if (!orphans.isEmpty()) {
-			out += "PROP:orphans\n";
-			String[] orphanIds = new String[orphans.size()];
-			for (int i = 0; i < orphanIds.length; i++) {
-				orphanIds[i] = String.valueOf(orphans.get(i).getId());
-			}
-			out += String.join(",", orphanIds) + "\n";
-		}
-
-		return out + "EOS:Entry";
-	}
-
 	@Override
 	public void clearChildren() {
 		apparts.clear();

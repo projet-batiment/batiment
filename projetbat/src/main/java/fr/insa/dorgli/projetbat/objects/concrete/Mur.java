@@ -232,37 +232,6 @@ public class Mur extends DrawableLine implements HasPrice {
 		serializer.eoEntry();
 	}
 
-	public String serialize(Objects objects) {
-		String out = String.join(",",
-		    String.valueOf(super.getId()),
-		    String.valueOf(pointDebut.getId()),
-		    String.valueOf(pointFin.getId()),
-		    String.valueOf(hauteur),
-		    String.valueOf(typeMur.getId())
-		) + "\n";
-
-		if (!revetements1.isEmpty()) {
-			out += "PROP:RevetementMur:1\n";
-			for (RevetementMur r: revetements1)
-				out += r.serialize(objects) + "\n";
-			out += "EOS:RevetementMur:1\n";
-		}
-		if (!revetements2.isEmpty()) {
-			out += "PROP:RevetementMur:2\n";
-			for (RevetementMur r: revetements2)
-				out += r.serialize(objects) + "\n";
-			out += "EOS:RevetementMur:2\n";
-		}
-		if (!ouvertures.isEmpty()) {
-			out += "PROP:OuvertureMur\n";
-			for (OuvertureMur o: ouvertures)
-				out += o.serialize(objects) + "\n";
-			out += "EOS:OuvertureMur\n";
-		}
-
-		return out + "EOS:Entry";
-	}
-
 	@Override
 	public void clearChildren() {
 		revetements1.clear();

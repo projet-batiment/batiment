@@ -207,41 +207,6 @@ public class Piece extends DrawablePath implements HasInnerPrice, NameDesc {
 		serializer.eoEntry();
 	}
 
-	public String serialize(Objects objects) {
-		String out = String.join(",",
-		    String.valueOf(super.getId()),
-		    EscapeStrings.escapeString(nom),
-		    EscapeStrings.escapeString(description)
-		) + "\n";
-
-		if (!points.isEmpty()) {
-			out += "PROP:points\n";
-			String[] pointIds = new String[points.size()];
-			for (int i = 0; i < pointIds.length; i++) {
-				pointIds[i] = String.valueOf(points.get(i).getId());
-			}
-			out += String.join(",", pointIds) + "\n";
-		}
-		if (!murs.isEmpty()) {
-			out += "PROP:murs\n";
-			String[] murIds = new String[murs.size()];
-			for (int i = 0; i < murIds.length; i++) {
-				murIds[i] = String.valueOf(murs.get(i).getId());
-			}
-			out += String.join(",", murIds) + "\n";
-		}
-		if (plafond != null) {
-			out += "PROP:plafond\n";
-			out += plafond.serialize(objects) + "\nEOS:plafond\n";
-		}
-		if (sol != null) {
-			out += "PROP:sol\n";
-			out += sol.serialize(objects) + "\nEOS:sol\n";
-		}
-
-		return out + "EOS:Entry";
-	}
-
 	@Override
 	public void clearChildren() {
 		points.clear();

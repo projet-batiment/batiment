@@ -81,15 +81,6 @@ public class OuvertureNiveaux extends Drawable implements Name, HasPrice {
 		);
 	}
 
-	public String serialize(Objects objects) {
-		return String.join(",",
-		    String.valueOf(super.getId()),
-		    String.valueOf(typeOuverture.getId()),
-		    String.valueOf(posL),
-		    String.valueOf(posH)
-		);
-	}
-
 	@Override
 	public void clearChildren() {
 		typeOuverture = null;

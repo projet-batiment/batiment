@@ -85,15 +85,6 @@ public class Point extends DrawablePoint {
 		);
 	}
 
-	public String serialize(Objects objects) {
-		return String.join(",",
-		    String.valueOf(super.getId()),
-		    String.valueOf(point.getX()),
-		    String.valueOf(point.getY()),
-		    String.valueOf(niveau.getId())
-		);
-	}
-
 	@Override
 	public void clearChildren() { }
 

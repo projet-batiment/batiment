@@ -359,7 +359,12 @@ public class Controller {
 	}
 
 	public void saveDevis() {
-		config.tui.error("controller: TODO: saveDevis");
+		Alert alert = new Alert(AlertType.INFORMATION);
+		alert.setTitle("Exporter un devis");
+		alert.setHeaderText("Dommage...");
+		alert.setContentText("Malheureusement, l'export d'un devis n'est pas encore implémenté...");
+
+		alert.showAndWait();
 	}
 
 	public void menuClickedHelp() {
@@ -616,7 +621,7 @@ public class Controller {
 		Batiment batiment = (Batiment) chooseFromList("batiment", state.getCurrentBatiment(), batiments);
 		if (batiment != null) {
 			state.setCurrentBatiment(batiment);
-			new Alert(AlertType.WARNING, "TODO: changer les niveaux et les bâtiments ensemble").showAndWait();
+			new Alert(AlertType.WARNING, "Vous venez de changer de Bâtiment. Pensez à changer également de niveau !").showAndWait();
 		} else
 			config.tui.log("no selection");
 	}
