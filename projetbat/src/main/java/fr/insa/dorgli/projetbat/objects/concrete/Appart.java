@@ -63,10 +63,6 @@ public class Appart extends BObject implements HasInnerPrice, NameDesc {
 		return Collections.unmodifiableList(pieces);
 	}
 
-	public void setPieces(ArrayList<Piece> pieces) {
-		this.pieces = pieces;
-	}
-
 	public TypeAppart getTypeAppart() {
 		return typeAppart;
 	}

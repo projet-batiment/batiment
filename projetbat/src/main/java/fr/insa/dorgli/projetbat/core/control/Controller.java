@@ -519,14 +519,14 @@ public class Controller {
 						}
 
 						if (allPieces) {
-							HashSet<Piece> pieces = new HashSet<>();
+							HashSet<BObject> pieces = new HashSet<>();
 
 							for (SelectableId each: state.getSelectedElements()) {
 								if (each instanceof Piece piece)
 									pieces.add(piece);
 							}
 
-							appart.setPieces(new ArrayList(pieces));
+							appart.addChildren(pieces.toArray(BObject[]::new));
 
 							config.project.objects.put(appart);
 							currentNiveau.addChildren(appart);

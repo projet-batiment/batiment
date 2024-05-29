@@ -65,10 +65,6 @@ public class Batiment extends BObject implements HasInnerPrice, NameDesc {
 		return Collections.unmodifiableList(niveaux);
 	}
 
-	public void setNiveaux(ArrayList<Niveau> niveaux) {
-		this.niveaux = niveaux;
-	}
-
 	public List<Appart> getApparts() {
 		return Collections.unmodifiableList(apparts);
 	}
@@ -116,7 +112,7 @@ public class Batiment extends BObject implements HasInnerPrice, NameDesc {
 		return new StructuredToString.OfFancyToStrings(depth, this, indentFirst)
 		    .textField("nom", nom)
 		    .textField("description", description)
-		    .field("typeBatiment", typeBatiment.toString(depth + 1))
+		    .field("typeBatiment", typeBatiment)
 		    .fieldShortCollection("apparts", (Collection<FancyToStrings>) ((ArrayList<?>) apparts))
 		    .fieldShortCollection("niveaux", (Collection<FancyToStrings>) ((ArrayList<?>) niveaux))
         	    .getValue();

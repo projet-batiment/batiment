@@ -172,8 +172,8 @@ public class Piece extends DrawablePath implements HasInnerPrice, NameDesc {
 		    .textField("description", description)
 		    .fieldShortCollection("points", (Collection<FancyToStrings>) ((ArrayList<?>) points))
 		    .fieldShortCollection("murs", (Collection<FancyToStrings>) ((ArrayList<?>) murs))
-		    .field("plafond", plafond.toString(depth + 1))
-		    .field("sol", sol.toString(depth + 1))
+		    .field("plafond", plafond)
+		    .field("sol", sol)
         	    .getValue();
 	}
 

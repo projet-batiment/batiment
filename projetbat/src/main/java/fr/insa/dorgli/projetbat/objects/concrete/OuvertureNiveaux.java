@@ -62,7 +62,7 @@ public class OuvertureNiveaux extends Drawable implements Name, HasPrice {
 		return new StructuredToString.OfFancyToStrings(depth, this, indentFirst)
 		    .field("posL", String.valueOf(posL))
 		    .field("posH", String.valueOf(posH))
-		    .field("typeOuverture", typeOuverture.toString(depth + 1))
+		    .field("typeOuverture", typeOuverture)
         	    .getValue();
 	}
 

@@ -19,6 +19,7 @@ public abstract class Editor extends SmartTab {
 		save.setOnAction((ActionEvent event) -> {
 			save(event);
 			reset();
+			config.controller.redrawCanvas();
 		});
 
 		cancel = new Button("Annuler");

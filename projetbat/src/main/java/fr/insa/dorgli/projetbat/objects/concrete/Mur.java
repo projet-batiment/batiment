@@ -191,8 +191,8 @@ public class Mur extends DrawableLine implements HasPrice {
 	@Override
 	public String toString(int depth, boolean indentFirst) {
 		return new StructuredToString.OfFancyToStrings(depth, this, indentFirst)
-		    .field("pointDebut", pointDebut.toString(depth + 1))
-		    .field("pointFin", pointFin.toString(depth + 1))
+		    .field("pointDebut", pointDebut)
+		    .field("pointFin", pointFin)
 		    .field("hauteur", String.valueOf(hauteur))
 		    .fieldShortCollection("revetements1", (Collection<FancyToStrings>) ((ArrayList<?>) revetements1))
 		    .fieldShortCollection("revetements2", (Collection<FancyToStrings>) ((ArrayList<?>) revetements2))

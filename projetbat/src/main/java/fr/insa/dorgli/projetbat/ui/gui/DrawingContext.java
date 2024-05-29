@@ -12,6 +12,7 @@ import fr.insa.dorgli.projetbat.objects.concrete.DrawableRoot;
 import fr.insa.dorgli.projetbat.ui.TUI;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import javafx.scene.paint.Color;
@@ -92,6 +93,7 @@ public class DrawingContext {
 				ostate = ObjectState.NORMAL;
 
 			config.tui.debug("DrawingContext/draw: drawing " + ostate + " object " + object.toStringShort());
+			config.tui.debug("DrawingContext/draw: with parents: " + Arrays.toString(object.getParents().toArray()));
 			drawnObjects.add(object);
 			object.draw(this, ostate);
 //		}

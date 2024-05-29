@@ -77,24 +77,12 @@ public class Niveau extends DrawableRoot implements NameDesc, HasInnerPrice {
 		return Collections.unmodifiableList(pieces);
 	}
 
-	public void setPieces(ArrayList<Piece> pieces) {
-		this.pieces = pieces;
-	}
-
 	public List<Appart> getApparts() {
 		return Collections.unmodifiableList(apparts);
 	}
 
-	public void setApparts(ArrayList<Appart> apparts) {
-		this.apparts = apparts;
-	}
-
 	public List<Drawable> getOrphans() {
 		return Collections.unmodifiableList(orphans);
-	}
-
-	public void setOrphans(ArrayList<Drawable> orphans) {
-		this.orphans = orphans;
 	}
 
 	@Override

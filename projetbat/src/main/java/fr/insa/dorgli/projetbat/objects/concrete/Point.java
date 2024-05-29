@@ -71,7 +71,7 @@ public class Point extends DrawablePoint {
 		return new StructuredToString.OfFancyToStrings(depth, this, indentFirst)
 		    .field("x", String.valueOf(point.getX()))
 		    .field("y", String.valueOf(point.getY()))
-		    .field("niveau", niveau == null ? "(null)" : niveau.toString(depth + 1))
+		    .field("niveau", niveau) 
         	    .getValue();
 	}
 
